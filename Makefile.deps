@@ -1,0 +1,8 @@
+build_h=$(EINC)/build.h $(EINC)/compat.h
+
+$(SRC)/b5compat.$o: $(SRC)/b5compat.c $(build_h)
+$(SRC)/config.$o: $(SRC)/config.c $(EINC)/compat.h $(EINC)/build.h $(EINC)/osd.h $(EINC)/baselayer.h $(INC)/tekwar.h
+
+$(SRC)/gameres.$(res): $(SRC)/gameres.rc $(INC)/gameres.h $(RSRC)/game.bmp $(RSRC)/game_icon.ico
+$(SRC)/startwin_game.$o: $(SRC)/startwin_game.c $(EINC)/build.h $(EINC)/winlayer.h $(EINC)/compat.h $(INC)/tekwar.h $(INC)/gameres.h
+$(SRC)/startgtk_game.$o: $(SRC)/startgtk_game.c $(EINC)/build.h $(EINC)/baselayer.h $(SRC)/grpscan.h $(INC)/startwin.h $(EINC)/compat.h

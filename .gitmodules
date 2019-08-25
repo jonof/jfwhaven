@@ -1,0 +1,3 @@
+[submodule "jfbuild"]
+	path = jfbuild
+	url = ../jfbuild.git
