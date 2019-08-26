@@ -124,3 +124,28 @@ int lockclock;
 
 void lb_printf(int,int,char *,...);
 
+// b5compat.c
+void permanentwritesprite(int thex, int they, short tilenum, signed char shade,
+        int cx1, int cy1, int cx2, int cy2, unsigned char dapalnum);
+void permanentwritespritetile(int UNUSED(thex), int UNUSED(they), short tilenum, signed char shade,
+        int cx1, int cy1, int cx2, int cy2, unsigned char dapalnum);
+void overwritesprite(int thex, int they, short tilenum, signed char shade,
+        char stat, unsigned char dapalnum);
+
+// whaven.c
+int setanimation(int *animptr,int thegoal,int thevel);
+void setdelayfunc(void (*func)(),int item,int delay);
+int getanimationgoal(int *animptr);
+
+// whmenu.c
+void fancyfont(int x,int y,short tilenum,char *string,char pal);
+void help(void);
+void loadsave(struct player *plr);
+
+// whobj.c
+int movesprite(short spritenum,int dx,int dy,int dz,int ceildist,int flordist,char cliptype);
+void newstatus(short sn,int seq);
+void trowajavlin(int s);
+
+// whsndmod.c
+int SND_PlaySound(unsigned int sound,int x,int y,unsigned int Pan,unsigned int loopcount);
