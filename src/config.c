@@ -1,11 +1,11 @@
 // Evil and Nasty Configuration File Reader for KenBuild
-// Repurposes for JFTekWar
+// Repurposed for JFWitchaven
 // by Jonathon Fowler
 
 #include "compat.h"
 #include "build.h"
 #include "osd.h"
-#include "tekwar.h"
+//#include "tekwar.h"
 
 #ifdef RENDERTYPEWIN
 #include "winlayer.h"
@@ -37,7 +37,7 @@ static int readconfig(BFILE *fp, const char *key, char *value, unsigned len)
 		while ((*eq == ' ' || *eq == '\t') && eq>=k) *(eq--) = 0;
 
 		if (Bstrcasecmp(k, key)) continue;
-		
+
 		while (*v == ' ' || *k == '\t') v++;
 		eq = v + Bstrlen(v)-1;
 
@@ -114,7 +114,7 @@ int writesetup(const char *fn)
 
 	fp = Bfopen(fn,"wt");
 	if (!fp) return -1;
-	
+
 	Bfprintf(fp,
 	"; Always show configuration options on startup\n"
 	";   0 - No\n"
@@ -201,7 +201,7 @@ int writesetup(const char *fn)
 	"keymouselook = %X\n"
 	"keyconsole = %X\n"
 	"\n",
-	
+
 	forcesetup, fullscreen, xdimgame, ydimgame, bppgame,
 #ifdef RENDERTYPEWIN
 	maxrefreshfreq,

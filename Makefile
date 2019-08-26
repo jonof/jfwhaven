@@ -68,9 +68,20 @@ EXESUFFIX=
 
 GAMEOBJS= \
 	$(SRC)/b5compat.$o \
-	$(SRC)/config.$o
+	$(SRC)/config.$o \
+	$(SRC)/whani.$o \
+	$(SRC)/whaven.$o \
+	$(SRC)/whctm.$o \
+	$(SRC)/whfx.$o \
+	$(SRC)/whinp.$o \
+	$(SRC)/whmenu.$o \
+	$(SRC)/whnet.$o \
+	$(SRC)/whobj.$o \
+	$(SRC)/whplr.$o \
+	$(SRC)/whsndmod.$o \
+	$(SRC)/whtag.$o
 
-EDITOROBJS=$(SRC)/bstub.$o
+EDITOROBJS=$(SRC)/whbuild.$o
 
 include $(EROOT)/Makefile.shared
 
