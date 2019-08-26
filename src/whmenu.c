@@ -319,16 +319,18 @@ void help(void) {
 
     struct {
         int helpnames;
-    }thenames[MAXHELPSCREENS] = {   WEAPONS,
-                                    SPELLS,
-                                    POTIONS,
-                                    WALKING,
-                                    FLYING,
-                                    CREDIT1,
-                                    CREDIT2,
-                                    CREDIT3,
-                                    CREDIT4,
-                                    BETAPAGE};
+    }thenames[MAXHELPSCREENS] = {
+        { WEAPONS },
+        { SPELLS },
+        { POTIONS },
+        { WALKING },
+        { FLYING },
+        { CREDIT1 },
+        { CREDIT2 },
+        { CREDIT3 },
+        { CREDIT4 },
+        { BETAPAGE }
+    };
 
     int select=0;
     int goaltime;
