@@ -1,0 +1,74 @@
+//#line "whobj.c" 71
+extern void monitor(void );
+//#line "whobj.c" 201
+extern void processobjs(struct player *plr);
+//#line "whobj.c" 1143
+extern int potionspace(int vial);
+//#line "whobj.c" 1155
+extern void updatepotion(int vial);
+//#line "whobj.c" 1184
+extern void transformactors(struct player *plr);
+//#line "whobj.c" 1315
+extern void newstatus(short sn,int seq);
+//#line "whobj.c" 2115
+extern void firebreath(long i,int a,int b,int c);
+//#line "whobj.c" 2163
+extern void throwspank(long i);
+//#line "whobj.c" 2204
+extern void castspell(long i);
+//#line "whobj.c" 2252
+extern void skullycastspell(long i);
+//#line "whobj.c" 2303
+extern int checkheat(long i);
+//#line "whobj.c" 2348
+extern int checkfacing(long i,long x,long y);
+//#line "whobj.c" 2364
+extern int checkmedusadist(long i,long x,long y,long z,int lvl);
+//#line "whobj.c" 2379
+extern int checkdist(long i,long x,long y,long z);
+//#line "whobj.c" 2458
+extern void checkspeed(long i,long *dax,long *day,int speed);
+//#line "whobj.c" 2468
+extern int checksight(long i,short *daang);
+//#line "whobj.c" 2514
+extern void checkmove(long i,long dax,long day,short *movestat);
+//#line "whobj.c" 2544
+extern void attack(long i);
+//#line "whobj.c" 2682
+extern void fireballblast(long i);
+//#line "whobj.c" 2713
+extern void makeafire(long i,int firetype);
+//#line "whobj.c" 2737
+extern void explosion(long i,long x,long y,long z,short owner);
+//#line "whobj.c" 2764
+extern void explosion2(long i,long x,long y,long z,short owner);
+//#line "whobj.c" 2792
+extern void trailingsmoke(short i);
+//#line "whobj.c" 2815
+extern void icecubes(long i,long x,long y,long z,short owner);
+//#line "whobj.c" 2847
+extern int damageactor(int hitobject,long i);
+//#line "whobj.c" 3008
+extern void nukespell(short j);
+//#line "whobj.c" 3117
+extern void medusa(short j);
+//#line "whobj.c" 3171
+extern int movesprite(short spritenum,long dx,long dy,long dz,long ceildist,long flordist,char cliptype);
+//#line "whobj.c" 3211
+extern void guardianfire(short i,int k,struct player *plr);
+//#line "whobj.c" 3245
+extern void trowajavlin(int s);
+//#line "whobj.c" 3302
+extern void throwhalberd(int s);
+//#line "whobj.c" 3344
+extern void monsterweapon(short i);
+//#line "whobj.c" 3420
+extern void madenoise(int val,long x,long y,long z);
+//#line "whobj.c" 3434
+extern void monsternoise(short i);
+//#line "whobj.c" 3452
+extern void randompotion(short i);
+//#line "whobj.c" 3475
+extern void spawnabaddy(short i,short monster);
+//#line "whobj.c" 3539
+extern void spawnapentagram(short sn);

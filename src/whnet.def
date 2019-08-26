@@ -1,0 +1,68 @@
+union INTPACK ;
+//#line "whnet.c" 280
+extern void __interrupt __far newGPhandler(union INTPACK r);
+union INTPACK ;
+//#line "whnet.c" 287
+extern void __interrupt __far newPGhandler(union INTPACK r);
+//#line "whnet.c" 294
+extern void __far *dpmi_getexception(int no);
+//#line "whnet.c" 307
+extern void dpmi_setexception(int no,void __far *func);
+//#line "whnet.c" 319
+extern void installGPhandler(void );
+//#line "whnet.c" 339
+extern void debugout(char *fmt,... );
+//#line "whnet.c" 350
+extern void netcheckargs(int argc,char *argv[]);
+//#line "whnet.c" 398
+extern int netattacking(short p);
+//#line "whnet.c" 407
+extern void netsendpck(struct netpck *p,unsigned int dnode);
+//#line "whnet.c" 455
+extern short netchecktouchflag(struct player *plr);
+//#line "whnet.c" 496
+extern void netmarkflag(short i);
+//#line "whnet.c" 533
+extern void moveflag(long x,long y,long z,long teamno);
+//#line "whnet.c" 546
+extern void sendmyinfo(unsigned int dnode,short forcesend);
+//#line "whnet.c" 738
+extern void netjoingame(void );
+//#line "whnet.c" 797
+extern void netsendmove(void );
+//#line "whnet.c" 826
+extern void netshootgun(short s,char guntype);
+//#line "whnet.c" 846
+extern void netdamageactor(short s,short o);
+//#line "whnet.c" 875
+extern void nethitsprite(short p,char guntype,char taghit);
+//#line "whnet.c" 1124
+extern void spawnflag(long x,long y,long z,long teamno);
+//#line "whnet.c" 1144
+extern void dropflagstart(short teamno);
+//#line "whnet.c" 1156
+extern void netdropflag(void );
+//#line "whnet.c" 1164
+extern void wongamescreen(short p);
+//#line "whnet.c" 1270
+extern char *IPXadrstr(struct _tagIPX_INTERNET_ADDR *p);
+//#line "whnet.c" 1292
+extern void netgetmove(void );
+//#line "whnet.c" 1699
+extern void netpickmonster(void );
+//#line "whnet.c" 1901
+extern void mdmreadsettings(void );
+//#line "whnet.c" 1943
+extern void initmulti(int numplayers);
+//#line "whnet.c" 2045
+extern void dropDTR(void );
+//#line "whnet.c" 2056
+extern void netshutdown(void );
+//#line "whnet.c" 2089
+extern void whnetmon(void );
+//#line "whnet.c" 2193
+extern void netrestartplayer(struct player *plr);
+//#line "whnet.c" 2202
+extern void netkillme(void );
+//#line "whnet.c" 2209
+extern void netreviveme(void );

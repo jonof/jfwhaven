@@ -1,0 +1,48 @@
+//#line "whfx.c" 86
+extern void initlava(void );
+//#line "whfx.c" 109
+extern void movelava(char *dapic);
+//#line "whfx.c" 210
+extern void initwater(void );
+//#line "whfx.c" 233
+extern void movewater(char *dapic);
+//#line "whfx.c" 332
+extern void skypanfx(void );
+//#line "whfx.c" 343
+extern void panningfx(void );
+//#line "whfx.c" 412
+extern void crushingfx(void );
+//#line "whfx.c" 483
+extern void revolvefx(void );
+//#line "whfx.c" 521
+extern void bobbingsector(void );
+//#line "whfx.c" 541
+extern void teleporter(void );
+//#line "whfx.c" 617
+extern void warp(long *x,long *y,long *z,short *daang,short *dasector);
+//#line "whfx.c" 647
+extern void warpsprite(short spritenum);
+//#line "whfx.c" 665
+extern void ironbars(void );
+//#line "whfx.c" 729
+extern void sectorsounds(void );
+//#line "whfx.c" 773
+extern void scary(void );
+//#line "whfx.c" 795
+extern void dofx(void );
+//#line "whfx.c" 827
+extern void thunder(void );
+//#line "whfx.c" 987
+extern void thesplash(void );
+//#line "whfx.c" 1008
+extern void makeasplash(int picnum,struct player *plr);
+//#line "whfx.c" 1046
+extern void makemonstersplash(int picnum,int i);
+//#line "whfx.c" 1103
+extern void bats(short k);
+//#line "whfx.c" 1129
+extern void cracks(void );
+//#line "whfx.c" 1197
+extern void lavadryland(void );
+//#line "whfx.c" 1244
+extern void warpfxsprite(int s);

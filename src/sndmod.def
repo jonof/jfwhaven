@@ -1,0 +1,42 @@
+//#line "sndmod.c" 38
+extern void SND_InitSOSTimer(void );
+//#line "sndmod.c" 62
+extern void __loadds __far timerevent(void );
+//#line "sndmod.c" 78
+extern void __far __cdecl sosDIGISampleCallback(unsigned int wDriverHandle,unsigned int wCallSource,unsigned int hSample);
+//#line "sndmod.c" 117
+extern void __far sosMIDISongCallback(unsigned int hSong);
+//#line "sndmod.c" 149
+extern void __far sosMIDITriggerCallback(unsigned int hSong,unsigned char bTrack,unsigned char bID);
+//#line "sndmod.c" 166
+extern void SND_SetupDigi(void );
+//#line "sndmod.c" 232
+extern void SND_LoadMidiIns(void );
+//#line "sndmod.c" 331
+extern unsigned char __far *SND_LoadMIDISong(unsigned int which);
+//#line "sndmod.c" 368
+extern unsigned int SND_AddTimerEvent(unsigned int wEventRate,void (__far *TimerRoutine)(void ));
+//#line "sndmod.c" 398
+extern void SND_RemoveTimerEvent(unsigned int wTimerHandle);
+//#line "sndmod.c" 419
+extern unsigned int SND_GetNumAuxEvents(void );
+//#line "sndmod.c" 441
+extern void SND_Startup(void );
+//#line "sndmod.c" 609
+extern void SND_Shutdown(void );
+//#line "sndmod.c" 687
+extern void SND_Mixer(unsigned int wSource,unsigned int wVolume);
+//#line "sndmod.c" 698
+extern void SND_StartMusic(void );
+//#line "sndmod.c" 722
+extern int SND_StartMIDISong(unsigned int wSongNum);
+//#line "sndmod.c" 761
+extern void SND_StopMIDISong(unsigned int wSongNum);
+//#line "sndmod.c" 782
+extern void SND_TriggerHook(unsigned int wSongNum);
+//#line "sndmod.c" 792
+extern void SND_LoadLoop(void );
+//#line "sndmod.c" 817
+extern void SND_PlaySound(unsigned int sound,long x,long y,unsigned int Pan,unsigned int playerpeek);
+//#line "sndmod.c" 891
+extern void SND_UpdateSoundLoc(unsigned int which,unsigned int Volume,unsigned int Pan);

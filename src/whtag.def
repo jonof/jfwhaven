@@ -1,0 +1,6 @@
+//#line "whtag.c" 22
+extern void operatesprite(int s);
+//#line "whtag.c" 61
+extern void operatesector(int s);
+//#line "whtag.c" 901
+extern void animatetags(struct player *plr);

@@ -1,0 +1,78 @@
+//#line "whplr.c" 564
+extern void playerdead(struct player *plr);
+//#line "whplr.c" 750
+extern void spikeheart(struct player *plr);
+//#line "whplr.c" 780
+extern void updateloadedplayer(int i);
+//#line "whplr.c" 818
+extern void initplayersprite(void );
+//#line "whplr.c" 958
+extern void autoweaponchange(int dagun);
+//#line "whplr.c" 1017
+extern void weaponchange(void );
+//#line "whplr.c" 1155
+extern void potiontext(void );
+//#line "whplr.c" 1186
+extern void swingdacrunch(int daweapon);
+//#line "whplr.c" 1238
+extern void swingdasound(int daweapon);
+//#line "whplr.c" 1276
+extern void swingdaweapon(struct player *plr);
+//#line "whplr.c" 1353
+extern void plrfireweapon(struct player *plr);
+//#line "whplr.c" 1559
+extern void activatedaorb(struct player *plr);
+//#line "whplr.c" 1604
+extern void plruse(struct player *plr);
+//#line "whplr.c" 1667
+extern void loadnewlevel(int mapon);
+//#line "whplr.c" 1695
+extern void victory(void );
+//#line "whplr.c" 1791
+extern void drawweapons(struct player *plr);
+//#line "whplr.c" 2493
+extern void castaorb(struct player *plr);
+//#line "whplr.c" 2541
+extern void chunksofmeat(struct player *plr,short hitsprite,long hitx,long hity,long hitz,short hitsect,short daang);
+//#line "whplr.c" 2712
+extern void swingdapunch(int daweapon);
+//#line "whplr.c" 2741
+extern void shootgun(struct player *plr,short daang,char guntype);
+//#line "whplr.c" 3796
+extern void singleshot(short bstatus);
+//#line "whplr.c" 3807
+extern void potionpic(int currentpotion);
+//#line "whplr.c" 3892
+extern void usapotion(struct player *plr);
+//#line "whplr.c" 3952
+extern void orbpic(int currentorb);
+//#line "whplr.c" 3982
+extern void healthpic(int hp);
+//#line "whplr.c" 4024
+extern void armorpic(int arm);
+//#line "whplr.c" 4055
+extern void levelpic(void );
+//#line "whplr.c" 4111
+extern void score(int score);
+//#line "whplr.c" 4146
+extern void goesupalevel(struct player *plr);
+//#line "whplr.c" 4207
+extern int checkweapondist(short i,long x,long y,long z,char guntype);
+//#line "whplr.c" 4245
+extern void updatepics(void );
+//#line "whplr.c" 4274
+extern void captureflagpic(void );
+//#line "whplr.c" 4313
+extern void fragspic(void );
+//#line "whplr.c" 4339
+extern void keyspic(void );
+//#line "whplr.c" 4391
+extern int adjustscore(int score);
+//#line "whplr.c" 4404
+extern int lvlspellcheck(struct player *plr);
+//#line "whplr.c" 4474
+extern void gronmissile(int s);
+//#line "whplr.c" 4516
+extern void displayspelltext(void );
+//#line "whplr.c" 4556
+extern void painsound(long xplc,long yplc);

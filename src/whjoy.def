@@ -1,0 +1,2 @@
+//#line "whjoy.c" 19
+extern int joystick_read(int *x,int *y,int *buttons);

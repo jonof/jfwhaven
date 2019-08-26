@@ -1,0 +1,56 @@
+//#line "whaven.c" 253
+extern void faketimerhandler(void );
+//#line "whaven.c" 258
+extern int getvmode(void );
+//#line "whaven.c" 272
+extern void cls80x25(int top,int mid,int bot);
+//#line "whaven.c" 296
+extern void tprintf(int x,int y,char *fmt,... );
+//#line "whaven.c" 326
+extern void rp_delay(long goal);
+//#line "whaven.c" 347
+extern void showadditionalinfo(void );
+//#line "whaven.c" 355
+extern void shutdown(void );
+//#line "whaven.c" 398
+extern void crash(char *fmt);
+//#line "whaven.c" 409
+extern void doanimations(long numtics);
+//#line "whaven.c" 437
+extern long getanimationgoal(long *animptr);
+//#line "whaven.c" 451
+extern long setanimation(long *animptr,long thegoal,long thevel);
+//#line "whaven.c" 475
+extern void setdelayfunc(void (*func)(),int item,int delay);
+//#line "whaven.c" 496
+extern void dodelayitems(int tics);
+//#line "whaven.c" 518
+extern void setup3dscreen(void );
+//#line "whaven.c" 559
+extern void setupboard(char *fname);
+//#line "whaven.c" 1239
+extern void drawscreen(struct player *plr);
+//#line "whaven.c" 1284
+extern void main(int argc,char *argv[]);
+//#line "whaven.c" 1486
+extern void intro(void );
+//#line "whaven.c" 1515
+extern void playloop(void );
+//#line "whaven.c" 1562
+extern void drawoverheadmap(struct player *plr);
+//#line "whaven.c" 1800
+extern void readpalettetable(void );
+//#line "whaven.c" 1819
+extern int adjusthp(int hp);
+//#line "whaven.c" 1835
+extern void inittimer(void );
+//#line "whaven.c" 1842
+extern void uninittimer(void );
+//#line "whaven.c" 1848
+extern void __interrupt __far timerhandler(void);
+//#line "whaven.c" 1854
+extern void initkeys(void );
+//#line "whaven.c" 1864
+extern void uninitkeys(void );
+//#line "whaven.c" 1873
+extern void __interrupt __far keyhandler(void );

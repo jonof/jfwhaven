@@ -1,0 +1,20 @@
+//#line "whinp.c" 135
+extern void initjstick(void );
+//#line "whinp.c" 158
+extern void keytimerstuff(void );
+//#line "whinp.c" 262
+extern void dophysics(struct player *plr,long goalz,short flyupdn,int v);
+//#line "whinp.c" 322
+extern void processinput(struct player *plr);
+//#line "whinp.c" 1254
+extern void autothehoriz(struct player *plr);
+//#line "whinp.c" 1361
+extern void nettypeletter(void );
+//#line "whinp.c" 1381
+extern void typeletter(void );
+//#line "whinp.c" 1442
+extern void checkcheat(void );
+//#line "whinp.c" 1506
+extern void typecheat(char ch);
+//#line "whinp.c" 1531
+extern void dosoundthing(void );
