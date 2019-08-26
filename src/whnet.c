@@ -4,24 +4,10 @@
  *                                                     - Les Bird 07/12/95 *
  ***************************************************************************/
 
-//#define   SERIAL1LIB
 //#define   DEBUGOUTPUT
-#define   MPLAYERCOMPILE
 
 #include "icorp.h"
 #include "time.h"
-
-#include "hmistd.h"
-#include "netnow.h"
-
-#ifdef MPLAYERCOMPILE
-#define __WITCHAVEN__
-#include "mplayer.h"
-#endif
-
-#ifdef SERIAL1LIB
-#include "serial.h"
-#endif
 
 #define   MAXDATASIZE    255
 #define   MAXTEAMS       4
@@ -43,16 +29,6 @@
 #define   TEAM3PAL       11
 #define   TEAM4PAL       12
 
-#ifdef MPLAYERCOMPILE
-// mplayer net game
-#define   MPLAYERGAME    4
-#define     FREEQUEUE            0
-#define     DOSWORKQUEUE         1
-#define     WINSENDQUEUE         3
-#define     DOSPENDINGQUEUE      4
-
-RTQ_NODE *MasterNode;
-#endif
 
 char netmsg[80],
      plrindex[256],
@@ -64,14 +40,9 @@ int  netgame,
 
 //#pragma pack(1)
 
-struct netnowhdr {
-     DWORD seq;                    // NETNOW reserved
-     _NETNOW_NODE_ADDR netadr;
-};
-
 struct netpck {
      char tagno;                   // players random tag number
-     WORD node;                    // NETNOW node number
+     short node;                   // NETNOW node number
      char enemytype;               // monster this player chose
      char teamno;                  // team this player chose
      char weap;                    // weapon being carried
@@ -107,15 +78,11 @@ struct mdmpck {
 
 #pragma pack()
 
-#ifdef SERIAL1LIB
-serialData sd;
-#endif
-
 _NETNOW_NODE_ADDR myadr,
      othadr[MAXPLAYERS];
 
 
-WORD enemytype,
+short enemytype,
      gametype,
      mynode,
      playersingame;
@@ -257,8 +224,7 @@ int  comadr[] = {
 };
 
 extern
-int  cyberenabled,
-     mapflag,
+int  mapflag,
      mapon;
 
 extern
@@ -388,7 +354,6 @@ netcheckargs(int argc, char *argv[])
                          i++;
                          break;
                     case 1:        // cybermax
-                         cyberenabled = atoi(argv[i + 1]);
                          break;
                     case 2:        // network
                          netgame = 1;
@@ -403,15 +368,10 @@ netcheckargs(int argc, char *argv[])
                          debugnet = 1;
                          break;
                     case 6:
-                         iglassenabled = atoi(argv[i + 1]);
                          break;
-#ifdef MPLAYERCOMPILE
                     case 7:
-                         netgame = MPLAYERGAME;
                          break;
-#endif
                     case 8:
-                         vfx1_init();
                          break;
                     case 9:
                          _dos_getdrive((unsigned *)&vixen);
@@ -435,25 +395,16 @@ netattacking(short p)
 }
 
 void
-netsendpck(struct netpck * p, WORD dnode)
+netsendpck(struct netpck * p, short dnode)
 {
      BOOL rc;
      short i;
      char *dptr;
-     struct netnowhdr hdr;
 
 // fprintf(stdaux, "netsendpck\r\n");
 
      switch (netgame) {
      case 1:
-          memmove(&hdr.netadr, &myadr, sizeof(_NETNOW_NODE_ADDR));
-          memmove(&othadr[plrindex[myrandomtag]], &myadr,
-                  sizeof(_NETNOW_NODE_ADDR));
-          rc = hmiNETNOWSendData((PSTR) & hdr, sizeof(struct netnowhdr),
-                                 (PSTR) p, sizeof(struct netpck), dnode);
-          if (rc == _FALSE) {
-               crash("netsendpck: XMT queue full");
-          }
           break;
      case 2:
      case 3:
@@ -466,38 +417,8 @@ netsendpck(struct netpck * p, WORD dnode)
           mdmsndpck.len = sizeof(struct netpck);
           dptr = (char *) &mdmsndpck;
           memmove(&mdmsndpck.data, p, sizeof(struct netpck));
-#ifdef SERIAL1LIB
-          for (i = 0; i < sizeof(struct mdmpck); i++) {
-               writeSer(&sd, dptr[i]);
-          }
-#else
           sendpacket(0, dptr, sizeof(struct mdmpck));
-#endif
           break;
-#ifdef MPLAYERCOMPILE
-     case MPLAYERGAME:{
-               RTQ_NODE *n;
-
-               // grab free buffer
-               while ((n = MGenMoveTo(FREEQUEUE, DOSWORKQUEUE)) == 0) {
-//			MGenFlushNodes(WINSENDQUEUE, FREEQUEUE);
-//			MGenFlushNodes(DOSPENDINGQUEUE, FREEQUEUE);
-                    MGenWakeupDll();
-                    Yield();
-//			return;
-               }
-
-               // here's what we want to send
-               memcpy(n->rtqDatum, p, sizeof(struct netpck));
-               n->rtqUpCtr = sizeof(struct netpck);
-
-               // put it into Windows queue
-               MGenMoveTo(DOSWORKQUEUE, WINSENDQUEUE);
-               PostWindowsMessage();
-               Yield();
-          }
-          break;
-#endif
      }
      numspcks[plrindex[myrandomtag]]++;
      totspcks++;
@@ -602,7 +523,7 @@ moveflag(long x, long y, long z, long teamno)
 #define TIMER_RESOLUTION 250
 
 void
-sendmyinfo(WORD dnode, short forcesend)
+sendmyinfo(short dnode, short forcesend)
 {
      short p;
      struct player *plr;
@@ -694,11 +615,6 @@ sendmyinfo(WORD dnode, short forcesend)
           case 3:
                netsendpck(&sndnetpck, 255);
                break;
-#ifdef MPLAYERCOMPILE
-          case MPLAYERGAME:
-               netsendpck(&sndnetpck, 255);
-               break;
-#endif
           }
      }
 #if 0
@@ -807,11 +723,7 @@ netjoingame(void)
      FILE *fp;
 
 // fprintf(stdaux, "netjoingame\r\n");
-#ifdef MPLAYERCOMPILE
-     if (netgame > 1 && netgame != MPLAYERGAME) {
-#else
      if (netgame > 1) {
-#endif
           for (i = 0; i < 256; i++) {
                plrindex[i] = 255;
           }
@@ -826,14 +738,6 @@ netjoingame(void)
      ihaveflag = 0;
      switch (netgame) {
      case 1:
-          myrandomtag = myadr.sIPX.bImmediate[5];
-          mynode = hmiNETNOWGetConsoleNode();
-          playersingame = hmiNETNOWGetActiveNodes();
-          plrindex[myrandomtag] = 0;
-          tagindex[0] = myrandomtag;
-          for (i = 0; i < _NETNOW_MAX_LISTEN_PACKETS; i++) {
-               hmiNETNOWPostListen();
-          }
           break;
      case 2:
      case 3:
@@ -853,17 +757,6 @@ netjoingame(void)
           tagindex[0] = myrandomtag;
           playersingame = 1;
           break;
-#ifdef MPLAYERCOMPILE
-     case MPLAYERGAME:
-          mynode = 0;
-          myrandomtag = LPCGetMPAddr() - 1;
-          if (myrandomtag == -1)
-               crash("MPAddr invalid!");
-          plrindex[myrandomtag] = 0;
-          tagindex[0] = myrandomtag;
-          playersingame = 1;
-          break;
-#endif
      }
      sendmyinfo(_NETNOW_BROADCAST, 1);
      SND_Sound(S_DROPFLAG);
@@ -888,11 +781,6 @@ netsendmove(void)
 //               }
 //          }
      }
-#ifdef MPLAYERCOMPILE
-     else if (netgame == MPLAYERGAME) {
-          sendmyinfo(_NETNOW_BROADCAST, 0);
-     }
-#endif
      else if (xmit) {
           if (playersingame > 1) {
                sendmyinfo(255, 1);
@@ -1262,7 +1150,6 @@ wongamescreen(short p)
      char *dptr;
      PSTR datapck;
      BOOL rc;
-     struct netnowhdr gethdr;
 
 // fprintf(stdaux, "wongamescreen\r\n");
 
@@ -1276,11 +1163,6 @@ wongamescreen(short p)
           rc = _FALSE;
           switch (netgame) {
           case 1:
-               rc = hmiNETNOWGetHeader((PSTR) & gethdr, sizeof(struct netnowhdr),
-                                       &datapck);
-               if (rc == _TRUE) {
-                    totrhdrs++;
-               }
                break;
           case 2:
           case 3:
@@ -1290,40 +1172,16 @@ wongamescreen(short p)
                }
                rc = _TRUE;
                break;
-#ifdef MPLAYERCOMPILE
-          case MPLAYERGAME:{
-                    // TODO
-                    RTQ_NODE *n;
-
-                    while ((n = MGenMoveTo(DOSPENDINGQUEUE, DOSWORKQUEUE)) == 0)
-                         Yield();
-
-                    memcpy(&othnetpck, n->rtqDatum, sizeof(struct netpck));
-// fprintf(stdaux, "received %d\r\n",  sizeof (struct netpck));
-                    MGenMoveTo(DOSWORKQUEUE, FREEQUEUE);
-                    Yield();
-                    rc = _TRUE;
-               }
-               break;
-#endif
           }
           if (rc == _TRUE) {
                memset(&othnetpck, 0, sizeof(struct netpck));
                switch (netgame) {
                case 1:
-                    hmiNETNOWGetBlock(datapck, (BYTE *) & othnetpck,
-                                      sizeof(struct netpck));
                     break;
                case 2:
                case 3:
                     memmove(&othnetpck, &mdmrcvpck.data, sizeof(struct netpck));
                     break;
-#ifdef MPLAYERCOMPILE
-               case MPLAYERGAME:
-                    // TODO
-                    // done above
-                    break;
-#endif
                }
           }
           switch (p) {
@@ -1412,95 +1270,31 @@ netgetmove(void)
           teamno;
      struct player *plr;
      char *dptr;
-     struct netnowhdr gethdr;
 
 // fprintf(stdaux, "netgetmove\r\n");
      do {
           rc = _FALSE;
           switch (netgame) {
           case 1:
-               rc = hmiNETNOWGetHeader((PSTR) & gethdr, sizeof(struct netnowhdr),
-                                       &datapck);
-               if (rc == _TRUE) {
-#ifdef DEBUGOUTPUT
-                    debugout("HEDR: %06ld NETADR: %s\n", gethdr.seq,
-                             IPXadrstr(&gethdr.netadr.sIPX));
-#endif
-                    totrhdrs++;
-               }
                break;
           case 2:
           case 3:
                dptr = (char *) &mdmrcvpck;
-#ifdef SERIAL1LIB
-               if (sd.rx.q->count < sizeof(struct mdmpck)) {
-                    return;
-               }
-               for (i = 0; i < 4; i++) {
-                    dptr[i] = readSer(&sd);
-               }
-               if (mdmrcvpck.hdr[0] != 0x01 || mdmrcvpck.hdr[1] != 0x02
-                   || mdmrcvpck.hdr[2] != 0x03 || mdmrcvpck.hdr[3] != 0x21) {
-                    sprintf(netmsg, "netgetmove: Invalid header (%X,%X,%X,%X)",
-                         mdmrcvpck.hdr[0], mdmrcvpck.hdr[1], mdmrcvpck.hdr[2],
-                            mdmrcvpck.hdr[3]);
-                    crash(netmsg);
-               }
-               mdmrcvpck.src = readSer(&sd);
-               mdmrcvpck.dest = readSer(&sd);
-               mdmrcvpck.len = readSer(&sd);
-               dptr = (char *) &mdmrcvpck.data;
-               for (i = 0; i < sizeof(struct netpck); i++) {
-                    dptr[i] = readSer(&sd);
-               }
-#else
                if ((i = getpacket(&p, dptr)) == 0) {
                     break;
                }
-#endif
                rc = _TRUE;
                break;
-#ifdef MPLAYERCOMPILE
-          case MPLAYERGAME:{
-                    // TODO
-                    rc = _TRUE;
-// fprintf(stdaux, "netgetmove 1\r\n");
-               }
-               break;
-#endif
           }
           if (rc == _TRUE) {
                memset(&othnetpck, 0, sizeof(struct netpck));
                switch (netgame) {
                case 1:
-                    hmiNETNOWGetBlock(datapck, (BYTE *) & othnetpck,
-                                      sizeof(struct netpck));
-#ifdef DEBUGOUTPUT
-                    debugout("PCKT: %06ld TAG: %03d P: %02d\n", gethdr.seq,
-                             othnetpck.tagno, plrindex[othnetpck.tagno]);
-#endif
                     break;
                case 2:
                case 3:
                     memmove(&othnetpck, &mdmrcvpck.data, sizeof(struct netpck));
                     break;
-#ifdef MPLAYERCOMPILE
-               case MPLAYERGAME:
-                    {
-                         RTQ_NODE *n;
-
-// fprintf(stdaux, "netgetmove 2\r\n");
-                         if ((n = MGenMoveTo(DOSPENDINGQUEUE, DOSWORKQUEUE)) != 0) {
-                              memcpy(&othnetpck, n->rtqDatum, sizeof(struct netpck));
-                              MGenMoveTo(DOSWORKQUEUE, FREEQUEUE);
-                              Yield();
-                         }
-                         else
-                              rc = 0;
-
-                         break;
-                    }
-#endif
                }
                if (othnetpck.mapon != mapon) {    // on a different map
                     if (debugnet) {
@@ -1531,12 +1325,6 @@ netgetmove(void)
                if (p == 255) {     // new player identified
                     switch (netgame) {
                     case 1:
-                         hmiNETNOWAddNode(&gethdr.netadr);
-                         hmiNETNOWSortNodes();
-                         mynode = hmiNETNOWGetConsoleNode();
-                         p = plrindex[othnetpck.tagno] = playersingame;
-                         tagindex[p] = othnetpck.tagno;
-                         playersingame = hmiNETNOWGetActiveNodes();
                          break;
                     case 2:
                     case 3:
@@ -1544,15 +1332,6 @@ netgetmove(void)
                          p = plrindex[othnetpck.tagno] = playersingame++;
                          tagindex[p] = othnetpck.tagno;
                          break;
-#ifdef MPLAYERCOMPILE
-                    case MPLAYERGAME:
-                         // TODO
-                         p = plrindex[othnetpck.tagno] = playersingame++;
-                         tagindex[p] = othnetpck.tagno;
-// fprintf(stdaux, "*netgetmove: players in game %d, idx %d, my ti0 %d ti1 %d\r\n", playersingame, othnetpck.tagno, tagindex[0], tagindex[1]);
-// fprintf(stdaux, "netgetmove: plrindex 0 %d plrindex 1 %d\r\n", plrindex[0], plrindex[1]);
-                         break;
-#endif
                     }
 #ifdef DEBUGOUTPUT
                     debugout("PCKT: %06ld TAG: %03d P: %02d NEWPLAYER\n",
@@ -1572,7 +1351,6 @@ netgetmove(void)
                     xmit = 1;
                }
                memmove(&netpck[p], &othnetpck, sizeof(struct netpck));
-               memmove(&othadr[p], &gethdr.netadr, sizeof(_NETNOW_NODE_ADDR));
                if (netpck[p].action == -2) {
                     i = teamflagsprite[netpck[p].hasflag - 1];
                     if (i >= 0 && ihaveflag == netpck[p].hasflag) {
@@ -1892,18 +1670,7 @@ netpickmonster(void)
                     myteam = selected;
                     selected = 0;
 
-#ifdef MPLAYERCOMPILE
-                    // ccw
-                    if (netgame != MPLAYERGAME)
-#endif
                          picking = 1;
-#ifdef MPLAYERCOMPILE
-                    else {
-                         gametype = 0;  // head to head
-                         mapon = mapnumbers[3];   // four castles
-                         more = 0; // bail
-                    }
-#endif
                }
                else if (keystatus[0x01]) {
                     keystatus[0x01] = 0;
@@ -2136,15 +1903,6 @@ initmulti(int numplayers)
      }
      switch (netgame) {
      case 1:
-          if (hmiNETNOWInitSystem(numplayers) != _NETNOW_NO_ERROR) {
-               crash("WHNET: IPX/NETBIOS driver not loaded");
-          }
-          netinitialized = 1;
-          if (!hmiNETNOWGetNetworkAddr(&myadr)) {
-               crash("WHNET: Cannot identify local address");
-          }
-          mynode = hmiNETNOWGetConsoleNode();
-          stat = 1;
           break;
      case 2:
      case 3:
@@ -2154,20 +1912,6 @@ initmulti(int numplayers)
           mdmsndpck.hdr[3] = 0x21;
           mdmsndpck.len = sizeof(struct netpck);
           mdmreadsettings();
-#ifdef SERIAL1LIB
-          stat = initSerial(&sd, comp - 1, USE_16550, 256L, 1024L);
-          if (stat == SER_OK) {
-               netinitialized;
-               if (netgame == 2 && getDCD(&sd) == _FALSE) {
-                    crash("MODEM connection not established");
-               }
-               setBPS(&sd, bps);
-               stat = 1;
-          }
-          else {
-               crash("COM port unavailable");
-          }
-#else
           option4 = option5 = 0;
           option4 = comtable[comp];
           switch (bps) {
@@ -2198,25 +1942,7 @@ initmulti(int numplayers)
           }
           initmultiplayers(option4, option5);
           netinitialized = 1;
-#endif
           break;
-#ifdef MPLAYERCOMPILE
-     case MPLAYERGAME:{
-               unsigned rtqSize;
-               char error[80];
-
-               MasterNode = MGenGetMasterNode(&rtqSize);
-               if (rtqSize != sizeof(RTQ_NODE)) {
-                    sprintf(error, "Incompatible version of Mplayer: expected %d"
-                            " got %d\n", sizeof(RTQ_NODE), rtqSize);
-                    crash(error);
-               }
-               netinitialized = 1;
-               mynode = 0;
-               stat = 1;
-          }
-          break;
-#endif
      }
      for (i = 0; i < 256; i++) {
           plrindex[i] = 255;
@@ -2228,37 +1954,17 @@ initmulti(int numplayers)
 }
 
 void
-dropDTR(void)
-{
-     outp(comadr[comp] + 4, 0);
-}
-
-void
 netshutdown(void)
 {
 // fprintf(stdaux, "netshutdown\r\n");
      if (netinitialized) {
           switch (netgame) {
  case 1:
-               hmiNETNOWUnInitSystem();
                break;
           case 2:
           case 3:
-#ifdef SERIAL1LIB
-               setDTR(&sd, 0);
-               setRTS(&sd, 0);
-               deInitSerial(&sd);
-#else
                uninitmultiplayers();
-               dropDTR();
-#endif
                break;
-#ifdef MPLAYERCOMPILE
-          case MPLAYERGAME:
-               // TODO
-               // do nothing for us
-               break;
-#endif
           }
      }
 #ifdef DEBUGOUTPUT

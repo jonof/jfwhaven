@@ -283,12 +283,6 @@ struct ambsounds {
 
 
 	// function prototypes
-	BOOL  cdecl hmiINIOpen              ( _INI_INSTANCE * sInstance, PSTR szName );
-	BOOL  cdecl hmiINIClose             ( _INI_INSTANCE * sInstance );
-	BOOL  cdecl hmiINILocateSection     ( _INI_INSTANCE * sInstance, PSTR szName );
-	BOOL  cdecl hmiINILocateItem        ( _INI_INSTANCE * sInstance, PSTR szItem );
-	BOOL  cdecl hmiINIGetDecimal        ( _INI_INSTANCE * sInstance, WORD * wValue );
-	BOOL  cdecl hmiINIGetItemDecimal    ( _INI_INSTANCE * sInstance, PSTR szItem, WORD * wValue );
 
 	BOOL  cdecl sosEZGetConfig( PSTR );
 

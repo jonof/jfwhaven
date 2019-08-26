@@ -1267,9 +1267,6 @@ void drawscreen(struct player *plr) {
     if (netgame) {
         whnetmon();
     }
-    if (iglassenabled || cyberenabled) {
-        whvrmon();
-    }
 
     nextpage();
 
@@ -1287,7 +1284,6 @@ void main(int argc,char *argv[]) {
     long i, j, k, l;
     char *ptr;
     char temp1[10]={"DEMO"};
-    char cybername[20];
     struct player *plr;
     int buttons;
     int done;
@@ -1399,24 +1395,6 @@ void main(int argc,char *argv[]) {
     loadpics("tiles000.art");
 
 
-//** Les START - 09/06/95
-     if (iglassenabled != 0) {
-          if (!vio_init(iglassenabled-1)) {
-               tprintf(0,0," - Virtual I/O glasses not detected");
-          }
-     }
-     if (iglassenabled != 0) {
-          tprintf(0,0," - Virtual I/O glasses detected on COM%d",iglassenabled);
-     }
-     if (cyberenabled != 0) {
-          if (!ctm_init(cyberenabled-1)) {
-               tprintf(0,0," - CyberMAXX not detected");
-          }
-     }
-     if (cyberenabled != 0) {
-          tprintf(0,0," - CyberMAXX detected on COM%d",cyberenabled);
-     }
-//** Les END   - 09/06/95
 #if 0
      if (vixen=ismscdex()) {
           sprintf(tempbuf,"%c:\\whaven\\intro.smk",vixen);

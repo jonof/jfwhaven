@@ -2,8 +2,6 @@
 //  les
 //
 
-#include "serial.h"
-
 #define MULTIPLAYER 1
 //#define GRAVITYCONSTANT  (synctics<<7);
 //#define JUMPVEL          (synctics<<10);
@@ -18,7 +16,3 @@ extern
 int  netgame;
 extern
 short ihaveflag;
-
-extern
-int  iglassenabled;
-

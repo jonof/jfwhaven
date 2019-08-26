@@ -106,15 +106,6 @@ short  oldmousestatus, brightness, gbrightness;
 extern short  compass;
 extern int playerdie;
 
-extern
-int  iglassenabled,
-     vfx1enabled;
-
-extern
-char vfx1_cyberpuck;
-
-int  cybpuckused;
-
 short pitch,
      roll,
      yaw;
@@ -122,14 +113,6 @@ short pitch,
 long vrangle,vrangle2,
      vrdelta,
      vrpitch;
-
-extern
-char puckbuttons;
-
-extern
-short puckpitch,
-     puckroll,
-     puckbutton[];
 
 void
 initjstick(void)
@@ -705,48 +688,6 @@ void processinput(struct player *plr) {
 #endif                                                           // Les 07/27/95
 	}
 
-     if (vfx1enabled || iglassenabled || cyberenabled) {
-          if (iglassenabled || cyberenabled) {
-               vio_read(&yaw,&pitch,&roll);
-          }
-          else {
-               vfx1_read(&yaw,&pitch,&roll,&puckpitch,&puckroll,&puckbuttons);
-          }
-          vrangle=(1024-(yaw>>4))&2047;
-          vrpitch=100+(pitch/82);
-          if (vrpitch < 0) {
-               vrpitch=0;
-          }
-          else if (vrpitch > 200) {
-               vrpitch=200;
-          }
-          plr->ang=(plr->ang+vrangle-vrangle2)&2047;
-          plr->horiz=vrpitch;
-          vrangle2=vrangle;
-          if (vfx1_cyberpuck) {
-               for (i=0 ; i < 3 ; i++) {
-                    if ((puckbuttons&(1<<i)) != 0) {
-                         keystatus[keys[puckbutton[i]]]=1;
-                         cybpuckused=1;
-                    }
-                    else if (cybpuckused) {
-                         keystatus[keys[puckbutton[i]]]=0;
-                    }
-               }
-               if (puckpitch < -1024) {
-                    vel=-max(puckpitch>>6,-128);
-               }
-               else if (puckpitch > 1024) {
-                    vel=-min(puckpitch>>6,127);
-               }
-               if (puckroll < -1024) {
-                    svel=-max(puckroll>>5,-128);
-               }
-               else if (puckroll > 1024) {
-                    svel=-min(puckroll>>5,127);
-               }
-          }
-     }
 
 	i=totalclock-lockclock;
 	if (i > 255)

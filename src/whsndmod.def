@@ -72,21 +72,3 @@ extern void SND_UpdateSoundLoc(unsigned int which,unsigned int Volume,unsigned i
 extern void playsound_loc(int soundnum,long xplc,long yplc);
 //#line "whsndmod.c" 1079
 extern void updatesound_loc(void );
-//#line "whsndmod.c" 1122
-extern int __cdecl sosEZGetConfig(char __near *szName);
-//#line "whsndmod.c" 1190
-extern unsigned int hmiINIHex2Decimal(char __near *szHexValue);
-//#line "whsndmod.c" 1233
-extern unsigned int hmiINIGetHexIndex(unsigned char bValue);
-//#line "whsndmod.c" 1271
-extern int __cdecl hmiINIOpen(struct _tagINIInstance *sInstance,char __near *szName);
-//#line "whsndmod.c" 1359
-extern int __cdecl hmiINIClose(struct _tagINIInstance *sInstance);
-//#line "whsndmod.c" 1415
-extern int __cdecl hmiINILocateSection(struct _tagINIInstance *sInstance,char __near *szName);
-//#line "whsndmod.c" 1530
-extern int __cdecl hmiINILocateItem(struct _tagINIInstance *sInstance,char __near *szItem);
-//#line "whsndmod.c" 1661
-extern int __cdecl hmiINIGetDecimal(struct _tagINIInstance *sInstance,unsigned int *wValue);
-//#line "whsndmod.c" 1763
-extern int __cdecl hmiINIGetItemDecimal(struct _tagINIInstance *sInstance,char __near *szItem,unsigned int *wValue);
