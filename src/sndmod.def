@@ -37,6 +37,6 @@ extern void SND_TriggerHook(unsigned int wSongNum);
 //#line "sndmod.c" 792
 extern void SND_LoadLoop(void );
 //#line "sndmod.c" 817
-extern void SND_PlaySound(unsigned int sound,long x,long y,unsigned int Pan,unsigned int playerpeek);
+extern void SND_PlaySound(unsigned int sound,int x,int y,unsigned int Pan,unsigned int playerpeek);
 //#line "sndmod.c" 891
 extern void SND_UpdateSoundLoc(unsigned int which,unsigned int Volume,unsigned int Pan);

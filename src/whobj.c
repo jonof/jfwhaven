@@ -18,7 +18,7 @@
 
 int vampiretime=0;
 
-long    justwarpedcnt=0;
+int    justwarpedcnt=0;
 extern justwarpedfx;
 
 extern int difficulty;
@@ -34,8 +34,8 @@ extern int spellbookflip;
 
 extern int  spiked;
 extern int  pressedkey;
-extern long pageoffset;
-extern long selectedgun;
+extern int pageoffset;
+extern int selectedgun;
 extern int currentpotion;
 
 short torchpattern[38] = { 2,2,2,3,3,3,4,4,5,5,6,6,4,4,6,6,4,4,6,6,4,4,6,6,4,4,6,6,5,5,4,4,3,3,3,2,2,2 };
@@ -74,7 +74,7 @@ void monitor(void) {
 	int val;
 	struct player *plr;
 	char buffer[20];
-	long dist, mindist;
+	int dist, mindist;
 	short lockx, locky;
 	short scrx, scry;
 	char temph[30];
@@ -131,7 +131,7 @@ void monitor(void) {
 
 	if( displaytime > 0 ) {
 		fancyfontscreen(18,24,THEFONT,displaybuf);
-		displaytime-=((long)synctics);
+		displaytime-=((int)synctics);
 	}
 
 	if( shadowtime >= 0 )
@@ -200,7 +200,7 @@ void monitor(void) {
 
 void processobjs(struct player *plr) {
 
-	  long dh,dx,dy,dz,i,nexti;
+	  int dh,dx,dy,dz,i,nexti;
 	  int j;
 
 	  if (plr->sector < 0 || plr->sector >= numsectors) {
@@ -556,7 +556,7 @@ void processobjs(struct player *plr) {
 			break;
 			case 6:
 				for(j=0;j<8;j++)
-					explosion((long)i, sprite[i].x, sprite[i].y, sprite[i].z, sprite[i].owner);
+					explosion((int)i, sprite[i].x, sprite[i].y, sprite[i].z, sprite[i].owner);
 				playsound_loc(S_EXPLODE,sprite[i].x,sprite[i].y);
 				deletesprite((short)i);
 			break;
@@ -1183,7 +1183,7 @@ void updatepotion(int vial) {
 
 void transformactors(struct player *plr) {
 
-	long i, j, k;
+	int i, j, k;
 	point3d *ospr;
 	spritetype *tspr;
 
@@ -1879,7 +1879,7 @@ void newstatus(short sn, int  seq) {
 						case GUARDIANATTACK:
 							playsound_loc(S_GUARDIANDIE,sprite[sn].x,sprite[sn].y);
 							for(j=0;j<4;j++)
-								explosion((long)sn, sprite[sn].x, sprite[sn].y, sprite[sn].z, sprite[sn].owner);
+								explosion((int)sn, sprite[sn].x, sprite[sn].y, sprite[sn].z, sprite[sn].owner);
 								deletesprite((short)sn);
 								score(1500);
 								goto outathere;
@@ -2112,12 +2112,12 @@ void newstatus(short sn, int  seq) {
 
 // FIRE BREATH
 
-void firebreath(long i, int a, int b, int c) {
+void firebreath(int i, int a, int b, int c) {
 
-	long j;
+	int j;
 	int  k;
-	long discrim;
-	long discrim2;
+	int discrim;
+	int discrim2;
 
 	struct player *plr;
 
@@ -2160,11 +2160,11 @@ void firebreath(long i, int a, int b, int c) {
 }
 
 //throwspank
-void throwspank(long i) {
+void throwspank(int i) {
 
-	long j;
-	long discrim;
-	long discrim2;
+	int j;
+	int discrim;
+	int discrim2;
 
 	struct player *plr;
 
@@ -2201,11 +2201,11 @@ void throwspank(long i) {
 
 //cast
 
-void castspell(long i) {
+void castspell(int i) {
 
-	long j;
-	long discrim;
-	long discrim2;
+	int j;
+	int discrim;
+	int discrim2;
 
 	struct player *plr;
 
@@ -2249,11 +2249,11 @@ void castspell(long i) {
 
 }
 
-void skullycastspell(long i) {
+void skullycastspell(int i) {
 
-	long j;
-	long discrim;
-	long discrim2;
+	int j;
+	int discrim;
+	int discrim2;
 
 	struct player *plr;
 
@@ -2300,11 +2300,11 @@ void skullycastspell(long i) {
 
 
 // heatseeker check
-int checkheat(long i) {
+int checkheat(int i) {
 
 	short hitsect, hitwall, hitsprite, daang2, daang, dahoriz;
-	long daz2, hitx, hity, hitz;
-	long x, y, z, dasectnum;
+	int daz2, hitx, hity, hitz;
+	int x, y, z, dasectnum;
 	struct player *plr;
 	int trys;
 
@@ -2345,7 +2345,7 @@ int checkheat(long i) {
 	return (0);
 }
 
-int checkfacing(long i, long x, long y) {
+int checkfacing(int i, int x, int y) {
 
 
 		//if(x-sprite[i].x == 0 && y-sprite[i].y == 0 ) {
@@ -2361,9 +2361,9 @@ int checkfacing(long i, long x, long y) {
 
 }
 
-int checkmedusadist(long i, long x, long y, long z, int lvl) {
+int checkmedusadist(int i, int x, int y, int z, int lvl) {
 
-	long attackdist;
+	int attackdist;
 
 	attackdist=1024+(lvl<<9);
 
@@ -2376,9 +2376,9 @@ int checkmedusadist(long i, long x, long y, long z, int lvl) {
 }
 
 
-int checkdist(long i,long x,long y,long z) {
+int checkdist(int i,int x,int y,int z) {
 
-	 long attackdist;
+	 int attackdist;
 
 		switch(sprite[i].picnum) {
 			case GRONHALATTACK:
@@ -2455,7 +2455,7 @@ int checkdist(long i,long x,long y,long z) {
 	}
 }
 
-void checkspeed(long i,long *dax,long *day,int speed) {
+void checkspeed(int i,int *dax,int *day,int speed) {
 
 	sprite[i].z = sector[sprite[i].sectnum].floorz;
 
@@ -2465,10 +2465,10 @@ void checkspeed(long i,long *dax,long *day,int speed) {
 }
 
 
-int checksight(long i,short *daang) {
+int checksight(int i,short *daang) {
 
 	  struct player *plr;
-	  //long tempx,tempy;
+	  //int tempx,tempy;
 
 	  plr=&player[pyrn];
 
@@ -2511,14 +2511,14 @@ int checksight(long i,short *daang) {
 	  return (0);
 }
 
-void checkmove(long i,long dax,long day,short *movestat) {
+void checkmove(int i,int dax,int day,short *movestat) {
 
 	struct player *plr;
 
 	plr=&player[pyrn];
 
-	//*movestat=movesprite((short)i,(((long)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((long)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
-	*movestat=movesprite((short)i,(((long)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((long)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,2);
+	//*movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
+	*movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,2);
 
 	if( *movestat!=0 ) {
 		if( krand()&1 == 0 ) {
@@ -2541,7 +2541,7 @@ void checkmove(long i,long dax,long day,short *movestat) {
 }
 
 
-void attack(long i) {
+void attack(int i) {
 
 	struct player *plr;
 	int k;
@@ -2679,9 +2679,9 @@ void attack(long i) {
 
 
 
-void fireballblast( long i) {
+void fireballblast( int i) {
 
-	long  j;
+	int  j;
 	int k;
 
 	for(k=0;k<8;k++) {
@@ -2710,9 +2710,9 @@ void fireballblast( long i) {
 
 }
 
-void makeafire( long i, int firetype) {
+void makeafire( int i, int firetype) {
 
-	 long j;
+	 int j;
 
 	 j=insertsprite(sprite[i].sectnum,FIRE);
 
@@ -2734,9 +2734,9 @@ void makeafire( long i, int firetype) {
 
 }
 
-void explosion( long i, long x, long y, long z, short owner) {
+void explosion( int i, int x, int y, int z, short owner) {
 
-	long  j;
+	int  j;
 
 	j = insertsprite(sprite[i].sectnum,EXPLO);
 
@@ -2761,9 +2761,9 @@ void explosion( long i, long x, long y, long z, short owner) {
 
 }
 
-void explosion2( long i, long x, long y, long z, short owner) {
+void explosion2( int i, int x, int y, int z, short owner) {
 
-	long  j;
+	int  j;
 
 	j=insertsprite(sprite[i].sectnum,EXPLO);
 
@@ -2791,7 +2791,7 @@ void explosion2( long i, long x, long y, long z, short owner) {
 
 void trailingsmoke(short i) {
 
-	long j;
+	int j;
 
 	j=insertsprite(sprite[i].sectnum,SMOKE);
 
@@ -2812,9 +2812,9 @@ void trailingsmoke(short i) {
 
 }
 
-void icecubes( long i, long x, long y, long z, short owner) {
+void icecubes( int i, int x, int y, int z, short owner) {
 
-	long  j;
+	int  j;
 
 	j = insertsprite(sprite[i].sectnum,FX);
 
@@ -2844,10 +2844,10 @@ void icecubes( long i, long x, long y, long z, short owner) {
 }
 
 
-int damageactor(int hitobject,long i) {
+int damageactor(int hitobject,int i) {
 
 	  short     osectnum, hitdamage;
-	  long      nexti,dax,day,daz,j,k;
+	  int      nexti,dax,day,daz,j,k;
 	  short     daang,movestat;
 	  struct    player *plr;
 	  int       incr;
@@ -3168,9 +3168,9 @@ void medusa(short j) {
 	//parameters global (&globhiz,&globhihit,&globloz,&globlohit) so they
 	//don't need to be passed everywhere.  Also this should make this
 	//movesprite function compatible with the older movesprite functions.
-int movesprite(short spritenum, long dx, long dy, long dz, long ceildist, long flordist, char cliptype)
+int movesprite(short spritenum, int dx, int dy, int dz, int ceildist, int flordist, char cliptype)
 {
-	long daz, zoffs, templong;
+	int daz, zoffs, tempint;
 	short retval, dasectnum, tempshort;
 	spritetype *spr;
 
@@ -3184,7 +3184,7 @@ int movesprite(short spritenum, long dx, long dy, long dz, long ceildist, long f
 	dasectnum = spr->sectnum;  //Can't modify sprite sectors directly becuase of linked lists
 	daz = spr->z+zoffs;  //Must do this if not using the new centered centering (of course)
 	retval = clipmove(&spr->x,&spr->y,&daz,&dasectnum,dx,dy,
-							((long)spr->clipdist)<<2,ceildist,flordist,cliptype);
+							((int)spr->clipdist)<<2,ceildist,flordist,cliptype);
 
 	if ((dasectnum != spr->sectnum) && (dasectnum >= 0))
 		changespritesect(spritenum,dasectnum);
@@ -3194,7 +3194,7 @@ int movesprite(short spritenum, long dx, long dy, long dz, long ceildist, long f
 	tempshort = spr->cstat; spr->cstat &= ~1;
 	getzrange(spr->x,spr->y,spr->z-1,spr->sectnum,
 				 &globhiz,&globhihit,&globloz,&globlohit,
-				 ((long)spr->clipdist)<<2,cliptype);
+				 ((int)spr->clipdist)<<2,cliptype);
 	spr->cstat = tempshort;
 
 	daz = spr->z+zoffs + dz;
@@ -3244,7 +3244,7 @@ void guardianfire(short i, int k, struct player *plr) {
 
 void trowajavlin(int s) {
 
-	long  j;
+	int  j;
 
 	j=insertsprite(sprite[s].sectnum,JAVLIN);
 
@@ -3301,7 +3301,7 @@ void trowajavlin(int s) {
 
 void throwhalberd(int s) {
 
-	long  j, daz;
+	int  j, daz;
 
 	j=insertsprite(sprite[s].sectnum,JAVLIN);
 
@@ -3330,10 +3330,10 @@ void throwhalberd(int s) {
 	sprite[j].pal=0;
 
 		sprite[j].cstat=0;
-		daz=((((long)sprite[j].zvel)*synctics)>>3);
+		daz=((((int)sprite[j].zvel)*synctics)>>3);
 			movesprite((short)j,
-				(((long)sintable[(sprite[j].extra+512)&2047])*synctics)<<7,
-				(((long)sintable[sprite[j].extra])*synctics)<<7,
+				(((int)sintable[(sprite[j].extra+512)&2047])*synctics)<<7,
+				(((int)sintable[sprite[j].extra])*synctics)<<7,
 				daz,4L<<8,4L<<8,1);
 		sprite[j].cstat=21;
 
@@ -3417,9 +3417,9 @@ void monsterweapon(short i) {
 }
 
 // VAL 1-3
-void madenoise (int val, long x, long y, long z) {
+void madenoise (int val, int x, int y, int z) {
 
-	long      i,nexti;
+	int      i,nexti;
 
 	i=headspritestat[FACE];
 	while(i>=0) {

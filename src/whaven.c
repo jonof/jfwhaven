@@ -10,12 +10,12 @@
 
 jmp_buf jmpenv;
 
-long *animateptr[MAXANIMATES],
+int *animateptr[MAXANIMATES],
       animategoal[MAXANIMATES],
       animatevel[MAXANIMATES],
       animatecnt=0;
 
-unsigned long flags32[32]={
+unsigned int flags32[32]={
       0x80000000,0x40000000,0x20000000,0x10000000,
       0x08000000,0x04000000,0x02000000,0x01000000,
       0x00800000,0x00400000,0x00200000,0x00100000,
@@ -28,17 +28,17 @@ unsigned long flags32[32]={
 
 extern short cddrive;
 
-long followx, followy;
+int followx, followy;
 
 int ratcnt=0;
 
 int gameactivated=0;
 int escapetomenu=0;
 
-long selectedgun;
+int selectedgun;
 int  difficulty=2;
 
-long    totsynctics,
+int    totsynctics,
         frames;
 
 extern int followmode;
@@ -77,11 +77,11 @@ short crushsectorlist[32], crushsectorcnt;
 short crushsectoranim[32], crushsectordone[32];
 
 short revolvesector[16], revolveang[16], revolveclip[16], revolvecnt;
-long revolvex[16][16], revolvey[16][16];
-long revolvepivotx[16], revolvepivoty[16];
+int revolvex[16][16], revolvey[16][16];
+int revolvepivotx[16], revolvepivoty[16];
 
 short dragsectorlist[16], dragxdir[16], dragydir[16], dragsectorcnt;
-long dragx1[16], dragy1[16], dragx2[16], dragy2[16], dragfloorz[16];
+int dragx1[16], dragy1[16], dragx2[16], dragy2[16], dragfloorz[16];
 
 short warpsectorlist[16], warpsectorcnt;
 
@@ -96,12 +96,12 @@ int playerdie=0;
 
 int wet=0;
 int oldvmode;
-long dasizeofit;
+int dasizeofit;
 
 short ironbarsector[16],ironbarscnt;
-long  ironbarsgoal1[16],ironbarsgoal2[16];
+int  ironbarsgoal1[16],ironbarsgoal2[16];
 short ironbarsdone[16], ironbarsanim[16];
-long  ironbarsgoal[16];
+int  ironbarsgoal[16];
 
 extern int mapon;
 int mapflag;
@@ -323,9 +323,9 @@ void tprintf(int x,int y,char *fmt,...) {
 
 }
 
-void rp_delay(long goal) {
+void rp_delay(int goal) {
 
-        long dagoal=0L;
+        int dagoal=0L;
         int exit=0;
 
         dagoal=totalclock+goal;
@@ -406,9 +406,9 @@ void crash(char *fmt) {
 
 }
 
-void doanimations(long numtics) {
+void doanimations(int numtics) {
 
-      long i,animval;
+      int i,animval;
 
       for (i=animatecnt-1 ; i >= 0 ; i--) {
              animval=*animateptr[i];
@@ -434,9 +434,9 @@ void doanimations(long numtics) {
       }
 }
 
-long getanimationgoal(long *animptr)
+int getanimationgoal(int *animptr)
 {
-    long i, j;
+    int i, j;
 
     j = -1;
     for(i=0;i<animatecnt;i++)
@@ -448,9 +448,9 @@ long getanimationgoal(long *animptr)
     return(j);
 }
 
-long setanimation(long *animptr,long thegoal,long thevel) {
+int setanimation(int *animptr,int thegoal,int thevel) {
 
-      long i,j;
+      int i,j;
 
       if (animatecnt >= MAXANIMATES-1) {
              return(-1);
@@ -518,7 +518,7 @@ void dodelayitems(int tics) {
 void setup3dscreen(void) {
 
     struct player *plr;
-    long i, dax, day, dax2, day2;
+    int i, dax, day, dax2, day2;
 
     plr=&player[0];
     setgamemode();
@@ -560,10 +560,10 @@ void setupboard(char *fname) {
 
     int  effect,endwall,i,j,k,s,startwall;
     struct player *plr;
-    long dax, day;
+    int dax, day;
     short treesize;
-    long dasector;
-    long dax2, day2;
+    int dasector;
+    int dax2, day2;
     short daang;
 
     plr=&player[0];
@@ -1238,9 +1238,9 @@ int outsideview=0;
 
 void drawscreen(struct player *plr) {
 
-    long dax, day, dax2, day2;
-    long olddist;
-    long dist;
+    int dax, day, dax2, day2;
+    int olddist;
+    int dist;
     int i,k;
     short daang;
 
@@ -1281,7 +1281,7 @@ short mousekeys[];
 void main(int argc,char *argv[]) {
 
     int fil;
-    long i, j, k, l;
+    int i, j, k, l;
     char *ptr;
     char temp1[10]={"DEMO"};
     struct player *plr;
@@ -1529,8 +1529,8 @@ void playloop(void) {
         processobjs(plr);
         animateobjs(plr);
         animatetags(plr);
-        doanimations((long)synctics);
-        dodelayitems((long)synctics);
+        doanimations((int)synctics);
+        dodelayitems((int)synctics);
 
     }
 
@@ -1539,15 +1539,15 @@ void playloop(void) {
 
 void drawoverheadmap(struct player *plr) {
 
-    long i, j, k, l, x1, y1, x2, y2, x3, y3, x4, y4, ox, oy, xoff, yoff;
-    long dax, day, cosang, sinang, xspan, yspan, sprx, spry;
-    long xrepeat, yrepeat, z1, z2, startwall, endwall, tilenum, daang;
-    long xvect, yvect, xvect2, yvect2;
+    int i, j, k, l, x1, y1, x2, y2, x3, y3, x4, y4, ox, oy, xoff, yoff;
+    int dax, day, cosang, sinang, xspan, yspan, sprx, spry;
+    int xrepeat, yrepeat, z1, z2, startwall, endwall, tilenum, daang;
+    int xvect, yvect, xvect2, yvect2;
     char col;
     walltype *wal, *wal2;
     spritetype *spr;
     short cang;
-    long czoom;
+    int czoom;
 
     cang=(short)plr->ang;
     czoom=plr->zoom;
@@ -1667,7 +1667,7 @@ void drawoverheadmap(struct player *plr) {
                     case 16:
                         x1 = sprx; y1 = spry;
                         tilenum = spr->picnum;
-                        xoff = (long)((signed char)((picanm[tilenum]>>8)&255))+((long)spr->xoffset);
+                        xoff = (int)((signed char)((picanm[tilenum]>>8)&255))+((int)spr->xoffset);
                         if ((spr->cstat&4) > 0) xoff = -xoff;
                         k = spr->ang; l = spr->xrepeat;
                         dax = sintable[k&2047]*l; day = sintable[(k+1536)&2047]*l;
@@ -1691,8 +1691,8 @@ void drawoverheadmap(struct player *plr) {
                         if (plr->dimension == 1)
                         {
                             tilenum = spr->picnum;
-                            xoff = (long)((signed char)((picanm[tilenum]>>8)&255))+((long)spr->xoffset);
-                            yoff = (long)((signed char)((picanm[tilenum]>>16)&255))+((long)spr->yoffset);
+                            xoff = (int)((signed char)((picanm[tilenum]>>8)&255))+((int)spr->xoffset);
+                            yoff = (int)((signed char)((picanm[tilenum]>>16)&255))+((int)spr->yoffset);
                             if ((spr->cstat&4) > 0) xoff = -xoff;
                             if ((spr->cstat&8) > 0) yoff = -yoff;
 
@@ -1831,7 +1831,7 @@ void __interrupt __far timerhandler()
 
 void initkeys(void)
 {
-    long i;
+    int i;
 
     keyfifoplc = 0; keyfifoend = 0;
     for(i=0;i<256;i++) keystatus[i] = 0;

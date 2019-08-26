@@ -15,8 +15,8 @@ int soundtoggle;
 extern int mapon;
 
 int followmode=0;
-extern long followx;
-extern long followy;
+extern int followx;
+extern int followy;
 
 //JSA BLORB
 extern int lavasnd;
@@ -47,7 +47,7 @@ int mousespeed=3;
 int  mousxspeed=3,
 	 mousyspeed=3;
 
-long angvel,
+int angvel,
 	 svel,
 	 vel;
 
@@ -57,9 +57,9 @@ extern int currweaponflip;
 extern int invincibletime;
 extern int manatime;
 
-long lockclock;
+int lockclock;
 
-long oldhoriz;
+int oldhoriz;
 
 int pressedkey;
 int testpaleffects=0;
@@ -94,7 +94,7 @@ extern int currweaponfired;
 
 extern int currentorb;
 extern int currentpotion;
-extern long selectedgun;
+extern int selectedgun;
 extern int currweapon;
 extern int hasshot;
 extern int orbshot;
@@ -110,7 +110,7 @@ short pitch,
      roll,
      yaw;
 
-long vrangle,vrangle2,
+int vrangle,vrangle2,
      vrdelta,
      vrpitch;
 
@@ -242,7 +242,7 @@ keytimerstuff(void)
 }
 
 void
-dophysics(struct player *plr,long goalz,short flyupdn,int v)
+dophysics(struct player *plr,int goalz,short flyupdn,int v)
 {
 	 if (plr->orbactive[5] > 0) {
 		  if (v > 0) {
@@ -295,8 +295,8 @@ dophysics(struct player *plr,long goalz,short flyupdn,int v)
 	 }
 #if 0
 	 if (plr->forcev != 0) {
-		  *xvect=(long)((plr->forcev*(long)sintable[(plr->forcea+512)&2047])>>3);
-		  *yvect=(long)((plr->forcev*(long)sintable[plr->forcea])>>3);
+		  *xvect=(int)((plr->forcev*(int)sintable[(plr->forcea+512)&2047])>>3);
+		  *yvect=(int)((plr->forcev*(int)sintable[plr->forcea])>>3);
 		  plr->forcev>>=1;
 	 }
 #endif
@@ -305,13 +305,13 @@ dophysics(struct player *plr,long goalz,short flyupdn,int v)
 void processinput(struct player *plr) {
 
 	short bstatus,mousx,mousy;
-	long goalz,hihit,hiz,i,lohit,loz,tics,xvect,yvect;
-	long dax,dax2,day,day2,odax,odax2,oday,oday2;
+	int goalz,hihit,hiz,i,lohit,loz,tics,xvect,yvect;
+	int dax,dax2,day,day2,odax,odax2,oday,oday2;
 	int  a,s,v;
 	 static int  mv;
-	long oldposx, oldposy;
-	long dist;
-	long feetoffground;
+	int oldposx, oldposy;
+	int dist;
+	int feetoffground;
 	char *ptr;
 	short hitobject, onsprite=-1;
 	static short tempsectornum;
@@ -694,7 +694,7 @@ void processinput(struct player *plr) {
 		i=255;
 
 	synctics=tics=i;
-	lockclock+=(long)synctics;
+	lockclock+=(int)synctics;
 
 
 	sprite[plr->spritenum].cstat^=1;
@@ -1005,12 +1005,12 @@ void processinput(struct player *plr) {
 	if(v != 0 || s != 0) {
 		xvect=yvect=0;
 		if (v != 0) {
-			xvect=(v*(long)tics*(long)sintable[((plr->ang+2560)&2047)])>>3;
-			yvect=(v*(long)tics*(long)sintable[((plr->ang+2048)&2047)])>>3;
+			xvect=(v*(int)tics*(int)sintable[((plr->ang+2560)&2047)])>>3;
+			yvect=(v*(int)tics*(int)sintable[((plr->ang+2048)&2047)])>>3;
 		}
 		if (s != 0) {
-			xvect+=((s*(long)tics*(long)sintable[((plr->ang+2048)&2047)])>>3);
-			yvect+=((s*(long)tics*(long)sintable[((plr->ang+1536)&2047)])>>3);
+			xvect+=((s*(int)tics*(int)sintable[((plr->ang+2048)&2047)])>>3);
+			yvect+=((s*(int)tics*(int)sintable[((plr->ang+1536)&2047)])>>3);
 		}
 
 		oldposx=plr->x; oldposy=plr->y;
@@ -1158,7 +1158,7 @@ void processinput(struct player *plr) {
 
 	}
 	if (a != 0) {
-		plr->ang+=((a*(long)synctics)>>4);
+		plr->ang+=((a*(int)synctics)>>4);
 		plr->ang=(plr->ang+2048)&2047;
 	}
 

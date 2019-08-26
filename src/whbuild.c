@@ -2,15 +2,15 @@
 #include "names.h"
 #include "stdio.h"
 
-extern long zmode, kensplayerheight;
+extern int zmode, kensplayerheight;
 
 #define AVERAGEFRAMES   16
 
-static long frameval[AVERAGEFRAMES], framecnt = 0;
+static int frameval[AVERAGEFRAMES], framecnt = 0;
 
 
 extern
-long posx,
+int posx,
 	  posy,
 	  posz,
 	  horiz,
@@ -274,7 +274,7 @@ char *ExtGetSectorCaption(short sectnum)
 const
 char *ExtGetWallCaption(short wallnum)
 {
-	  long i=0;
+	  int i=0;
 
 	  if (keystatus[0x57] > 0) {    // f11   Grab pic 0x4e +
 			 wallpicnum=wall[curwall].picnum;
@@ -379,7 +379,7 @@ char *ExtGetSpriteCaption(short spritenum)
 }
 
 //printext16 parameters:
-//printext16(long xpos, long ypos, short col, short backcol,
+//printext16(int xpos, int ypos, short col, short backcol,
 //           char name[82], char fontsize)
 //  xpos 0-639   (top left)
 //  ypos 0-479   (top left)
@@ -389,7 +389,7 @@ char *ExtGetSpriteCaption(short spritenum)
 //  fontsize 0=8*8, 1=3*5
 
 //drawline16 parameters:
-// drawline16(long x1, long y1, long x2, long y2, char col)
+// drawline16(int x1, int y1, int x2, int y2, char col)
 //  x1, x2  0-639
 //  y1, y2  0-143  (status bar is 144 high, origin is top-left of STATUS BAR)
 //  col     0-15
@@ -563,12 +563,12 @@ ExtEditSpriteData(short spritenum)   //F8
 
 	 //Just thought you might want my getnumber16 code
 /*
-getnumber16(char namestart[80], short num, long maxnumber)
+getnumber16(char namestart[80], short num, int maxnumber)
 {
 	char buffer[80];
-	long j, k, n, danum, oldnum;
+	int j, k, n, danum, oldnum;
 
-	danum = (long)num;
+	danum = (int)num;
 	oldnum = danum;
 	while ((keystatus[0x1c] != 2) && (keystatus[0x1] == 0))  //Enter, ESC
 	{
@@ -752,7 +752,7 @@ Keys2d(void)
 
 void ExtInit(void)
 {
-	long i;
+	int i;
 
 		//You can load your own palette lookup tables here if you just
 		//copy the right code!
@@ -771,7 +771,7 @@ void ExtUnInit(void)
 
 void ExtCheckKeys(void)
 {
-	long i;
+	int i;
 
 	if (qsetmode == 200)    //In 3D mode
 	{

@@ -5,7 +5,7 @@
 #include "sos.h"
 #include "icorp.h"
 
-int   readfile(int,char *,long);
+int   readfile(int,char *,int);
 #pragma aux readfile =\
 	"mov  ah,0x3f",\
 	"int 0x21",\
@@ -366,7 +366,7 @@ SND_DoBuffers(void)
 
 
 	for( wIndex=0; wIndex<MAX_ACTIVE_SAMPLES; wIndex++ ) {
-		sSOSSampleData[wIndex].lpSamplePtr = (LPSTR)malloc((long)55000);
+		sSOSSampleData[wIndex].lpSamplePtr = (LPSTR)malloc((int)55000);
 		if(sSOSSampleData[wIndex].lpSamplePtr==_NULL)
 			crash("Could Not get a Sound Buffer!!");
 	}
@@ -859,11 +859,11 @@ int temp;
 
 //WORD
 int
-SND_PlaySound(WORD sound, long x,long y, WORD Pan,WORD loopcount)
+SND_PlaySound(WORD sound, int x,int y, WORD Pan,WORD loopcount)
 {
 WORD  wVol,flag=0;
-long  sqrdist;
-long  prioritize;
+int  sqrdist;
+int  prioritize;
 
 	if(!SoundMode)
 		return(0);
@@ -1061,9 +1061,9 @@ SND_UpdateSoundLoc(WORD which,WORD Volume,WORD Pan)
 //
 
 void
-playsound_loc(int soundnum, long xplc, long yplc)
+playsound_loc(int soundnum, int xplc, int yplc)
 {
-long sqrdist;
+int sqrdist;
 unsigned wVol,wPan;
 
 	 SND_PlaySound(soundnum,xplc,yplc,1,0);
@@ -1074,7 +1074,7 @@ updatesound_loc(void)
 {
 int wIndex;
 unsigned wVol,wPan;
-long sqrdist;
+int sqrdist;
 
 	if(!SoundMode)
 		return;

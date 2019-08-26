@@ -1,7 +1,7 @@
 //#line "whmenu.c" 105
-extern void fancyfont(long x,long y,short tilenum,char *string,char pal);
+extern void fancyfont(int x,int y,short tilenum,char *string,char pal);
 //#line "whmenu.c" 141
-extern void fancyfontscreen(long x,long y,short tilenum,char *string);
+extern void fancyfontscreen(int x,int y,short tilenum,char *string);
 //#line "whmenu.c" 176
 extern int menuscreen(struct player *plr);
 //#line "whmenu.c" 318

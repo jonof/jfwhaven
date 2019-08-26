@@ -35,7 +35,7 @@
 int justwarpedfx=0;
 int lastbat=-1;
 
-extern long angvel,
+extern int angvel,
 			svel,
 			vel;
 
@@ -46,20 +46,20 @@ extern short lavadrylandcnt;
 
 
 static char lavabakpic[(LAVASIZ+2)*(LAVASIZ+2)], lavainc[LAVASIZ];
-static long lavanumdrops, lavanumframes;
-static long lavadropx[LAVAMAXDROPS], lavadropy[LAVAMAXDROPS];
-static long lavadropsiz[LAVAMAXDROPS], lavadropsizlookup[LAVAMAXDROPS];
-static long lavaradx[32][128], lavarady[32][128], lavaradcnt[32];
+static int lavanumdrops, lavanumframes;
+static int lavadropx[LAVAMAXDROPS], lavadropy[LAVAMAXDROPS];
+static int lavadropsiz[LAVAMAXDROPS], lavadropsizlookup[LAVAMAXDROPS];
+static int lavaradx[32][128], lavarady[32][128], lavaradcnt[32];
 
 static char waterbakpic[(WATERSIZ+2)*(WATERSIZ+2)], waterinc[WATERSIZ];
-static long waternumdrops, waternumframes;
-static long waterdropx[WATERMAXDROPS], waterdropy[WATERMAXDROPS];
-static long waterdropsiz[WATERMAXDROPS], waterdropsizlookup[WATERMAXDROPS];
-static long waterradx[32][128], waterrady[32][128], waterradcnt[32];
+static int waternumdrops, waternumframes;
+static int waterdropx[WATERMAXDROPS], waterdropy[WATERMAXDROPS];
+static int waterdropsiz[WATERMAXDROPS], waterdropsizlookup[WATERMAXDROPS];
+static int waterradx[32][128], waterrady[32][128], waterradcnt[32];
 
 extern short revolvesector[], revolveang[], revolveclip[], revolvecnt;
-extern long revolvex[16][16], revolvey[16][16];
-extern long revolvepivotx[], revolvepivoty[];
+extern int revolvex[16][16], revolvey[16][16];
+extern int revolvepivotx[], revolvepivoty[];
 
 extern short xpanningsectorlist[], xpanningsectorcnt;
 extern short ypanningwalllist[], ypanningwallcnt;
@@ -72,7 +72,7 @@ extern short warpsectorlist[], warpsectorcnt;
 
 char revolvesyncstat;
 short revolvesyncang, revolvesyncrotang;
-long revolvesyncx, revolvesyncy;
+int revolvesyncx, revolvesyncy;
 
 extern int mapon;
 
@@ -85,7 +85,7 @@ extern char displaybuf[50];
 
 void initlava(void) {
 
-   long x, y, z, r;
+   int x, y, z, r;
 
    for(x=-16;x<=16;x++)
 	  for(y=-16;y<=16;y++)
@@ -109,8 +109,9 @@ void initlava(void) {
 void movelava(char *dapic) {
 
    char dat, *ptr;
-   long x, y, z, zx, dalavadropsiz, dadropsizlookup, offs, offs2;
-   long dalavax, dalavay;
+   int x, y, z, zx, dalavadropsiz, dadropsizlookup;
+   intptr_t offs, offs2;
+   int dalavax, dalavay;
 
    z = 3;
    if (lavanumdrops+z >= LAVAMAXDROPS)
@@ -151,11 +152,11 @@ void movelava(char *dapic) {
 
 	  //Back up dapic with 1 pixel extra on each boundary
 	  //(to prevent anding for wrap-around)
-   offs = ((long)dapic);
-   offs2 = (LAVASIZ+2)+1+((long)lavabakpic);
+   offs = ((intptr_t)dapic);
+   offs2 = (LAVASIZ+2)+1+((intptr_t)lavabakpic);
    for(x=0;x<LAVASIZ;x++)
    {
-	  copybuf(offs,offs2,LAVASIZ>>2);
+	  copybuf((void*)offs,(void*)offs2,LAVASIZ>>2);
 	  offs += LAVASIZ;
 	  offs2 += LAVASIZ+2;
    }
@@ -185,7 +186,7 @@ void movelava(char *dapic) {
    for(x=LAVASIZ-1;x>=0;x--)
    {
 	  offs = (x+1)*(LAVASIZ+2)+1;
-	  ptr = (char *)((x<<LAVALOGSIZ) + (long)dapic);
+	  ptr = (char *)((x<<LAVALOGSIZ) + (intptr_t)dapic);
 
 	  zx = ((x+lavanumframes)&(LAVASIZ-1));
 
@@ -209,7 +210,7 @@ void movelava(char *dapic) {
 
 void initwater(void) {
 
-   long x, y, z, r;
+   int x, y, z, r;
 
    for(x=-16;x<=16;x++)
 	  for(y=-16;y<=16;y++)
@@ -233,8 +234,9 @@ void initwater(void) {
 void movewater(char *dapic) {
 
    char dat, *ptr;
-   long x, y, z, zx, dawaterdropsiz, dadropsizlookup, offs, offs2;
-   long dawaterx, dawatery;
+   int x, y, z, zx, dawaterdropsiz, dadropsizlookup;
+   intptr_t offs, offs2;
+   int dawaterx, dawatery;
 
    z = 3;
    if (waternumdrops+z >= WATERMAXDROPS)
@@ -272,11 +274,11 @@ void movewater(char *dapic) {
 	  z--;
    }
 
-   offs = ((long)dapic);
-   offs2 = (WATERSIZ+2)+1+((long)waterbakpic);
+   offs = ((intptr_t)dapic);
+   offs2 = (WATERSIZ+2)+1+((intptr_t)waterbakpic);
    for(x=0;x<WATERSIZ;x++)
    {
-	  copybuf(offs,offs2,WATERSIZ>>2);
+	  copybuf((void*)offs,(void*)offs2,WATERSIZ>>2);
 	  offs += WATERSIZ;
 	  offs2 += WATERSIZ+2;
    }
@@ -306,7 +308,7 @@ void movewater(char *dapic) {
    for(x=WATERSIZ-1;x>=0;x--)
    {
 	  offs = (x+1)*(WATERSIZ+2)+1;
-	  ptr = (char *)((x<<WATERLOGSIZ) + (long)dapic);
+	  ptr = (char *)((x<<WATERLOGSIZ) + (intptr_t)dapic);
 
 	  zx = ((x+waternumframes)&(WATERSIZ-1));
 
@@ -347,7 +349,7 @@ void panningfx(void) {
    short startwall, endwall;
    short whichdir;
    struct player *plr;
-   long lavax, lavay;
+   int lavax, lavay;
 
    plr=&player[pyrn];
 
@@ -412,8 +414,8 @@ void panningfx(void) {
 void crushingfx(void) {
 
    int i, j, s;
-   long daz, goalz;
-   long speed;
+   int daz, goalz;
+   int speed;
    short datag;
 
 	for(i=0;i<crushsectorcnt;i++) {
@@ -483,9 +485,9 @@ void crushingfx(void) {
 void revolvefx(void) {
 
    short startwall, endwall, wallfind[2];
-   long i, j, k, s, nexti, good, cnt, datag;
-   long dax, day, daz, dax2, day2, daz2, centx, centy;
-   long xvect, yvect;
+   int i, j, k, s, nexti, good, cnt, datag;
+   int dax, day, daz, dax2, day2, daz2, centx, centy;
+   int xvect, yvect;
    struct player *plr;
 
 
@@ -496,7 +498,7 @@ void revolvefx(void) {
 	  startwall = sector[revolvesector[i]].wallptr;
 	  endwall = startwall + sector[revolvesector[i]].wallnum - 1;
 
-	  revolveang[i] = ((revolveang[i]+2048-(((long)synctics)<<1))&2047);
+	  revolveang[i] = ((revolveang[i]+2048-(((int)synctics)<<1))&2047);
 	  for(k=startwall;k<=endwall;k++) {
 		 rotatepoint(revolvepivotx[i],revolvepivoty[i],revolvex[i][k-startwall],revolvey[i][k-startwall],revolveang[i],&dax,&day);
 		 dragpoint(k,dax,day);
@@ -506,7 +508,7 @@ void revolvefx(void) {
 		revolvesyncrotang = 0;
 		revolvesyncx = plr->x;
 		revolvesyncy = plr->y;
-		revolvesyncrotang = ((revolvesyncrotang+2048-(((long)synctics)<<1))&2047);
+		revolvesyncrotang = ((revolvesyncrotang+2048-(((int)synctics)<<1))&2047);
 		rotatepoint(revolvepivotx[i],revolvepivoty[i],revolvesyncx,revolvesyncy,revolvesyncrotang,&plr->x,&plr->y);
 		plr->ang = ((revolvesyncang+revolvesyncrotang)&2047);
 	  }
@@ -614,10 +616,10 @@ void teleporter(void) {
 
 }
 
-void warp(long *x, long *y, long *z, short *daang, short *dasector) {
+void warp(int *x, int *y, int *z, short *daang, short *dasector) {
 
 	short startwall, endwall, s;
-	long i, dax, day;
+	int i, dax, day;
 
 	for(i=0;i<warpsectorcnt;i++) {
 		if( sector[warpsectorlist[i]].hitag == sector[*dasector].hitag && warpsectorlist[i] != *dasector) {
@@ -664,11 +666,11 @@ void warpsprite(short spritenum) {
 
 void ironbars(void) {
 
-	long i;
+	int i;
 	short temp;
-	long spritenum;
-	long ironbarmove;
-	long x1, x2, y1, y2;
+	int spritenum;
+	int ironbarmove;
+	int x1, x2, y1, y2;
 
 	for(i=0;i<ironbarscnt;i++) {
 		if( ironbarsdone[i] == 1 ) {
@@ -767,8 +769,8 @@ void sectorsounds(void) {
 }
 
 
-long scarytime=-1;
-long scarysize=0;
+int scarytime=-1;
+int scarysize=0;
 
 void scary(void) {
 
@@ -1009,7 +1011,7 @@ void makeasplash(int picnum, struct player *plr) {
 
 	short j;
 	short movestat;
-	long dax, day;
+	int dax, day;
 
 	plr=&player[pyrn];
 
@@ -1039,7 +1041,7 @@ void makeasplash(int picnum, struct player *plr) {
 	}
 //JSA ends
 
-	movestat=movesprite((short)j,(((long)sintable[(sprite[j].ang+512)&2047])*synctics)<<3,(((long)sintable[sprite[j].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
+	movestat=movesprite((short)j,(((int)sintable[(sprite[j].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[j].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
 }
 
 
@@ -1047,7 +1049,7 @@ void makemonstersplash(int picnum, int i) {
 
 	short j;
 	short movestat;
-	long dax, day;
+	int dax, day;
 
 	if(sprite[i].picnum == FISH)
 		return;
@@ -1130,7 +1132,7 @@ void cracks(void) {
 
 	struct player *plr;
 	short datag;
-	long daz;
+	int daz;
 	int j,k;
 
 	plr=&player[0];
@@ -1199,7 +1201,7 @@ void lavadryland(void) {
 	struct player *plr;
 	short j,k;
 	short s;
-	long daz;
+	int daz;
 
 	plr=&player[pyrn];
 
@@ -1244,7 +1246,7 @@ void lavadryland(void) {
 void warpfxsprite(int s) {
 
 	struct player *plr;
-	long  j, daz;
+	int  j, daz;
 	short daang;
 
 
@@ -1283,11 +1285,11 @@ void warpfxsprite(int s) {
 	sprite[j].hitag=0;
 	sprite[j].pal=0;
 
-	daz=((((long)sprite[j].zvel)*synctics)>>3);
+	daz=((((int)sprite[j].zvel)*synctics)>>3);
 
 			movesprite((short)j,
-				(((long)sintable[(daang+512)&2047])*synctics)<<3,
-				(((long)sintable[daang])*synctics)<<3,
+				(((int)sintable[(daang+512)&2047])*synctics)<<3,
+				(((int)sintable[daang])*synctics)<<3,
 				daz,4L<<8,4L<<8,1);
 
 

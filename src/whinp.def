@@ -3,7 +3,7 @@ extern void initjstick(void );
 //#line "whinp.c" 158
 extern void keytimerstuff(void );
 //#line "whinp.c" 262
-extern void dophysics(struct player *plr,long goalz,short flyupdn,int v);
+extern void dophysics(struct player *plr,int goalz,short flyupdn,int v);
 //#line "whinp.c" 322
 extern void processinput(struct player *plr);
 //#line "whinp.c" 1254

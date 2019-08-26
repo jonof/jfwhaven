@@ -21,8 +21,8 @@ extern int spellbookflip;
 
 extern int  spiked;
 extern int  pressedkey;
-extern long pageoffset;
-extern long selectedgun;
+extern int pageoffset;
+extern int selectedgun;
 extern int currentpotion;
 
 extern short torchpattern[];
@@ -54,28 +54,28 @@ extern  int strongtime,
 void animateobjs(struct player *plr) {
 
 
-	long      hiz, hihit, loz, lohit;
+	int      hiz, hihit, loz, lohit;
 	short     osectnum, hitobject, hitdamage;
-	long      i,nexti,dax,day,daz,j,k;
+	int      i,nexti,dax,day,daz,j,k;
 	short     daang,movestat;
 	int       speed;
-	long      heat, ironbarmove;
+	int      heat, ironbarmove;
 
 	struct spritetype *spr;
-	long      x1,x2,y1,y2;
+	int      x1,x2,y1,y2;
 	short startwall, endwall;
 
-	long dax2;
-	long dist, olddist;
-	long xdist, ydist;
+	int dax2;
+	int dist, olddist;
+	int xdist, ydist;
 	int  found;
 
-	long dx,dy,dz,dh;
-	long nextj;
+	int dx,dy,dz,dh;
+	int nextj;
 
 	  // explosion variables:
-	long   x, y, z;
-	short  belongs;
+	int   x, y, z;
+	short  beints;
 	  /////////////////
 
 	//struct    spritetype    *spriteptr=&sprite[0];
@@ -265,8 +265,8 @@ void animateobjs(struct player *plr) {
 			k=sprite[i].owner;
 			sprite[i].z=sector[sprite[i].sectnum].floorz;
 			sprite[i].ang=(getangle(sprite[k].x-sprite[i].x,sprite[k].y-sprite[i].y)&2047);
-			//movestat=movesprite((short)i,(((long)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((long)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
-			movestat=movesprite((short)i,(((long)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((long)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,2);
+			//movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
+			movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,2);
 			if(sector[sprite[i].sectnum].floorpicnum == WATER
 				|| sector[sprite[i].sectnum].floorpicnum == LAVA
 				|| sector[sprite[i].sectnum].floorpicnum == SLIME ) {
@@ -374,8 +374,8 @@ void animateobjs(struct player *plr) {
 		case 3: // flee
 			sprite[i].lotag-=synctics;
 			sprite[i].z=sector[sprite[i].sectnum].floorz;
-			//movestat=movesprite((short)i,(((long)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((long)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
-			movestat=movesprite((short)i,(((long)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((long)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,2);
+			//movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
+			movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,2);
 			if(sector[sprite[i].sectnum].floorpicnum == WATER
 				|| sector[sprite[i].sectnum].floorpicnum == LAVA
 				|| sector[sprite[i].sectnum].floorpicnum == SLIME) {
@@ -496,8 +496,8 @@ void animateobjs(struct player *plr) {
 		sprite[i].ang=(short)plr->ang;
 		newstatus(i,FLEE);
 		}
-		//movestat=movesprite((short)i,(((long)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((long)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
-		movestat=movesprite((short)i,(((long)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((long)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,2);
+		//movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
+		movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,2);
 		setsprite(i,sprite[i].x,sprite[i].y,sprite[i].z);
 
 		j=headspritesect[sprite[i].sectnum];
@@ -572,7 +572,7 @@ void animateobjs(struct player *plr) {
 				sprite[i].lotag=512;
 			}
 			else {
-				movestat=movesprite((short)i,(((long)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((long)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
+				movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
 				setsprite(i,sprite[i].x,sprite[i].y,sprite[i].z);
 				if( movestat != 0 )
 					sprite[i].ang=rand()&2047;
@@ -587,7 +587,7 @@ void animateobjs(struct player *plr) {
 			else {
 				sprite[i].z-=synctics<<4;
 				sprite[i].ang=(sprite[i].ang+(synctics<<2))&2047;
-				movestat=movesprite((short)i,(((long)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((long)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
+				movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
 				setsprite(i,sprite[i].x,sprite[i].y,sprite[i].z);
 				if( movestat != 0 )
 					sprite[i].ang=rand()&2047;
@@ -602,7 +602,7 @@ void animateobjs(struct player *plr) {
 				deletesprite((short)i);
 			}
 			else {
-				movestat=movesprite((short)i,(((long)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((long)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
+				movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
 				setsprite(i,sprite[i].x,sprite[i].y,sprite[i].z);
 				if ((movestat&0xc000) == 16384 ) {//Hits a ceiling / floor
 					if( i == lastbat && batsnd != -1) {
@@ -650,8 +650,8 @@ void animateobjs(struct player *plr) {
 		}
 
 		sprite[i].z=sector[sprite[i].sectnum].floorz;
-		//movestat=movesprite((short)i,(((long)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((long)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
-		movestat=movesprite((short)i,(((long)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((long)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,2);
+		//movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
+		movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,2);
 		if (movestat != 0) {
 			sprite[i].ang=(getangle(plr->x-sprite[i].x,plr->y-sprite[i].y)&2047);
 			newstatus(i,FACE);
@@ -759,7 +759,7 @@ void animateobjs(struct player *plr) {
 
 		sprite[i].z=sector[sprite[i].sectnum].floorz;
 
-		movestat=movesprite((short)i,(((long)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((long)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,2);
+		movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,2);
 
 		if( checkdist(i,plr->x,plr->y,plr->z) ) {
 			if(shadowtime > 0) {
@@ -1442,7 +1442,7 @@ void animateobjs(struct player *plr) {
 		sprite[i].lotag-=synctics;
 
 		if( sprite[i].z < sector[sprite[i].sectnum].floorz )
-			sprite[i].z+=(long)synctics<<8;
+			sprite[i].z+=(int)synctics<<8;
 		if( sprite[i].z > sector[sprite[i].sectnum].floorz )
 			sprite[i].z=sector[sprite[i].sectnum].floorz;
 
@@ -1483,8 +1483,8 @@ void animateobjs(struct player *plr) {
 			daz=sprite[i].zvel+=(synctics<<9);
 
 		hitobject=movesprite((short)i,
-							(((long)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,
-							(((long)sintable[sprite[i].ang])*synctics)<<3,
+							(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,
+							(((int)sintable[sprite[i].ang])*synctics)<<3,
 							daz,4L<<8,4L<<8,0);
 
 		setsprite(i,sprite[i].x,sprite[i].y,sprite[i].z);
@@ -1531,8 +1531,8 @@ void animateobjs(struct player *plr) {
 			daz=sprite[i].zvel+=(synctics<<5);
 
 		hitobject=movesprite((short)i,
-							(((long)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,
-							(((long)sintable[sprite[i].ang])*synctics)<<3,
+							(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,
+							(((int)sintable[sprite[i].ang])*synctics)<<3,
 							daz,4L<<8,4L<<8,0);
 
 		setsprite(i,sprite[i].x,sprite[i].y,sprite[i].z);
@@ -1597,7 +1597,7 @@ void animateobjs(struct player *plr) {
 		if( sprite[i].z < sector[sprite[i].sectnum].floorz )
 			daz=sprite[i].zvel+=(synctics<<1);
 																	 // clip type was 1
-		hitobject=movesprite((short)i,(((long)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((long)sintable[sprite[i].ang])*synctics)<<3,daz,4L<<8,4L<<8,0);
+		hitobject=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,daz,4L<<8,4L<<8,0);
 
 		setsprite(i,sprite[i].x,sprite[i].y,sprite[i].z);
 
@@ -1697,7 +1697,7 @@ void animateobjs(struct player *plr) {
 					trailingsmoke(i);
 			}
 
-			movestat=movesprite((short)i,(((long)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((long)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,2);
+			movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,2);
 			if (movestat != 0) {
 				sprite[i].ang=(getangle(plr->x-sprite[i].x,plr->y-sprite[i].y)&2047);
 				newstatus(i,FACE);
@@ -1963,8 +1963,8 @@ void animateobjs(struct player *plr) {
 
 					sprite[i].z = sector[sprite[i].sectnum].floorz;
 
-					//movestat=movesprite((short)i,(((long)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((long)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
-					movestat=movesprite((short)i,(((long)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((long)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,2);
+					//movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
+					movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,2);
 
 					if (movestat != 0)  {
 						if(movestat&4095 != plr->spritenum) {
@@ -2494,7 +2494,7 @@ void animateobjs(struct player *plr) {
 
 			checkheat(i);
 
-			movestat=movesprite((short)i,(((long)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((long)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
+			movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
 
 			if( movestat !=0 || sprite[i].lotag < 0 ) {
 
@@ -2581,7 +2581,7 @@ void animateobjs(struct player *plr) {
 				dax = sprite[i].xvel;
 				day = sprite[i].yvel;
 				//daz = sprite[i].zvel;
-				daz=((((long)sprite[i].zvel)*synctics)>>3);
+				daz=((((int)sprite[i].zvel)*synctics)>>3);
 			break;
 			case BULLET:
 				dax = sprite[i].xvel;
@@ -2597,8 +2597,8 @@ void animateobjs(struct player *plr) {
 		sprite[i].cstat=0;
 
 		hitobject=movesprite((short)i,
-				(((long)sintable[(sprite[i].extra+512)&2047])*synctics)<<6,
-				(((long)sintable[sprite[i].extra])*synctics)<<6,
+				(((int)sintable[(sprite[i].extra+512)&2047])*synctics)<<6,
+				(((int)sintable[sprite[i].extra])*synctics)<<6,
 				daz,4L<<8,4L<<8,1);
 
 
@@ -2608,8 +2608,8 @@ void animateobjs(struct player *plr) {
 		else {
 
 			hitobject=movesprite((short)i,
-				(((long)sintable[(sprite[i].ang+512)&2047])*synctics)<<6,//was 3
-				(((long)sintable[sprite[i].ang])*synctics)<<6,//was 3
+				(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<6,//was 3
+				(((int)sintable[sprite[i].ang])*synctics)<<6,//was 3
 				daz,4L<<8,4L<<8,1);
 
 		}
@@ -2724,7 +2724,7 @@ bulletisdeletedskip:
 				}
 				dax=sprite[i].xvel;
 				day=sprite[i].yvel;
-				daz=((((long)sprite[i].zvel)*synctics)>>3);
+				daz=((((int)sprite[i].zvel)*synctics)>>3);
 			break;
 		}
 
@@ -2733,8 +2733,8 @@ bulletisdeletedskip:
 		sprite[i].cstat=0;
 
 		hitobject=movesprite((short)i,
-				(((long)sintable[(sprite[i].extra+512)&2047])*synctics)<<6,
-				(((long)sintable[sprite[i].extra])*synctics)<<6,
+				(((int)sintable[(sprite[i].extra+512)&2047])*synctics)<<6,
+				(((int)sintable[sprite[i].extra])*synctics)<<6,
 				daz,4L<<8,4L<<8,0);
 
 		if( sprite[i].picnum == WALLARROW
@@ -2806,8 +2806,8 @@ javlinskip:
 		dax=sprite[i].xvel>>3;
 		day=sprite[i].yvel>>3;
 		daz=sprite[i].zvel-=synctics<<2;
-		//movestat=movesprite(i,dax,day,daz,4<<8,4<<8,1,((long)synctics));
-		movestat=movesprite((short)i,(((long)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((long)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,1);
+		//movestat=movesprite(i,dax,day,daz,4<<8,4<<8,1,((int)synctics));
+		movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,1);
 		setsprite(i,sprite[i].x,sprite[i].y,sprite[i].z);
 		if(sprite[i].extra == 0) {
 			if(sprite[i].lotag < 0) {
@@ -2838,14 +2838,14 @@ javlinskip:
 			&& sprite[i].picnum == BONECHUNKEND ) {
 			daz>>=1;
 			movestat=movesprite((short)i,
-							(((long)sintable[(sprite[i].ang+512)&2047])*synctics)<<2,
-							(((long)sintable[sprite[i].ang])*synctics)<<2,
+							(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<2,
+							(((int)sintable[sprite[i].ang])*synctics)<<2,
 							daz,4L<<8,4L<<8,1);
 		}
 		else
 			movestat=movesprite((short)i,
-							(((long)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,
-							(((long)sintable[sprite[i].ang])*synctics)<<3,
+							(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,
+							(((int)sintable[sprite[i].ang])*synctics)<<3,
 							daz,4L<<8,4L<<8,1);
 
 		if((movestat&0xc000) == 16384 ) {
@@ -2934,7 +2934,7 @@ javlinskip:
 		dax=0L;
 		day=0L;
 		daz=sprite[i].zvel+=synctics<<1;
-		daz=((((long)sprite[i].zvel)*synctics)<<1);
+		daz=((((int)sprite[i].zvel)*synctics)<<1);
 		movestat=movesprite((short)i,dax,day,daz,4L<<8,4L<<8,1);
 
 		if((movestat&0xc000) == 16384) {
@@ -3067,9 +3067,9 @@ javlinskip:
 				sprite[i].zvel=0;
 				sprite[i].lotag=4;
 			}
-			dax=((((long)sprite[i].xvel)*synctics)>>3);
-			day=((((long)sprite[i].yvel)*synctics)>>3);
-			daz=(((long)sprite[i].zvel)*synctics);
+			dax=((((int)sprite[i].xvel)*synctics)>>3);
+			day=((((int)sprite[i].yvel)*synctics)>>3);
+			daz=(((int)sprite[i].zvel)*synctics);
 			movestat=movesprite((short)i,dax,day,daz,4L<<8,4L<<8,1);
 			setsprite(i,sprite[i].x,sprite[i].y,sprite[i].z);
 		}
@@ -3080,8 +3080,8 @@ javlinskip:
 			daz=sprite[i].zvel+=synctics<<4;
 
 		movestat=movesprite((short)i,
-							(((long)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,
-							(((long)sintable[sprite[i].ang])*synctics)<<3,
+							(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,
+							(((int)sintable[sprite[i].ang])*synctics)<<3,
 							daz,4L<<8,4L<<8,1);
 
 		}

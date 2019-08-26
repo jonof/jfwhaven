@@ -19,7 +19,7 @@ extern void bobbingsector(void );
 //#line "whfx.c" 541
 extern void teleporter(void );
 //#line "whfx.c" 617
-extern void warp(long *x,long *y,long *z,short *daang,short *dasector);
+extern void warp(int *x,int *y,int *z,short *daang,short *dasector);
 //#line "whfx.c" 647
 extern void warpsprite(short spritenum);
 //#line "whfx.c" 665

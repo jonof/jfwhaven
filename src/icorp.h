@@ -51,8 +51,8 @@ struct swingdoor {
      int  angopendir;
      int  ang;
      int  anginc;
-     long x[8];
-     long y[8];
+     int x[8];
+     int y[8];
 };
 
 extern
@@ -68,17 +68,17 @@ struct swingdoor swingdoor[MAXSWINGDOORS];
 
 
 struct player {
-     long x,y,z;
-     long ang;
-     long horiz;
-     long zoom;
-     long height;
-     long hvel;
+     int x,y,z;
+     int ang;
+     int horiz;
+     int zoom;
+     int height;
+     int hvel;
      short sector,oldsector;
      short screensize;
      short spritenum;
      char dimension;
-     unsigned long flags;
+     unsigned int flags;
      int  weapon[MAXWEAPONS];
      int  ammo[MAXWEAPONS];
      int  orbammo[MAXNUMORBS];
@@ -87,13 +87,13 @@ struct player {
      int  orb[MAXNUMORBS];
      int  potion[MAXPOTIONS];
      int  lvl;
-     long score;
+     int score;
      int  health;
      int  maxhealth;
      int  armor;
      int  armortype;
      char onsomething;
-     long fallz;
+     int fallz;
 };
 
 extern struct player player[MAXPLAYERS];
@@ -108,8 +108,8 @@ extern
 struct delayitem delayitem[MAXSECTORS];
 
 struct sectoreffect {
-     unsigned long sectorflags;
-     long animate;
+     unsigned int sectorflags;
+     int animate;
      int  hi,lo;
      int  delay,delayreset;
 };
@@ -125,12 +125,12 @@ extern
 int  pyrn;
 
 extern
-long angvel,
+int angvel,
      svel,
      vel;
 
 extern
-long *animateptr[],
+int *animateptr[],
      animategoal[],
      animatevel[],
      animatecnt,
@@ -138,7 +138,7 @@ long *animateptr[],
      neartaghitdist;
 
 extern
-unsigned long flags32[];
+unsigned int flags32[];
 
 extern
 short neartagsector,
@@ -146,7 +146,7 @@ short neartagsector,
      neartagsprite;
 
 extern
-long lockclock;
+int lockclock;
 
 void lb_printf(int,int,char *,...);
 

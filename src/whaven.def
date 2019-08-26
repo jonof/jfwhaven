@@ -7,7 +7,7 @@ extern void cls80x25(int top,int mid,int bot);
 //#line "whaven.c" 296
 extern void tprintf(int x,int y,char *fmt,... );
 //#line "whaven.c" 326
-extern void rp_delay(long goal);
+extern void rp_delay(int goal);
 //#line "whaven.c" 347
 extern void showadditionalinfo(void );
 //#line "whaven.c" 355
@@ -15,11 +15,11 @@ extern void shutdown(void );
 //#line "whaven.c" 398
 extern void crash(char *fmt);
 //#line "whaven.c" 409
-extern void doanimations(long numtics);
+extern void doanimations(int numtics);
 //#line "whaven.c" 437
-extern long getanimationgoal(long *animptr);
+extern int getanimationgoal(int *animptr);
 //#line "whaven.c" 451
-extern long setanimation(long *animptr,long thegoal,long thevel);
+extern int setanimation(int *animptr,int thegoal,int thevel);
 //#line "whaven.c" 475
 extern void setdelayfunc(void (*func)(),int item,int delay);
 //#line "whaven.c" 496

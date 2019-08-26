@@ -47,7 +47,7 @@ struct netpck {
      char teamno;                  // team this player chose
      char weap;                    // weapon being carried
      short score;                  // player's score (team or head to head)
-     long x,
+     int x,
           y,
           z;                       // x,y,z for this player
      short ang;                    // player's angle
@@ -102,7 +102,7 @@ short debugnet,
      teamscore[MAXPLAYERS],
      xmit = 1;
 
-long bps = 9600L,
+int bps = 9600L,
      netstartx,
      netstarty,
      netstartz,
@@ -242,7 +242,7 @@ extern
 int  oldvmode;
 
 extern
-long selectedgun;
+int selectedgun;
 
 #ifdef DEBUGOUTPUT
 FILE *dbgfp;
@@ -506,7 +506,7 @@ netmarkflag(short i)
 }
 
 void
-moveflag(long x, long y, long z, long teamno)
+moveflag(int x, int y, int z, int teamno)
 {
      short s;
 
@@ -766,7 +766,7 @@ void
 netsendmove(void)
 {
      short p;
-     static long sendclock = 0L;
+     static int sendclock = 0L;
 
 // fprintf(stdaux, "netsendmove\r\n");
 
@@ -856,7 +856,7 @@ nethitsprite(short p, char guntype, char taghit)
           i,
           j,
           k;
-     long dax,
+     int dax,
           day,
           hitx,
           hity,
@@ -1098,7 +1098,7 @@ nethitsprite(short p, char guntype, char taghit)
 }
 
 void
-spawnflag(long x, long y, long z, long teamno)
+spawnflag(int x, int y, int z, int teamno)
 {
      short s,
           sect;
@@ -1614,7 +1614,7 @@ netpickmonster(void)
           picking,
           selected,
           step;
-     long animclock = 0L;
+     int animclock = 0L;
      char tmpbuf[32];
      struct player *plr;
 
@@ -1841,7 +1841,7 @@ mdmreadsettings(void)
 {
      short i,
           n;
-     long l;
+     int l;
      char buf[80],
          *ptr;
      FILE *fp;
@@ -1979,7 +1979,7 @@ whnetmon(void)
 {
      int  i,
           n;
-     long loz;
+     int loz;
      char tmpbuf[80];
 
 // fprintf(stdaux, "whnetmon\r\n");

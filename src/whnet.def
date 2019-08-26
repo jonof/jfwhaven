@@ -23,7 +23,7 @@ extern short netchecktouchflag(struct player *plr);
 //#line "whnet.c" 496
 extern void netmarkflag(short i);
 //#line "whnet.c" 533
-extern void moveflag(long x,long y,long z,long teamno);
+extern void moveflag(int x,int y,int z,int teamno);
 //#line "whnet.c" 546
 extern void sendmyinfo(unsigned int dnode,short forcesend);
 //#line "whnet.c" 738
@@ -37,7 +37,7 @@ extern void netdamageactor(short s,short o);
 //#line "whnet.c" 875
 extern void nethitsprite(short p,char guntype,char taghit);
 //#line "whnet.c" 1124
-extern void spawnflag(long x,long y,long z,long teamno);
+extern void spawnflag(int x,int y,int z,int teamno);
 //#line "whnet.c" 1144
 extern void dropflagstart(short teamno);
 //#line "whnet.c" 1156

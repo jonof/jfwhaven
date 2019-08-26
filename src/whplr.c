@@ -29,7 +29,7 @@ int  pyrn;
 int  dahand=0;
 int  mapon=1;
 
-long neartagdist,
+int neartagdist,
 	 neartaghitdist;
 
 short neartagsector,
@@ -40,9 +40,9 @@ struct player player[MAXPLAYERS];
 
 extern int justteleported;
 extern int gameactivated;
-extern long selectedgun;
+extern int selectedgun;
 extern short oldmousestatus;
-extern long oldhoriz;
+extern int oldhoriz;
 
 extern char tempbuf[];
 extern char displaybuf[];
@@ -62,7 +62,7 @@ extern int shadowtime;
 
 extern int playerdie;
 extern int frames;
-extern long vel;
+extern int vel;
 
 int hasshot;
 int orbshot;
@@ -565,8 +565,8 @@ void playerdead(struct player *plr) {
 
 	int i;
 	int spellbookpage;
-	long clockgoal, goalz;
-	long goaltime;
+	int clockgoal, goalz;
+	int goaltime;
 	int exit=0;
 
 	clockgoal=totalclock+240;
@@ -597,8 +597,8 @@ void playerdead(struct player *plr) {
 		drawscreen(plr);
 		animateobjs(plr);
 		animatetags(plr);
-		doanimations((long)synctics);
-		dodelayitems((long)synctics);
+		doanimations((int)synctics);
+		dodelayitems((int)synctics);
 		nextpage();
 	}
 
@@ -1016,7 +1016,7 @@ void autoweaponchange(int dagun) {
 
 void weaponchange(void) {
 
-	long i;
+	int i;
 	int  j;
 	struct player *plr;
 	char temp[50];
@@ -1353,8 +1353,8 @@ int weaponuseless=0;
 void plrfireweapon(struct player *plr) {
 
 	char guntype;
-	long x, y, z;
-	long dasectnum, daz;
+	int x, y, z;
+	int dasectnum, daz;
 	short daang, dahoriz;
 	short k;
 	int i;
@@ -1604,8 +1604,8 @@ void activatedaorb(struct player *plr) {
 void plruse(struct player *plr) {
 
 	short hitsect, hitwall, hitsprite, daang2, daang;
-	long i, daz2, hitx, hity, hitz;
-	long hit, dax, day;
+	int i, daz2, hitx, hity, hitz;
+	int hit, dax, day;
 
 	neartag(plr->x,plr->y,plr->z,plr->sector,plr->ang,
 		  &neartagsector,&neartagwall,&neartagsprite,&neartaghitdist,1024,3);
@@ -1694,7 +1694,7 @@ void loadnewlevel(int mapon) {
 
 void victory(void) {
 
-	long goaltime;
+	int goaltime;
 	int exit;
 
 	goaltime=totalclock+360;
@@ -1791,8 +1791,8 @@ void victory(void) {
 void drawweapons(struct player *plr) {
 
 	int dax, day;
-	long snakex=0;
-	long snakey=0;
+	int snakex=0;
+	int snakey=0;
 	char dabits;
 	char dashade;
 	char dapalnum;
@@ -2040,7 +2040,7 @@ void drawweapons(struct player *plr) {
 					swingdaweapon(plr);
 			}
 
-			currweapontics-=((long)synctics);
+			currweapontics-=((int)synctics);
 			if( helmettime > 0)
 				currweapontics--;
 
@@ -2255,7 +2255,7 @@ void drawweapons(struct player *plr) {
 			}
 		break;
 		case 3: // ready
-			currweapontics-=((long)synctics);
+			currweapontics-=((int)synctics);
 			if( currweapontics < 0 ) {
 				currweaponanim++;
 				if( currweaponanim == 12 ) {
@@ -2301,7 +2301,7 @@ void drawweapons(struct player *plr) {
 		break;
 
 		case 5: //cock
-			currweapontics-=((long)synctics);
+			currweapontics-=((int)synctics);
 			if( currweapontics < 0 ) {
 				currweaponanim++;
 				if( currweaponanim == 4 ) {
@@ -2337,7 +2337,7 @@ void drawweapons(struct player *plr) {
 				castaorb(plr);
 			}
 
-			currweapontics-=((long)synctics);
+			currweapontics-=((int)synctics);
 			if( currweapontics < 0 ) {
 				currweaponanim++;
 				if( currweaponanim > 12 ) {
@@ -2538,7 +2538,7 @@ void castaorb( struct player *plr ) {
 
 }
 
-void chunksofmeat(struct player *plr,short hitsprite,long hitx,long hity,long hitz, short hitsect, short daang) {
+void chunksofmeat(struct player *plr,short hitsprite,int hitx,int hity,int hitz, short hitsect, short daang) {
 
 	short j;
 	short k;
@@ -2703,7 +2703,7 @@ void chunksofmeat(struct player *plr,short hitsprite,long hitx,long hity,long hi
 			sprite[j].lotag = 512;
 			sprite[j].hitag = 0;
 			sprite[j].pal = 0;
-			movesprite((short)j,(((long)sintable[(sprite[j].ang+512)&2047])*synctics)<<3,(((long)sintable[sprite[j].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
+			movesprite((short)j,(((int)sintable[(sprite[j].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[j].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
 		}
 	}
 
@@ -2741,9 +2741,9 @@ void swingdapunch(int daweapon) {
 void shootgun ( struct player *plr, short daang, char guntype ) {
 
 	short hitsect, hitwall, hitsprite, daang2, daang3, k;
-	long i, j, daz2, hitx, hity, hitz;
+	int i, j, daz2, hitx, hity, hitz;
 	int chunk;
-	long hit, dax, day;
+	int hit, dax, day;
 	int bolts;
 	int cnt;
 
@@ -3417,7 +3417,7 @@ void shootgun ( struct player *plr, short daang, char guntype ) {
 			sprite[j].owner=4096;
 			sprite[j].lotag=32;
 			sprite[j].hitag=0;
-			movesprite((short)j,(((long)sintable[(sprite[j].ang+512)&2047])*synctics)<<3,(((long)sintable[sprite[j].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
+			movesprite((short)j,(((int)sintable[(sprite[j].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[j].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
 		}
 		if ((hitsprite >= 0) && (sprite[hitsprite].statnum < MAXSTATUS)) {
 			switch(sprite[hitsprite].picnum) {
@@ -3670,7 +3670,7 @@ void shootgun ( struct player *plr, short daang, char guntype ) {
 
 		 //movesprite
 		 //setsprite
-		movesprite((short)j,(((long)sintable[(sprite[j].ang+512)&2047])*synctics)<<3,(((long)sintable[sprite[j].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
+		movesprite((short)j,(((int)sintable[(sprite[j].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[j].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
 		setsprite(j,sprite[j].x,sprite[j].y,sprite[j].z);
 
 	  break;
@@ -3703,7 +3703,7 @@ void shootgun ( struct player *plr, short daang, char guntype ) {
 		//dax=(sintable[(sprite[j].ang+512)&2047]>>6);
 		//day=(sintable[sprite[j].ang]>>6);
 
-		movesprite((short)j,(((long)sintable[(sprite[j].ang+512)&2047])*synctics)<<3,(((long)sintable[sprite[j].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
+		movesprite((short)j,(((int)sintable[(sprite[j].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[j].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
 		setsprite(j,sprite[j].x,sprite[j].y,sprite[j].z);
 
 
@@ -3779,7 +3779,7 @@ void shootgun ( struct player *plr, short daang, char guntype ) {
 		dax=(sintable[(sprite[j].ang+512)&2047]>>6);
 		day=(sintable[sprite[j].ang]>>6);
 
-		movesprite((short)j,(((long)sintable[(sprite[j].ang+512)&2047])*synctics)<<3,(((long)sintable[sprite[j].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
+		movesprite((short)j,(((int)sintable[(sprite[j].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[j].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
 		setsprite(j,sprite[j].x,sprite[j].y,sprite[j].z);
 
 */
@@ -4204,7 +4204,7 @@ void goesupalevel(struct player *plr) {
 }
 
 
-int checkweapondist(short i,long x,long y,long z,char guntype) {
+int checkweapondist(short i,int x,int y,int z,char guntype) {
 
    int length;
 
@@ -4475,7 +4475,7 @@ void gronmissile(int s) {
 
 	struct player *plr;
 	short k, j, daang;
-	long discrim;
+	int discrim;
 
 	plr=&player[pyrn];
 
@@ -4553,7 +4553,7 @@ void displayspelltext(void) {
 
 
 void
-painsound(long xplc,long yplc)
+painsound(int xplc,int yplc)
 {
 	playsound_loc(S_BREATH1+(rand()%6),xplc,yplc);
 }

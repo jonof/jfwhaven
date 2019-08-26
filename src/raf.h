@@ -90,11 +90,11 @@
 
 extern short ironbarscnt;
 extern short ironbarsdone[16];
-extern long  ironbarsgoal1[16];
-extern long  ironbarsgoal2[16];
+extern int  ironbarsgoal1[16];
+extern int  ironbarsgoal2[16];
 extern short ironbarsector[16];
 extern short ironbarsanim[16];
-extern long  ironbarsgoal[16];
+extern int  ironbarsgoal[16];
 
 #define MAXKEYS   4
 
@@ -151,7 +151,7 @@ extern long  ironbarsgoal[16];
 
 typedef struct
 {
-    long x, y, z;
+    int x, y, z;
 } point3d;
 
 //point3d osprite[MAXSPRITESONSCREEN];

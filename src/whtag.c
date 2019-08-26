@@ -15,7 +15,7 @@ extern short crushsectorlist[32], crushsectorcnt;
 extern short crushsectoranim[32], crushsectordone[32];
 
 extern short dragsectorlist[16], dragxdir[16], dragydir[16], dragsectorcnt;
-extern long dragx1[16], dragy1[16], dragx2[16], dragy2[16], dragfloorz[16];
+extern int dragx1[16], dragy1[16], dragx2[16], dragy2[16], dragfloorz[16];
 
 
 
@@ -62,15 +62,15 @@ void operatesector(int s) {
 
 	 short endwall,startwall,wallfind[2];
 	 int  botz,ctrz,dax2,day2,datag,goalz,i,j,size,topz;
-	 long centx, centy;
+	 int centx, centy;
 	 struct player *plr;
-	 long daz;
+	 int daz;
 	 int doorantic, doorkey, doortype, checkforkey;
-	 long smush;
+	 int smush;
 	 int  temp1, temp2, temp3;
 	 short daceiling=0;
-	 long circledoorstart;
-	 long k;
+	 int circledoorstart;
+	 int k;
 	 int keysok=0;
 
 	 plr=&player[pyrn];
@@ -902,8 +902,8 @@ void animatetags(struct player *plr) {
 
 	 int  effect,endwall,good,i,j,k,oldang,r,s,startwall;
 	 int  nexti;
-	 long dax,dax2,day,day2;
-	 long dasector;
+	 int dax,dax2,day,day2;
+	 int dasector;
 
 
 		if (sector[plr->sector].lotag == 2)
@@ -998,7 +998,7 @@ void animatetags(struct player *plr) {
 	 for (i=0 ; i < swingcnt ; i++) {
 		  if (swingdoor[i].anginc != 0) {
 			   oldang=swingdoor[i].ang;
-			   for (j=0 ; j < (((long)synctics)<<2) ; j++) {
+			   for (j=0 ; j < (((int)synctics)<<2) ; j++) {
 					swingdoor[i].ang=((swingdoor[i].ang+2048+swingdoor[i].anginc)&2047);
 					if (swingdoor[i].ang == swingdoor[i].angclosed) {
 						 swingdoor[i].anginc=0;

@@ -102,7 +102,7 @@ char fancy[41] = {  'a','b','c','d','e',
                     '9','!','?','-',':',' ' };
 
 
-void fancyfont(long x, long y, short tilenum, char *string, char pal) {
+void fancyfont(int x, int y, short tilenum, char *string, char pal) {
 
      int i, j;
      int len;
@@ -138,7 +138,7 @@ void fancyfont(long x, long y, short tilenum, char *string, char pal) {
 
 
 
-void fancyfontscreen(long x, long y, short tilenum, char *string) {
+void fancyfontscreen(int x, int y, short tilenum, char *string) {
 
      int i, j;
      int len;
@@ -189,7 +189,7 @@ int menuscreen(struct player *plr) {
     int select=0;
     short redpicnum;
     char tempbuf[40];
-    long goaltime;
+    int goaltime;
     int i;
 
 
@@ -331,7 +331,7 @@ void help(void) {
                                     BETAPAGE};
 
     int select=0;
-    long goaltime;
+    int goaltime;
     int exit=0;
 
     while (!exit) {
@@ -379,7 +379,7 @@ void loadsave(struct player *plr) {
 
     int exit=0;
     int select=0;
-    long goaltime;
+    int goaltime;
 
     goaltime=totalclock+10L;
 
@@ -437,7 +437,7 @@ void loadsave(struct player *plr) {
 void quit(void) {
 
     int exit=0;
-    long goaltime;
+    int goaltime;
     char temp[20];
 
     overwritesprite(0L,0L,MAINMENU,0,0,0);
@@ -521,7 +521,7 @@ void thedifficulty(void) {
         int select3=goreon;
         int redpicnum;
         int pickone=0;
-        long goaltime;
+        int goaltime;
 
         struct player *plr;
 
@@ -704,7 +704,7 @@ void loadgame(struct player *plr) {
     int exit=0;
     int gn, i;
     char temp[20];
-    long goaltime;
+    int goaltime;
 
     goaltime=totalclock+10L;
 
@@ -784,7 +784,7 @@ void savegame(struct player *plr) {
     int gn, i;
     int select=0;
     char temp[20];
-    long goaltime;
+    int goaltime;
 
 
     for(i=0;i<MAXSAVEDGAMES;i++)
@@ -954,6 +954,7 @@ int savedgamename(int gn) {
     int  file;
     int  i;
     char temp[3];
+    int tmpanimateptr[MAXANIMATES];
 
     plr=&player[0];
 
@@ -1007,12 +1008,8 @@ int savedgamename(int gn) {
 
         //Warning: only works if all pointers are in sector structures!
         for(i=MAXANIMATES-1;i>=0;i--)
-            animateptr[i] = (long *)(animateptr[i]-((long)sector));
-
-        write(file,animateptr,MAXANIMATES<<2);
-
-        for(i=MAXANIMATES-1;i>=0;i--)
-            animateptr[i] = (long *)(animateptr[i]+((long)sector));
+            tmpanimateptr[i] = (int)((intptr_t)animateptr[i]-(intptr_t)sector);
+        write(file,tmpanimateptr,MAXANIMATES<<2);
 
         write(file,animategoal,MAXANIMATES<<2);
         write(file,animatevel,MAXANIMATES<<2);
@@ -1082,6 +1079,7 @@ void loadplayerstuff(void) {
     int fh;
     int i;
     char temp[40];
+    int tmpanimateptr[MAXANIMATES];
 
     fh=open(loadgamename, O_RDONLY | O_BINARY);
 
@@ -1113,13 +1111,10 @@ void loadplayerstuff(void) {
     read(fh,&synctics,sizeof(synctics));
 
         //Warning: only works if all pointers are in sector structures!
-    for(i=MAXANIMATES-1;i>=0;i--)
-        animateptr[i] = (long *)(animateptr[i]-((long)sector));
-
-    read(fh,animateptr,MAXANIMATES<<2);
+    read(fh,tmpanimateptr,MAXANIMATES<<2);
 
     for(i=MAXANIMATES-1;i>=0;i--)
-        animateptr[i] = (long *)(animateptr[i]+((long)sector));
+        animateptr[i] = (int *)(tmpanimateptr[i]+(intptr_t)sector);
 
     read(fh,animategoal,MAXANIMATES<<2);
     read(fh,animatevel,MAXANIMATES<<2);
@@ -1623,8 +1618,8 @@ installcrerrhndlr(void)
 #define   LEDRANDOMKEY        10
 
 char      forcemessiah=0;
-long      messcnt;
-long      ledcnt;
+int      messcnt;
+int      ledcnt;
 char      ledflash;
 char      tremors;
 char      dofadein=0;
@@ -1632,7 +1627,7 @@ char      dofadein=0;
 #define   DEADTIME       2   // # minutes of nothing happening
 #define   FLASHINTERVAL  20
 
-long      passlock,lastastep,lastbstep,astep,bstep;
+int      passlock,lastastep,lastbstep,astep,bstep;
 
 extern char pee;
 extern char flashflag;

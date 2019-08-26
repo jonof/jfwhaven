@@ -208,8 +208,8 @@ typedef struct
 	int      playing;
 	unsigned SOSHandle;
 	unsigned number;
-	long     priority;
-	long     x,y;
+	int     priority;
+	int     x,y;
 } SampleType;
 
 
@@ -548,8 +548,8 @@ struct ambsounds {
 	//          EXTERN STUFF
 	//
 	extern keytimerstuff();
-	extern volatile long totalclock;
-	extern long posx[],posy[];
+	extern volatile int totalclock;
+	extern int posx[],posy[];
 
 	//JSA temp int to show vol and pan
 	int gVol,gPan;

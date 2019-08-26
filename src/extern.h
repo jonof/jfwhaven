@@ -19,7 +19,7 @@ extern volatile char readch, oldreadch, extended, keytemp;
 
 #ifdef WHAVEN
 point3d osprite[MAXSPRITESONSCREEN];
-long   smoothratio;
+int   smoothratio;
 volatile char keystatus[256];
 int shieldpoints=0;
 int poisoned=0;
@@ -38,7 +38,7 @@ int   delaycnt,
       videoinitflag;
 #else
 extern point3d osprite[];
-extern long   smoothratio;
+extern int   smoothratio;
 extern volatile char keystatus[];
 extern int shieldpoints;
 extern int poisoned;
@@ -58,11 +58,11 @@ extern int  delaycnt,
 #endif
 
 #ifdef SVGA
-long synctics;
-long globhiz, globloz, globhihit, globlohit;
-long chainxres[4] = {256,320,360,400};
-long chainyres[11] = {200,240,256,270,300,350,360,400,480,512,540};
-long vesares[7][2] = {320,200,640,400,640,480,800,600,1024,768,
+int synctics;
+int globhiz, globloz, globhihit, globlohit;
+int chainxres[4] = {256,320,360,400};
+int chainyres[11] = {200,240,256,270,300,350,360,400,480,512,540};
+int vesares[7][2] = {320,200,640,400,640,480,800,600,1024,768,
                                       1280,1024,1600,1200};
 char option[NUMOPTIONS] = {0,0,0,0,0,0,1,0};
 
@@ -90,11 +90,11 @@ char option2[];
 //** Les END   - 07/27/95
 
 #else
-extern long synctics;
-extern long globhiz, globloz, globhihit, globlohit;
-extern long chainxres[];
-extern long chainyres[];
-extern long vesares[7][2];
+extern int synctics;
+extern int globhiz, globloz, globhihit, globlohit;
+extern int chainxres[];
+extern int chainyres[];
+extern int vesares[7][2];
 extern char option[];
 extern char keys[];
 #endif

@@ -57,7 +57,7 @@ extern void SND_SwapLoops(void );
 //#line "whsndmod.c" 843
 extern void SND_Sting(unsigned int sound);
 //#line "whsndmod.c" 868
-extern int SND_PlaySound(unsigned int sound,long x,long y,unsigned int Pan,unsigned int loopcount);
+extern int SND_PlaySound(unsigned int sound,int x,int y,unsigned int Pan,unsigned int loopcount);
 //#line "whsndmod.c" 963
 extern unsigned int SND_Sound(unsigned int sound);
 //#line "whsndmod.c" 974
@@ -69,6 +69,6 @@ extern void SND_DIGIFLush(void );
 //#line "whsndmod.c" 1051
 extern void SND_UpdateSoundLoc(unsigned int which,unsigned int Volume,unsigned int Pan);
 //#line "whsndmod.c" 1070
-extern void playsound_loc(int soundnum,long xplc,long yplc);
+extern void playsound_loc(int soundnum,int xplc,int yplc);
 //#line "whsndmod.c" 1079
 extern void updatesound_loc(void );
