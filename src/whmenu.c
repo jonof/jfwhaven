@@ -1653,15 +1653,8 @@ void screenfx(struct player *plr) {
 //    value           [eax]               /* Return value.                 */ \
 //    modify          [ecx]; // Non parameter registers that will be altered.
 
-extern    void near asmwaitvrt(int parm1);
-#pragma aux asmwaitvrt  "*_"       \
-     parm caller     [ecx]          \
-     modify          [eax edx];
-
-extern    void near asmsetpalette(char *pal);
-#pragma aux asmsetpalette "*_"     \
-    parm caller     [esi]           \
-    modify          [eax ecx edx];
+extern    void asmwaitvrt(int parm1);
+extern    void asmsetpalette(char *pal);
 
 void
 clearpal(void)

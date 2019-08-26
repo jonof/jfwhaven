@@ -108,220 +108,14 @@ int mapflag;
 //
 //
 //
-void (__interrupt __far *oldtimerhandler)();
-void __interrupt __far timerhandler(void);
-
-void (__interrupt __far *oldkeyhandler)();
-void __interrupt __far keyhandler(void);
-
-
-    //Here are some nice in-line assembly pragmas that make life easier.
-    //(at least for Ken)
-#pragma aux setvmode =\
-    "int 0x10",\
-    parm [eax]\
-
-#pragma aux clearbuf =\
-    "rep stosd",\
-    parm [edi][ecx][eax]\
-
-#pragma aux clearbufbyte =\
-    "shr ecx, 1",\
-    "jnc skip1",\
-    "stosb",\
-    "skip1: shr ecx, 1",\
-    "jnc skip2",\
-    "stosw",\
-    "skip2: test ecx, ecx",\
-    "jz skip3",\
-    "rep stosd",\
-    "skip3:",\
-    parm [edi][ecx][eax]\
-
-#pragma aux copybuf =\
-    "rep movsd",\
-    parm [esi][edi][ecx]\
-
-#pragma aux copybufbyte =\
-    "shr ecx, 1",\
-    "jnc skip1",\
-    "movsb",\
-    "skip1: shr ecx, 1",\
-    "jnc skip2",\
-    "movsw",\
-    "skip2: test ecx, ecx",\
-    "jz skip3",\
-    "rep movsd",\
-    "skip3:",\
-    parm [esi][edi][ecx]\
-
-#pragma aux copybufreverse =\
-    "shr ecx, 1",\
-    "jnc skipit1",\
-    "mov al, byte ptr [esi]",\
-    "dec esi",\
-    "mov byte ptr [edi], al",\
-    "inc edi",\
-    "skipit1: shr ecx, 1",\
-    "jnc skipit2",\
-    "mov ax, word ptr [esi-1]",\
-    "sub esi, 2",\
-    "ror ax, 8",\
-    "mov word ptr [edi], ax",\
-    "add edi, 2",\
-    "skipit2: test ecx, ecx",\
-    "jz endloop",\
-    "begloop: mov eax, dword ptr [esi-3]",\
-    "sub esi, 4",\
-    "bswap eax",\
-    "mov dword ptr [edi], eax",\
-    "add edi, 4",\
-    "dec ecx",\
-    "jnz begloop",\
-    "endloop:",\
-    parm [esi][edi][ecx]\
-
-#pragma aux klabs =\
-    "test eax, eax",\
-    "jns skipnegate",\
-    "neg eax",\
-    "skipnegate:",\
-    parm [eax]\
-
-#pragma aux ksgn =\
-    "add ebx, ebx",\
-    "sbb eax, eax",\
-    "cmp eax, ebx",\
-    "adc eax, 0",\
-    parm [ebx]\
-
-#pragma aux mulscale =\
-    "imul ebx",\
-    "shrd eax, edx, cl",\
-    parm [eax][ebx][ecx]\
-    modify [edx]\
-
-#pragma aux divscale =\
-    "mov edx, eax",\
-    "sar edx, 31",\
-    "shld edx, eax, cl",\
-    "sal eax, cl",\
-    "idiv ebx",\
-    parm [eax][ebx][ecx]\
-    modify [edx]\
-
-#pragma aux scale =\
-    "imul ebx",\
-    "idiv ecx",\
-    parm [eax][ebx][ecx]\
-    modify [eax edx]\
-
-#pragma aux umin =\
-    "sub eax,ebx",\
-    "sbb ecx,ecx",\
-    "and eax,ecx",\
-    "add eax,ebx",\
-    parm [eax][ebx]\
-    modify [ecx]\
-
-#pragma aux umax =\
-    "sub eax,ebx",\
-    "sbb ecx,ecx",\
-    "not ecx",\
-    "and eax,ecx",\
-    "add eax,ebx",\
-    parm [eax][ebx]\
-    modify [ecx]\
-
-#pragma aux drawpixel =\
-    "mov byte ptr [edi], al",\
-    parm [edi][eax]\
-
-#pragma aux koutp =\
-    "out dx, al",\
-    parm [edx][eax]\
-
-#pragma aux koutpw =\
-    "out dx, ax",\
-    parm [edx][eax]\
-
-#pragma aux kinp =\
-    "in al, dx",\
-    parm [edx]\
-
 
 void faketimerhandler(void) {
     return;
 }
 
-//   basic text functions from tekwar
-int getvmode(void) {
-
-      union REGS regs;
-
-      regs.h.ah=0x0F;
-      regs.h.al=0x00;
-      int386(0x10,&regs,&regs);
-      return(regs.h.al);
-}
-
 //
 //   basic text functions
 //
-
-void cls80x25(int top,int mid,int bot) {
-
-      int  i,j;
-      char *ptr;
-
-      ptr=(char *)0xB8000;
-      memset(ptr,0,4000);
-      for (i=0 ; i < 80 ; i++) {
-             *(ptr+(i*2)+1)=top;           // top line attribute set to gray on blue
-      }
-      *ptr='Û';                          // hides the cursor behind this block
-      *(ptr+1)=(char)(((top&0x07)<<4)+((top&0xF0)>>4));
-      for (j=1 ; j < 24 ; j++) {         // and rest of screen set to gray
-             for (i=0 ; i < 80 ; i++) {
-                    *(ptr+(i*2)+(j*160)+1)=mid;
-             }
-      }
-      j=24;
-      for (i=0 ; i < 80 ; i++) {
-             *(ptr+(i*2)+(j*160)+1)=bot;   // and last line is white on red
-      }
-
-}
-
-void tprintf(int x,int y,char *fmt,...) {
-
-      int  i;
-      static int curx=0,cury=0;
-      char buf[80],*ptr;
-      va_list argptr;
-
-      ptr=(char *)0xB8000;
-      va_start(argptr,fmt);
-      vsprintf(buf,fmt,argptr);
-      va_end(argptr);
-      if (x == 0) {
-             x=curx;
-      }
-      else if (x == -1) {
-             x=40-(strlen(buf)/2);
-      }
-      if (y == 0) {
-             y=cury;
-      }
-      ptr=(char *)(0xB8000+(x*2)+(y*160));
-      for (i=0 ; i < strlen(buf) ; i++) {
-             *ptr=buf[i];
-             ptr+=2;
-      }
-      curx=x+strlen(buf);
-      cury=y;
-
-}
 
 void rp_delay(int goal) {
 
@@ -379,10 +173,6 @@ shutdown(void)
 
       if(SoundMode)
           SND_UnDoBuffers();
-
-      if (videoinitflag) {
-             setvmode(oldvmode);
-      }
 
         uninitkeys();
         uninitgroupfile();
@@ -1302,15 +1092,9 @@ void main(int argc,char *argv[]) {
 
     initgroupfile("stuff.dat");
 
-     oldvmode=getvmode();
-     setvmode(0x03);                                             // Les 07/24/95
-     cls80x25(0x1F,0x07,0x0F);
-
-    tprintf(-1,0,"WITCHAVEN Copyright (C) 1995 IntraCorp, Inc. ver 1.1",temp1);
-
-    tprintf(2,2," map name: level%d",mapon);
-
-    tprintf(2,3," initengine()");
+    buildputs("WITCHAVEN Copyright (C) 1995 IntraCorp, Inc. ver 1.1\n");
+    buildprintf(" map name: level%d\n",mapon);
+    buildputs(" initengine()\n");
 
     if ((fil = open("setup.dat",O_BINARY|O_RDWR,S_IREAD)) != -1) {
         read(fil,&option,NUMOPTIONS);
@@ -1390,8 +1174,8 @@ void main(int argc,char *argv[]) {
     pskyoff[0] = 0; pskyoff[1] = 0; pskybits = 1;
 
     SND_Startup();
-    tprintf(2,4," loadpics()");
-    tprintf(2,5," tiles000.art");
+    buildputs(" loadpics()\n");
+    buildputs(" tiles000.art\n");
     loadpics("tiles000.art");
 
 
@@ -1406,11 +1190,11 @@ void main(int argc,char *argv[]) {
     initlava();
     initwater();
 
-    tprintf(2,6," setupboard()");
+    buildputs(" setupboard()\n");
 
     pyrn=0;
-    tprintf(2,7," initplayersprite(%d)",pyrn);
-    tprintf(2,8," resettiming()");
+    buildprintf(" initplayersprite(%d)\n",pyrn);
+    buildputs(" resettiming()\n");
     totalclock=0;
 
     //JSA_DEMO start menu song here use
@@ -1809,73 +1593,4 @@ int adjusthp(int hp) {
 
 }
 
-
-void inittimer(void)
-{
-    outp(0x43,54); outp(0x40,9942&255); outp(0x40,9942>>8);  //120 times/sec
-    oldtimerhandler = _dos_getvect(0x8);
-    _disable(); _dos_setvect(0x8, timerhandler); _enable();
-}
-
-void uninittimer(void)
-{
-    outp(0x43,54); outp(0x40,255); outp(0x40,255);           //18.2 times/sec
-    _disable(); _dos_setvect(0x8, oldtimerhandler); _enable();
-}
-
-void __interrupt __far timerhandler()
-{
-    totalclock++;
-    outp(0x20,0x20);
-}
-
-void initkeys(void)
-{
-    int i;
-
-    keyfifoplc = 0; keyfifoend = 0;
-    for(i=0;i<256;i++) keystatus[i] = 0;
-    oldkeyhandler = _dos_getvect(0x9);
-    _disable(); _dos_setvect(0x9, keyhandler); _enable();
-}
-
-void uninitkeys(void)
-{
-    short *ptr;
-
-    _dos_setvect(0x9, oldkeyhandler);
-        //Turn off shifts to prevent stucks with quitting
-    ptr = (short *)0x417; *ptr &= ~0x030f;
-}
-
-void __interrupt __far keyhandler(void)
-{
-    koutp(0x20,0x20);
-    oldreadch = readch; readch = kinp(0x60);
-    keytemp = kinp(0x61); koutp(0x61,keytemp|128); koutp(0x61,keytemp&127);
-    if ((readch|1) == 0xe1) { extended = 128; return; }
-    if (oldreadch != readch)
-    {
-        if ((readch&128) == 0)
-        {
-            keytemp = readch+extended;
-            if (keystatus[keytemp] == 0)
-            {
-                keystatus[keytemp] = 1;
-                keyfifo[keyfifoend] = keytemp;
-                keyfifo[(keyfifoend+1)&(KEYFIFOSIZ-1)] = 1;
-                keyfifoend = ((keyfifoend+2)&(KEYFIFOSIZ-1));
-            }
-        }
-        else
-        {
-            keytemp = (readch&127)+extended;
-            keystatus[keytemp] = 0;
-            keyfifo[keyfifoend] = keytemp;
-            keyfifo[(keyfifoend+1)&(KEYFIFOSIZ-1)] = 0;
-            keyfifoend = ((keyfifoend+2)&(KEYFIFOSIZ-1));
-        }
-    }
-    extended = 0;
-}
 

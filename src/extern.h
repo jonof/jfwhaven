@@ -6,8 +6,6 @@
 #define YDIM    200
 
 #define KEYFIFOSIZ 64
-extern void (__interrupt __far *oldkeyhandler)();
-extern void __interrupt __far keyhandler(void);
 
 #ifdef WHAVEN
 volatile char keystatus[256], keyfifo[KEYFIFOSIZ], keyfifoplc, keyfifoend;

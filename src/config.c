@@ -59,7 +59,7 @@ int loadsetup(const char *fn)
 	int i;
 
 	if ((fp = Bfopen(fn, "rt")) == NULL) return -1;
-
+/*
 	if (readconfig(fp, "forcesetup", val, VL) > 0) { forcesetup = (Batoi(val) != 0); }
 	if (readconfig(fp, "fullscreen", val, VL) > 0) { fullscreen = (Batoi(val) != 0); }
 	if (readconfig(fp, "xdim", val, VL) > 0) xdimgame = Batoi(val);
@@ -102,7 +102,7 @@ int loadsetup(const char *fn)
 	if (readconfig(fp, "keyconcealgun", val, VL) > 0) keys[27] = Bstrtol(val, NULL, 16);
 	if (readconfig(fp, "keymouselook", val, VL) > 0) keys[28] = Bstrtol(val, NULL, 16);
 	if (readconfig(fp, "keyconsole", val, VL) > 0) { keys[29] = Bstrtol(val, NULL, 16); OSD_CaptureKey(keys[29]); }
-
+*/
 	Bfclose(fp);
 
 	return 0;
@@ -114,7 +114,7 @@ int writesetup(const char *fn)
 
 	fp = Bfopen(fn,"wt");
 	if (!fp) return -1;
-
+/*
 	Bfprintf(fp,
 	"; Always show configuration options on startup\n"
 	";   0 - No\n"
@@ -214,7 +214,7 @@ int writesetup(const char *fn)
 	keys[18], keys[19], keys[20], keys[21], keys[22], keys[23],
 	keys[24], keys[25], keys[26], keys[27], keys[28], keys[29]
 		);
-
+*/
 	Bfclose(fp);
 
 	return 0;

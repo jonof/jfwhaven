@@ -248,67 +248,6 @@ int selectedgun;
 FILE *dbgfp;
 #endif
 
-#if 0
-void (interrupt far * oldGPhandler) ();
-void (interrupt far * oldPGhandler) ();
-
-#pragma aux gpsetmode=\
-    "int 10h",     \
-    parm [eax]     \
-
-void gpsetmode(short);
-
-void interrupt far
-newGPhandler(union INTPACK r)
-{
-     gpsetmode(oldvmode);
-     _chain_intr(oldGPhandler);
-}
-
-void interrupt far
-newPGhandler(union INTPACK r)
-{
-     gpsetmode(oldvmode);
-     _chain_intr(oldPGhandler);
-}
-
-void far *
-dpmi_getexception(int no)
-{
-     void far *fp;
-     union REGS regs;
-
-     regs.x.eax = 0x202;
-     regs.x.ebx = no;
-     int386(0x31, &regs, &regs);
-     fp = MK_FP(regs.w.cx, regs.x.edx);
-     return (fp);
-}
-
-void
-dpmi_setexception(int no, void far * func)
-{
-     union REGS regs;
-
-     regs.x.eax = 0x203;
-     regs.x.ebx = no;
-     regs.x.ecx = FP_SEG(func);
-     regs.x.edx = FP_OFF(func);
-     int386(0x31, &regs, &regs);
-}
-
-void
-installGPhandler(void)
-{
-// fprintf(stdaux, "intstall gphandlet\r\n");
-
-     oldGPhandler = (void interrupt far *) dpmi_getexception(0x0D);
-     oldPGhandler = (void interrupt far *) dpmi_getexception(0x0E);
-     dpmi_setexception(0x0D, (void far *) newGPhandler);
-     dpmi_setexception(0x0E, (void far *) newPGhandler);
-}
-#endif
-
 #ifdef DEBUGOUTPUT
 void
 debugout(char *fmt,...)

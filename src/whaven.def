@@ -1,11 +1,5 @@
 //#line "whaven.c" 253
 extern void faketimerhandler(void );
-//#line "whaven.c" 258
-extern int getvmode(void );
-//#line "whaven.c" 272
-extern void cls80x25(int top,int mid,int bot);
-//#line "whaven.c" 296
-extern void tprintf(int x,int y,char *fmt,... );
 //#line "whaven.c" 326
 extern void rp_delay(int goal);
 //#line "whaven.c" 347
@@ -42,15 +36,3 @@ extern void drawoverheadmap(struct player *plr);
 extern void readpalettetable(void );
 //#line "whaven.c" 1819
 extern int adjusthp(int hp);
-//#line "whaven.c" 1835
-extern void inittimer(void );
-//#line "whaven.c" 1842
-extern void uninittimer(void );
-//#line "whaven.c" 1848
-extern void __interrupt __far timerhandler(void);
-//#line "whaven.c" 1854
-extern void initkeys(void );
-//#line "whaven.c" 1864
-extern void uninitkeys(void );
-//#line "whaven.c" 1873
-extern void __interrupt __far keyhandler(void );

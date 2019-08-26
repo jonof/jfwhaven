@@ -4,18 +4,6 @@
  *                                                     12/15/94 Les Bird   *
  ***************************************************************************/
 
-#include <fcntl.h>
-#include <io.h>
-#include <sys\types.h>
-#include <sys\stat.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <dos.h>
-#include <setjmp.h>
-#include <stdarg.h>
-#include <process.h>
-
 #include "build.h"
 #include "names.h"
 #include "sndmod.h"
@@ -25,20 +13,6 @@
 #include "whdefs.h"
 #include "extern.h"
 #include "keydefs.h"
-
-#ifndef _PROTOTYPING_
-     #include "whaven.def"
-     #include "whinp.def"
-     #include "whtag.def"
-     #include "whobj.def"
-     #include "whplr.def"
-     #include "whfx.def"
-     #include "whsndmod.def"
-     #include "whani.def"
-     #include "whnet.def"
-     #include "cdrom.def"
-     #include "whctm.def"
-#endif
 
 
 extern int  swingcnt;

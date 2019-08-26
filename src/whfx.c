@@ -11,17 +11,6 @@
 
 #include "icorp.h"
 
-#pragma aux copybuf =\
-   "rep movsd",\
-   parm [esi][edi][ecx]\
-
-#pragma aux klabs =\
-   "test eax, eax",\
-   "jns skipnegate",\
-   "neg eax",\
-   "skipnegate:",\
-   parm [eax]\
-
 #define LAVASIZ 128
 #define LAVALOGSIZ 7
 #define LAVAMAXDROPS 32

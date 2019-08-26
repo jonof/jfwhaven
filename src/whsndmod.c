@@ -1,17 +1,9 @@
 
 #define  SND_CALLER
 #define  GAME
-#include <malloc.h>
-#include "sos.h"
 #include "icorp.h"
 
 int   readfile(int,char *,int);
-#pragma aux readfile =\
-	"mov  ah,0x3f",\
-	"int 0x21",\
-	parm [ebx] [edx] [ecx]\
-	modify [eax];
-
 
 int flag=0;
 

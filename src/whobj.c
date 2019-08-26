@@ -5,12 +5,6 @@
 
 #include "icorp.h"
 
-#pragma aux mulscale =\
-	"imul ebx",\
-	"shrd eax, edx, cl",\
-	parm [eax][ebx][ecx]\
-	modify [edx]\
-
 //extern int poisoned;
 //extern int poisontime;
 
@@ -62,10 +56,6 @@ extern  int strongtime,
 			manatime,
 			invisibletime,
 			nightglowtime;
-
-#pragma aux drawpixel =\
-	"mov byte ptr [edi], al",\
-	parm [edi][eax]\
 
 
 void monitor(void) {
