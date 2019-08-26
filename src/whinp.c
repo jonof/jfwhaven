@@ -698,7 +698,7 @@ void processinput(struct player *plr) {
 
 
 	sprite[plr->spritenum].cstat^=1;
-	getzrange(plr->x,plr->y,plr->z,plr->sector,&hiz,&hihit,&loz,&lohit,128L,0);
+	getzrange(plr->x,plr->y,plr->z,plr->sector,&hiz,&hihit,&loz,&lohit,128L,CLIPMASK0);
 	sprite[plr->spritenum].cstat^=1;
 
 		if ((lohit&0xc000) == 49152) {
@@ -1015,7 +1015,7 @@ void processinput(struct player *plr) {
 
 		oldposx=plr->x; oldposy=plr->y;
 
-		clipmove(&plr->x,&plr->y,&plr->z,&plr->sector,xvect,yvect,128L,4<<8,4<<8,0);
+		clipmove(&plr->x,&plr->y,&plr->z,&plr->sector,xvect,yvect,128L,4<<8,4<<8,CLIPMOVE0);
 
 
 //JSA BLORB

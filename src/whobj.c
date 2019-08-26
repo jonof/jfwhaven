@@ -3163,6 +3163,13 @@ int movesprite(short spritenum, int dx, int dy, int dz, int ceildist, int flordi
 	int daz, zoffs, tempint;
 	short retval, dasectnum, tempshort;
 	spritetype *spr;
+	int clipmask;
+
+	switch (cliptype) {
+		case 0: clipmask = CLIPMASK0; break;
+		case 1: clipmask = CLIPMASK1; break;
+		case 2: clipmask = CLIPMASK2; break;
+	}
 
 	spr = &sprite[spritenum];
 
@@ -3174,7 +3181,7 @@ int movesprite(short spritenum, int dx, int dy, int dz, int ceildist, int flordi
 	dasectnum = spr->sectnum;  //Can't modify sprite sectors directly becuase of linked lists
 	daz = spr->z+zoffs;  //Must do this if not using the new centered centering (of course)
 	retval = clipmove(&spr->x,&spr->y,&daz,&dasectnum,dx,dy,
-							((int)spr->clipdist)<<2,ceildist,flordist,cliptype);
+							((int)spr->clipdist)<<2,ceildist,flordist,clipmask);
 
 	if ((dasectnum != spr->sectnum) && (dasectnum >= 0))
 		changespritesect(spritenum,dasectnum);
@@ -3184,7 +3191,7 @@ int movesprite(short spritenum, int dx, int dy, int dz, int ceildist, int flordi
 	tempshort = spr->cstat; spr->cstat &= ~1;
 	getzrange(spr->x,spr->y,spr->z-1,spr->sectnum,
 				 &globhiz,&globhihit,&globloz,&globlohit,
-				 ((int)spr->clipdist)<<2,cliptype);
+				 ((int)spr->clipdist)<<2,clipmask);
 	spr->cstat = tempshort;
 
 	daz = spr->z+zoffs + dz;

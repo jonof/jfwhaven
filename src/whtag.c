@@ -1017,11 +1017,7 @@ void animatetags(struct player *plr) {
 					if (plr->sector == swingdoor[i].sector) {
 						 good=1;
 						 for (k=1 ; k <= 3 ; k++) {
-							  dax=wall[swingdoor[i].wall[k]].x-plr->x+64;
-							  day=wall[swingdoor[i].wall[k]].y-plr->y+64;
-							  dax2=wall[wall[swingdoor[i].wall[k]].point2].x-plr->x+64;
-							  day2=wall[wall[swingdoor[i].wall[k]].point2].y-plr->y+64;
-							  if (clipinsidebox(dax,day,dax2,day2,128L) == 1) {
+							  if (clipinsidebox(plr->x,plr->y,swingdoor[i].wall[k],128L) != 0) {
 								   good=0;
 								   break;
 							  }
