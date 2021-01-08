@@ -36,7 +36,7 @@
 		AB3AE6C21A4D423600CE4329 /* b5compat.c in Sources */ = {isa = PBXBuildFile; fileRef = AB3AE6C11A4D423600CE4329 /* b5compat.c */; };
 		AB98B2DF1A6B87E6009E8749 /* config.c in Sources */ = {isa = PBXBuildFile; fileRef = AB98B2DE1A6B87E6009E8749 /* config.c */; };
 		AB9E4ABD23125D810008A90E /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BDC1A49C30C007D0D43 /* SDL2.framework */; };
-		AB9E4ABE23125D810008A90E /* SDL2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BDC1A49C30C007D0D43 /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		AB9E4ABE23125D810008A90E /* SDL2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BDC1A49C30C007D0D43 /* SDL2.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		AB9E4AC52312976F0008A90E /* Game Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB9E4AC42312976F0008A90E /* Game Images.xcassets */; };
 		AB9E4AE42312ABAB0008A90E /* whmenu.c in Sources */ = {isa = PBXBuildFile; fileRef = AB9E4ADB2312ABAB0008A90E /* whmenu.c */; };
 		AB9E4AE52312ABAB0008A90E /* whsndmod.c in Sources */ = {isa = PBXBuildFile; fileRef = AB9E4ADC2312ABAB0008A90E /* whsndmod.c */; };
@@ -54,7 +54,7 @@
 		ABD03E161A5181020012B9D1 /* StartupWinController.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD03E151A5181020012B9D1 /* StartupWinController.m */; };
 		ABD03E771A52745C0012B9D1 /* startwin.editor.nib in Resources */ = {isa = PBXBuildFile; fileRef = ABD03E751A52745C0012B9D1 /* startwin.editor.nib */; };
 		ABD03E781A52747F0012B9D1 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BDC1A49C30C007D0D43 /* SDL2.framework */; };
-		ABD03E791A52747F0012B9D1 /* SDL2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BDC1A49C30C007D0D43 /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		ABD03E791A52747F0012B9D1 /* SDL2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BDC1A49C30C007D0D43 /* SDL2.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		ABD03E7B1A5274870012B9D1 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BDF1A49C347007D0D43 /* AppKit.framework */; };
 		ABD03E7C1A5274910012B9D1 /* libeditor.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BCB1A49BFB1007D0D43 /* libeditor.a */; };
 		ABD03E7D1A5274910012B9D1 /* libeditorsupp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BCD1A49BFB1007D0D43 /* libeditorsupp.a */; };
@@ -199,7 +199,7 @@
 		AB3AE6C11A4D423600CE4329 /* b5compat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = b5compat.c; sourceTree = "<group>"; };
 		AB5BD5FD23123FA500BC4BEF /* version-auto.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "version-auto.c"; sourceTree = "<group>"; };
 		AB98B2DE1A6B87E6009E8749 /* config.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = config.c; sourceTree = "<group>"; };
-		AB9E4AC42312976F0008A90E /* Game Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = "Game Images.xcassets"; path = "JFWitchaven/Game Images.xcassets"; sourceTree = "<group>"; };
+		AB9E4AC42312976F0008A90E /* Game Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Game Images.xcassets"; sourceTree = "<group>"; };
 		AB9E4AC82312995E0008A90E /* whaven.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = whaven.c; sourceTree = "<group>"; };
 		AB9E4ACF231299700008A90E /* icorp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = icorp.h; sourceTree = "<group>"; };
 		AB9E4AD123129A0D0008A90E /* whaven.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = whaven.h; sourceTree = "<group>"; };
@@ -652,7 +652,9 @@
 		ABC75B971A49BC18007D0D43 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_CHAR_IS_UNSIGNED_CHAR = NO;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
@@ -666,7 +668,8 @@
 					../src,
 					../jfbuild/include,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				ONLY_ACTIVE_ARCH = YES;
 				WARNING_CFLAGS = (
 					"-W",
 					"-Wall",
@@ -677,7 +680,9 @@
 		ABC75B981A49BC18007D0D43 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_CHAR_IS_UNSIGNED_CHAR = NO;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
@@ -690,7 +695,7 @@
 					../src,
 					../jfbuild/include,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				WARNING_CFLAGS = (
 					"-W",
 					"-Wall",
@@ -742,6 +747,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/Build Editor-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks @executable_path/../Frameworks";
 				OTHER_LDFLAGS = "-lstdc++";
+				PRODUCT_BUNDLE_IDENTIFIER = au.id.jonof.jfwhaven.build;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -754,6 +760,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/Build Editor-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks @executable_path/../Frameworks";
 				OTHER_LDFLAGS = "-lstdc++";
+				PRODUCT_BUNDLE_IDENTIFIER = au.id.jonof.jfwhaven.build;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
