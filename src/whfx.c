@@ -95,7 +95,7 @@ void initlava(void) {
    lavanumframes = 0;
 }
 
-void movelava(char *dapic) {
+void movelava(unsigned char *dapic) {
 
    char dat, *ptr;
    int x, y, z, zx, dalavadropsiz, dadropsizlookup;
@@ -220,7 +220,7 @@ void initwater(void) {
    waternumframes = 0;
 }
 
-void movewater(char *dapic) {
+void movewater(unsigned char *dapic) {
 
    char dat, *ptr;
    int x, y, z, zx, dawaterdropsiz, dadropsizlookup;
@@ -507,7 +507,7 @@ void revolvefx(void) {
 
 }
 
-extern bobbingsectorcnt, bobbingsectorlist[];
+extern int bobbingsectorcnt, bobbingsectorlist[];
 
 void bobbingsector(void) {
 
@@ -772,13 +772,13 @@ void scary(void) {
 		scarytime-=synctics<<1;
 		scarysize+=synctics<<1;
 		if( scarytime > 140 && scarytime < 180)
-			rotatesprite(320<<15,200<<15,scarysize<<9,0,SCARY,0,0,1+2);
+			rotatesprite(320<<15,200<<15,scarysize<<9,0,SCARY,0,0,1+2,0,0,xdim-1,ydim-1);
 		if( scarytime > 120 && scarytime < 139)
-			rotatesprite(320<<15,200<<15,scarysize<<9,0,SCARY+1,0,0,1+2);
+			rotatesprite(320<<15,200<<15,scarysize<<9,0,SCARY+1,0,0,1+2,0,0,xdim-1,ydim-1);
 		if( scarytime > 100 && scarytime < 119)
-			rotatesprite(320<<15,200<<15,scarysize<<9,0,SCARY+2,0,0,1+2);
+			rotatesprite(320<<15,200<<15,scarysize<<9,0,SCARY+2,0,0,1+2,0,0,xdim-1,ydim-1);
 		if( scarytime > 0 && scarytime < 99)
-			rotatesprite(320<<15,200<<15,scarysize<<9,0,SCARY+3,0,0,1+2);
+			rotatesprite(320<<15,200<<15,scarysize<<9,0,SCARY+3,0,0,1+2,0,0,xdim-1,ydim-1);
 	}
 
 }
@@ -799,12 +799,12 @@ void dofx(void) {
 	if ((gotpic[ANILAVA>>3]&(1<<(ANILAVA&7))) > 0) {
 		gotpic[ANILAVA>>3] &= ~(1<<(ANILAVA&7));
 		if (waloff[ANILAVA] != -1)
-		movelava((char *)waloff[ANILAVA]);
+		movelava((unsigned char *)waloff[ANILAVA]);
 	}
 	if ((gotpic[HEALTHWATER>>3]&(1<<(HEALTHWATER&7))) > 0) {
 		gotpic[HEALTHWATER>>3] &= ~(1<<(HEALTHWATER&7));
 		if (waloff[HEALTHWATER] != -1)
-			movewater((char *)waloff[HEALTHWATER]);
+			movewater((unsigned char *)waloff[HEALTHWATER]);
 	}
 	thesplash();
 	thunder();
@@ -939,7 +939,7 @@ void thunder(void) {
 			thunderflash=0;
 			//brightness=0;
 			brightness=gbrightness;
-			setbrightness(brightness);
+			setbrightness(brightness,palette,0);
 			//JSA_DEMO3
 			SND_Sound(S_THUNDER1+(rand()%4));
 			//visibility=2048;
@@ -970,7 +970,7 @@ void thunder(void) {
 			}
 			if(brightness > 8)
 				brightness=0;
-			setbrightness(brightness);
+			setbrightness(brightness,palette,0);
 		}
 	}
 }

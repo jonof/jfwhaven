@@ -5,6 +5,9 @@
  ***************************************************************************/
 
 #include "build.h"
+#include "pragmas.h"
+#include "cache1d.h"
+#include "baselayer.h"
 #include "names.h"
 #include "sndmod.h"
 #include "les.h"
@@ -131,21 +134,181 @@ void permanentwritespritetile(int UNUSED(thex), int UNUSED(they), short tilenum,
         int cx1, int cy1, int cx2, int cy2, unsigned char dapalnum);
 void overwritesprite(int thex, int they, short tilenum, signed char shade,
         char stat, unsigned char dapalnum);
+void precache();
+
+// whani.c
+void animateobjs(struct player *plr);
 
 // whaven.c
+void shutdown(void );
+void crashgame(char *fmt,...);
+void doanimations(int numtics);
+int getanimationgoal(int *animptr);
 int setanimation(int *animptr,int thegoal,int thevel);
 void setdelayfunc(void (*func)(),int item,int delay);
-int getanimationgoal(int *animptr);
+void dodelayitems(int tics);
+void setup3dscreen(void);
+void setupboard(char *fname);
+void drawscreen(struct player *plr);
+void playloop(void);
+void drawoverheadmap(struct player *plr);
+void readpalettetable(void);
+int adjusthp(int hp);
+
+// whfx.c
+void initlava(void);
+void initwater(void);
+void warp(int *x, int *y, int *z, short *daang, short *dasector);
+void warpsprite(short spritenum);
+void sectorsounds(void);
+void dofx(void);
+void thunder(void);
+void thesplash(void);
+void makeasplash(int picnum, struct player *plr);
+void makemonstersplash(int picnum, int i);
+void bats(short k);
+void cracks(void);
+void lavadryland(void);
+void warpfxsprite(int s);
+
+// whinp.c
+void initjstick(void);
+void keytimerstuff(void);
+void processinput(struct player *plr);
+void autothehoriz(struct player *plr);
+void nettypeletter(void);
+void typeletter(void);
+void checkcheat(void);
+void dosoundthing(void);
 
 // whmenu.c
 void fancyfont(int x,int y,short tilenum,char *string,char pal);
+void fancyfontscreen(int x, int y, short tilenum, char *string);
+int menuscreen(struct player *plr);
 void help(void);
 void loadsave(struct player *plr);
+void quit(void);
+void thedifficulty(void);
+void startnewgame(struct player *plr);
+void loadgame(struct player *plr);
+void savegame(struct player *plr);
+void savegametext(int select);
+int savedgamename(int gn);
+int savedgamedat(int gn);
+void loadplayerstuff(void);
+void screenfx(struct player *plr);
+void initpaletteshifts(void);
+void startgreenflash(int greentime);
+void startblueflash(int bluetime);
+void startredflash(int damage);
+void startwhiteflash(int bonus);
+void updatepaletteshifts(void);
+void TEMPSND(void);
+void cleanup(void);
+
+// whnet.c
+void netcheckargs(int argc, const char * const argv[]);
+void netmarkflag(short i);
+void netsendmove(void);
+void netshootgun(short s, char guntype);
+void netdamageactor(short s, short o);
+void dropflagstart(short teamno);
+void netdropflag(void);
+void netgetmove(void);
+void netpickmonster(void);
+void initmulti(int numplayers);
+void netshutdown(void);
+void whnetmon(void);
+void netrestartplayer(struct player * plr);
 
 // whobj.c
+void monitor(void);
+void processobjs(struct player *plr);
+int potionspace(int vial);
+void updatepotion(int vial);
+void transformactors(struct player *plr);
+void firebreath(int i, int a, int b, int c);
+void throwspank(int i);
+void castspell(int i);
+void skullycastspell(int i);
+int checkmedusadist(int i, int x, int y, int z, int lvl);
+int checkdist(int i,int x,int y,int z);
+void checkspeed(int i,int *dax,int *day,int speed);
+int checksight(int i,short *daang);
+void checkmove(int i,int dax,int day,short *movestat);
+void attack(int i);
+void makeafire( int i, int firetype);
+void explosion( int i, int x, int y, int z, short owner);
+void explosion2( int i, int x, int y, int z, short owner);
+void trailingsmoke(short i);
+void icecubes( int i, int x, int y, int z, short owner);
+int damageactor(int hitobject,int i);
+void nukespell(short j);
+void medusa(short j);
 int movesprite(short spritenum,int dx,int dy,int dz,int ceildist,int flordist,char cliptype);
 void newstatus(short sn,int seq);
 void trowajavlin(int s);
+void throwhalberd(int s);
+void monsterweapon(short i);
+void madenoise (int val, int x, int y, int z);
+void monsternoise(short i);
+void randompotion(short i);
+void spawnabaddy(short i,short monster);
+void spawnapentagram(short sn);
+
+// whplr.c
+void playerdead(struct player *plr);
+void spikeheart(struct player *plr);
+void initplayersprite(void);
+void autoweaponchange(int dagun);
+void weaponchange(void);
+void potiontext(void);
+void plrfireweapon(struct player *plr);
+void activatedaorb(struct player *plr);
+void plruse(struct player *plr);
+void loadnewlevel(int mapon);
+void victory(void);
+void drawweapons(struct player *plr);
+void castaorb( struct player *plr );
+void shootgun ( struct player *plr, short daang, char guntype );
+void singleshot(short bstatus);
+void potionpic(int currentpotion);
+void usapotion(struct player *plr);
+void orbpic(int currentorb);
+void healthpic(int hp);
+void armorpic(int arm);
+void levelpic(void);
+void score(int score);
+void goesupalevel(struct player *plr);
+int checkweapondist(short i,int x,int y,int z,char guntype);
+void updatepics(void);
+void captureflagpic(void);
+void fragspic(void);
+void keyspic(void);
+int lvlspellcheck(struct player *plr);
+void displayspelltext(void);
+void painsound(int xplc,int yplc);
 
 // whsndmod.c
-int SND_PlaySound(unsigned int sound,int x,int y,unsigned int Pan,unsigned int loopcount);
+void SND_DoBuffers(void);
+void SND_UnDoBuffers(void);
+void SND_Startup(void);
+void SND_Shutdown(void);
+void SND_Mixer( unsigned short wSource, unsigned short wVolume );
+void SND_MenuMusic(int choose);
+void SND_StartMusic(unsigned short level);
+void SND_SongFlush(void);
+void SND_FadeMusic(void );
+void SND_Sting(unsigned short sound);
+int SND_PlaySound(unsigned short sound,int x,int y,unsigned short Pan,unsigned short loopcount);
+unsigned short SND_Sound(unsigned short sound );
+void SND_CheckLoops(void);
+void SND_StopLoop(unsigned short which);
+void SND_DIGIFlush(void);
+void dolevelmusic(int level);
+void playsound_loc(int soundnum,int xplc,int yplc);
+
+// whtag.c
+void operatesprite(int s);
+void operatesector(int s);
+void animatetags(struct player *plr);

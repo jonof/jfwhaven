@@ -72,6 +72,7 @@ void animateobjs(struct player *plr) {
 
 	int dx,dy,dz,dh;
 	int nextj;
+    int belongs;
 
 	  // explosion variables:
 	int   x, y, z;
@@ -308,7 +309,7 @@ void animateobjs(struct player *plr) {
 		k=sprite[i].owner;
 		if(checkdist(i,sprite[k].x,sprite[k].y,sprite[k].z) ) {
 
-			if(krand()&100 > 99) {
+			if((krand()&100) > 99) {
 				// goblins are fighting
 				//JSA_DEMO
 				if(rand()%10 > 6)
@@ -1293,7 +1294,7 @@ void animateobjs(struct player *plr) {
 						sprite[i].x,sprite[i].y,sprite[i].z-(tilesizy[sprite[i].picnum]<<7),sprite[i].sectnum) == 1 )
 							if(checkdist(i,plr->x,plr->y,plr->z)) {
 								if(shockme < 0)
-								if( krand()&100 > 95) {
+								if( (krand()&100) > 95) {
 									shockme=120;
 									plr->lvl--;
 									switch(plr->lvl) {
@@ -1495,7 +1496,7 @@ void animateobjs(struct player *plr) {
 			startredflash(50);
 			}
 
-		if((hitobject&0xc0000) == 16384 ) {
+		if((hitobject&0xc000) == 16384 ) {
 			if( sector[sprite[i].sectnum].floorpicnum == WATER ) {
 				makemonstersplash(SPLASHAROO,i);
 			}
@@ -1835,11 +1836,12 @@ void animateobjs(struct player *plr) {
 		case DRAGON:
 			speed=10;
 			if( krand()%16 == 0 ) {
-				if( cansee(plr->x,plr->y,plr->z,plr->sector,sprite[i].x,sprite[i].y,sprite[i].z-(tilesizy[sprite[i].picnum]<<7),sprite[i].sectnum) == 1 && invisibletime < 0)
+				if( cansee(plr->x,plr->y,plr->z,plr->sector,sprite[i].x,sprite[i].y,sprite[i].z-(tilesizy[sprite[i].picnum]<<7),sprite[i].sectnum) == 1 && invisibletime < 0) {
 					if( plr->z < sprite[i].z )
 						newstatus(i,ATTACK2);
 					else
 						newstatus(i,ATTACK);
+				}
 				break;
 			}
 			else {
@@ -1949,7 +1951,7 @@ void animateobjs(struct player *plr) {
 							newstatus(i,ATTACK);
 						break;
 					}
-					else if( krand()&32 == 0) {
+					else if( (krand()&32) == 0) {
 						sprite[i].ang=((krand()&128-256)+sprite[i].ang+1024)&2047;  // NEW
 						newstatus(i,FLEE);    // NEW
 					}
@@ -1967,8 +1969,8 @@ void animateobjs(struct player *plr) {
 					movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,2);
 
 					if (movestat != 0)  {
-						if(movestat&4095 != plr->spritenum) {
-							if( krand()&2 == 0) {
+						if((movestat&4095) != plr->spritenum) {
+							if( (krand()&2) == 0) {
 								daang=(sprite[i].ang+256)&2047;
 								sprite[i].ang=daang;
 							}
@@ -2568,13 +2570,14 @@ void animateobjs(struct player *plr) {
 				if (sprite[i].z > sector[sprite[i].sectnum].floorz-(4<<8)) {
 					sprite[i].z = sector[sprite[i].sectnum].floorz-(4<<8);
 					if( sector[sprite[i].sectnum].floorpicnum == WATER
-						|| sector[sprite[i].sectnum].floorpicnum == SLIME)
+						|| sector[sprite[i].sectnum].floorpicnum == SLIME) {
 						if( sprite[i].picnum == FISH )
 							sprite[i].z=sector[sprite[i].sectnum].floorz;
 						else {
 							if( rand()%100 > 60)
 								makemonstersplash(SPLASHAROO,i);
 						}
+					}
 					deletesprite((short)i);
 					goto bulletisdeletedskip;
 				}
@@ -2615,7 +2618,7 @@ void animateobjs(struct player *plr) {
 		}
 
 
-		if( hitobject && sprite[i].picnum == MONSTERBALL )
+		if( hitobject && sprite[i].picnum == MONSTERBALL ) {
 			if( sprite[i].owner == 4096 ) {
 				for(j=0;j<8;j++)
 					explosion2( i, sprite[i].x, sprite[i].y, sprite[i].z, i);
@@ -2624,6 +2627,7 @@ void animateobjs(struct player *plr) {
 				for(j=0;j<4;j++)
 					explosion( i, sprite[i].x, sprite[i].y, sprite[i].z, i);
 			}
+		}
 
 		if ((hitobject&0xc000) == 16384 ) {  //Hits a ceiling / floor
 
@@ -2762,7 +2766,7 @@ bulletisdeletedskip:
 
 		}
 
-		if ((hitobject-49152) >= 0 || hitobject&0xc000 == 49152) { //Bullet hit a sprite
+		if ((hitobject-49152) >= 0 || (hitobject&0xc000) == 49152) { //Bullet hit a sprite
 
 			j=(hitobject&4095);     //j is the spritenum that the bullet (spritenum i) hit
 
@@ -3100,13 +3104,14 @@ javlinskip:
 		if (sprite[i].z+(8<<8) >= sector[sprite[i].sectnum].floorz && sprite[i].picnum == ICECUBE || movestat != 0) {
 			sprite[i].z=sector[sprite[i].sectnum].floorz , changespritestat(i,0);
 			if( sector[sprite[i].sectnum].floorpicnum == WATER
-				|| sector[sprite[i].sectnum].floorpicnum == SLIME)
+				|| sector[sprite[i].sectnum].floorpicnum == SLIME) {
 				if( sprite[i].picnum == FISH )
 					sprite[i].z=sector[sprite[i].sectnum].floorz;
 				else {
 					if( rand()%100 > 60)
 						makemonstersplash(SPLASHAROO,i);
 				}
+			}
 		}
 		outathere:
 		i = nexti;

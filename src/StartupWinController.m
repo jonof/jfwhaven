@@ -2,6 +2,7 @@
 
 #include "compat.h"
 #include "baselayer.h"
+#include "startwin.h"
 #include "build.h"
 // #include "tekwar.h"
 
@@ -292,6 +293,7 @@ int startwin_settitle(const char *s)
 
 int startwin_idle(void *v)
 {
+    (void)v;
     return 0;
 }
 

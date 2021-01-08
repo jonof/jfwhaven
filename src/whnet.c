@@ -8,6 +8,7 @@
 
 #include "icorp.h"
 #include "time.h"
+#include "mmulti.h"
 
 #define   MAXDATASIZE    255
 #define   MAXTEAMS       4
@@ -78,7 +79,7 @@ struct mdmpck {
 
 #pragma pack()
 
-_NETNOW_NODE_ADDR myadr,
+int myadr,
      othadr[MAXPLAYERS];
 
 
@@ -87,7 +88,7 @@ short enemytype,
      mynode,
      playersingame;
 
-BYTE killedby = 0,
+unsigned char killedby = 0,
      myrandomtag = 255;
 
 short comp;
@@ -135,9 +136,9 @@ int  xreps[] = {
 //     32,       // goblin
 //     32,       // minotaur
 //     32,       // skull witch
-     GRONHALXR,
-     GRONSWXR,
-     GRONMUXR
+     32,//GRONHALXR,
+     32,//GRONSWXR,
+     32,//GRONMUXR
 };
 
 int  yreps[] = {
@@ -147,9 +148,9 @@ int  yreps[] = {
 //     36,       // goblin
 //     64,       // minotaur
 //     64,       // skull witch
-     GRONHALYR,
-     GRONSWXR,
-     GRONMUXR
+     64,//GRONHALYR,
+     64,//GRONSWXR,
+     64,//GRONMUXR
 };
 
 int  enemheights[] = {
@@ -274,7 +275,7 @@ extern
 unsigned vixen;
 
 void
-netcheckargs(int argc, char *argv[])
+netcheckargs(int argc, const char * const argv[])
 {
      int  i,
           j;
@@ -282,10 +283,9 @@ netcheckargs(int argc, char *argv[])
 // fprintf(stdaux, "netcheckargs\r\n");
 
      i = 1;
-     do {
-          strupr(argv[i]);
+     while (i < argc) {
           for (j = 0; j < MAXARGS; j++) {
-               if (stricmp(argv[i], argparm[j]) == 0) {
+               if (Bstrcasecmp(argv[i], argparm[j]) == 0) {
                     switch (j) {
                     case 0:        // map number
                          mapon = atoi(argv[i + 1]);
@@ -313,13 +313,13 @@ netcheckargs(int argc, char *argv[])
                     case 8:
                          break;
                     case 9:
-                         _dos_getdrive((unsigned *)&vixen);
+                         //_dos_getdrive((unsigned *)&vixen);
                          break;
                     }
                }
           }
           i++;
-     } while (i < argc);
+     }
 }
 
 int
@@ -336,10 +336,6 @@ netattacking(short p)
 void
 netsendpck(struct netpck * p, short dnode)
 {
-     BOOL rc;
-     short i;
-     char *dptr;
-
 // fprintf(stdaux, "netsendpck\r\n");
 
      switch (netgame) {
@@ -354,9 +350,8 @@ netsendpck(struct netpck * p, short dnode)
           mdmsndpck.src = mynode;
           mdmsndpck.dest = dnode;
           mdmsndpck.len = sizeof(struct netpck);
-          dptr = (char *) &mdmsndpck;
           memmove(&mdmsndpck.data, p, sizeof(struct netpck));
-          sendpacket(0, dptr, sizeof(struct mdmpck));
+          sendpacket(0, (void*)&mdmsndpck, sizeof(struct mdmpck));
           break;
      }
      numspcks[plrindex[myrandomtag]]++;
@@ -464,7 +459,7 @@ moveflag(int x, int y, int z, int teamno)
 void
 sendmyinfo(short dnode, short forcesend)
 {
-     short p;
+     short p = 0;//FIXME
      struct player *plr;
 
      if (!forcesend) {
@@ -697,7 +692,7 @@ netjoingame(void)
           playersingame = 1;
           break;
      }
-     sendmyinfo(_NETNOW_BROADCAST, 1);
+     sendmyinfo(-1, 1);
      SND_Sound(S_DROPFLAG);
 }
 
@@ -713,7 +708,7 @@ netsendmove(void)
           return;
      }
      if (netgame == 1) {
-          sendmyinfo(_NETNOW_BROADCAST, 0);
+          sendmyinfo(-1, 0);
 //          for (p=0 ; p < playersingame ; p++) {
 //               if (mynode != p || playersingame == 1) {
 //                    sendmyinfo(p,0);
@@ -814,11 +809,11 @@ nethitsprite(short p, char guntype, char taghit)
                   sintable[(daang + 512) & 2047],
                   sintable[daang],
                   (100 - plr->horiz) * 2000,
-                  &hitsect, &hitwall, &hitsprite, &hitx, &hity, &hitz);
+                  &hitsect, &hitwall, &hitsprite, &hitx, &hity, &hitz, CLIPMASK1);
           if (hitwall >= 0 && hitsprite < 0) {
                neartag(hitx, hity, hitz, hitsect, daang,
                        &neartagsector, &neartagwall, &neartagsprite,
-                       &neartaghitdist, 1024);
+                       &neartaghitdist, 1024, 0);
                if (neartagsector < 0) {
                     if (sector[neartagsector].lotag == 0) {
                          j = insertsprite(hitsect, 0);
@@ -1084,11 +1079,10 @@ wongamescreen(short p)
      int  cnt = 0,
           i,
           n;
-     short oth;
+     int oth;
      char tmpbuf[32];
-     char *dptr;
-     PSTR datapck;
-     BOOL rc;
+     char * datapck;
+     int rc;
 
 // fprintf(stdaux, "wongamescreen\r\n");
 
@@ -1099,20 +1093,19 @@ wongamescreen(short p)
                cnt++;
                netsendmove();
           }
-          rc = _FALSE;
+          rc = 0;
           switch (netgame) {
           case 1:
                break;
           case 2:
           case 3:
-               dptr = (char *) &mdmrcvpck;
-               if ((i = getpacket(&oth, dptr)) == 0) {
+               if ((i = getpacket(&oth, (void*)&mdmrcvpck)) == 0) {
                     break;
                }
-               rc = _TRUE;
+               rc = 1;
                break;
           }
-          if (rc == _TRUE) {
+          if (rc == 1) {
                memset(&othnetpck, 0, sizeof(struct netpck));
                switch (netgame) {
                case 1:
@@ -1174,58 +1167,33 @@ wongamescreen(short p)
      gameactivated = 0;
 }
 
-char *
-IPXadrstr(_IPX_INTERNET_ADDR * p)
-{
-     int  i,
-          j,
-          n;
-     unsigned char far *ptr;
-     static unsigned char ret[25];
-
-     ptr = (char *) p;
-     memset(ret, 0, sizeof(ret));
-     for (i = j = n = 0; n < 4; i += 2, n++) {
-          sprintf(&ret[i], "%02X", ptr[j++]);
-     }
-     strcat(ret, ":");
-     i++;
-     for (n = 0; n < 6; i += 2, n++) {
-          sprintf(&ret[i], "%02X", ptr[j++]);
-     }
-     return (ret);
-}
-
 void
 netgetmove(void)
 {
-     BOOL rc;
-     PSTR datapck;
+     int rc;
      short etype,
           i,
-          p,
           sect,
           s,
           teamno;
+     int p;
      struct player *plr;
-     char *dptr;
 
 // fprintf(stdaux, "netgetmove\r\n");
      do {
-          rc = _FALSE;
+          rc = 0;
           switch (netgame) {
           case 1:
                break;
           case 2:
           case 3:
-               dptr = (char *) &mdmrcvpck;
-               if ((i = getpacket(&p, dptr)) == 0) {
+               if ((i = getpacket(&p, (void*)&mdmrcvpck)) == 0) {
                     break;
                }
-               rc = _TRUE;
+               rc = 1;
                break;
           }
-          if (rc == _TRUE) {
+          if (rc == 1) {
                memset(&othnetpck, 0, sizeof(struct netpck));
                switch (netgame) {
                case 1:
@@ -1279,12 +1247,11 @@ netgetmove(void)
                     sprintf(netmsg, "ADDING TAG %d", othnetpck.tagno);
 #endif
 // ccw               sendmyinfo(_NETNOW_BROADCAST,1);
-                    sendmyinfo(_NETNOW_BROADCAST, 0);
+                    sendmyinfo(-1, 0);
                }
                if (p < 0 || p >= MAXPLAYERS) {
 //					fprintf(stdaux, "error = player index invalid p = %d\r\n", p);
-                    sprintf(netmsg, "netgetmove: player index invalid (p=%d)", p);
-                    crash(netmsg);
+                    crashgame("netgetmove: player index invalid (p=%d)", p);
                }
                if (xmit != 1) {
                     xmit = 1;
@@ -1355,9 +1322,8 @@ netgetmove(void)
                     plr->ang = netpck[p].ang;
                     plr->horiz = netpck[p].horiz;
                     if (plr->spritenum <= 0 || plr->spritenum >= MAXSPRITES) {
-                         sprintf(netmsg, "netgetmove: player sprite number (%d) invalid",
+                         crashgame("netgetmove: player sprite number (%d) invalid",
                                  plr->spritenum);
-                         crash(netmsg);
                     }
                     sprite[plr->spritenum].ang = plr->ang;
                     sprite[plr->spritenum].cstat = 1 + 256;
@@ -1368,16 +1334,14 @@ netgetmove(void)
                     updatesector(plr->x, plr->y, &plr->sector);
 //                    plr->sector = sprite[plr->spritenum].sectnum;
                     if (plr->sector < 0 || plr->sector >= numsectors) {
-                         sprintf(netmsg, "netgetmove (p=%d): sector number"
+                         crashgame("netgetmove (p=%d): sector number"
                                  "invalid (t=%d s=%d x=%d, y=%d, z=%d)",p,
                                  teamno,plr->sector,
                                  plr->x, plr->y, plr->z);
-                         crash(netmsg);
                     }
                     if (gametype >= 1) {
                          if (teamno < 0 || teamno >= MAXTEAMS) {
-                              sprintf(netmsg, "netgetmove: invalid team number %d", teamno);
-                              crash(netmsg);
+                              crashgame("netgetmove: invalid team number %d", teamno);
                          }
                          if (teaminplay[teamno] == 0) {
                               teaminplay[teamno] = 1;
@@ -1395,14 +1359,12 @@ netgetmove(void)
                     }
                     if (gametype >= 1 && netpck[p].hasflag) {
                          if (netpck[p].hasflag < 1 || netpck[p].hasflag > MAXTEAMS) {
-                              sprintf(netmsg, "netgetmove: flag referencing invalid team %d",
+                              crashgame("netgetmove: flag referencing invalid team %d",
                                       netpck[p].hasflag);
-                              crash(netmsg);
                          }
                          if (ihaveflag < 0 || ihaveflag > MAXTEAMS) {
-                              sprintf(netmsg, "netgetmove: ihaveflag (%d) invalid value",
+                              crashgame("netgetmove: ihaveflag (%d) invalid value",
                                       ihaveflag);
-                              crash(netmsg);
                          }
                          if (netpck[p].hasflag == ihaveflag) {
                               if (teamflagsprite[ihaveflag - 1] >= 0) {
@@ -1519,7 +1481,7 @@ netgetmove(void)
                numspcks[p]++;
                totrpcks++;
           }
-     } while (rc != _FALSE);
+     } while (rc != 0);
      for (i = 0; i < MAXTEAMS; i++) {
           switch (gametype) {
           case 0:                  // head to head
@@ -1778,9 +1740,8 @@ char *setopts[] = {
 void
 mdmreadsettings(void)
 {
-     short i,
-          n;
-     int l;
+     short i;
+     int n, l;
      char buf[80],
          *ptr;
      FILE *fp;
@@ -1803,7 +1764,7 @@ mdmreadsettings(void)
                          comp = n;
                          break;
                     case 1:        // baud rate
-                         sscanf(ptr, "%ld", &l);
+                         sscanf(ptr, "%d", &l);
                          if (l < 2400L || l > 115200L) {
                               break;
                          }
@@ -1837,8 +1798,8 @@ initmulti(int numplayers)
 #ifdef DEBUGOUTPUT
      dbgfp = fopen("debug.out", "w");
 #endif
-     if (numplayers > _NETNOW_MAX_NODES) {
-          numplayers = _NETNOW_MAX_NODES;
+     if (numplayers > MAXPLAYERS) {
+          numplayers = MAXPLAYERS;
      }
      switch (netgame) {
      case 1:
@@ -2004,10 +1965,12 @@ whnetmon(void)
           }
      }
      if (netgame == 2) {
+         /*
           if ((inp(comadr[comp] + 6) & 0x80) == 0) {
                sprintf(tmpbuf, "NO CONNECTION");
                printext256((xdim >> 1) - (strlen(tmpbuf) << 2), (ydim >> 1), 31, -1, tmpbuf, 1);
           }
+          */
      }
      if (escapetomenu) {
           if (keystatus[0x15]) {

@@ -5,7 +5,6 @@
 
 #include "icorp.h"
 #include "keydefs.h"                                             // Les 07/24/95
-#include "jstick.h"                                              // Les 07/27/95
 
 int soundcontrol;
 int musiclevel;
@@ -64,8 +63,7 @@ int oldhoriz;
 int pressedkey;
 int testpaleffects=0;
 
-char joyb,
-	 oldjoyb,
+char oldjoyb,
 	 oldbstatus,
 	 butbit[]={0x10,0x20,0x40,0x80},
 	 mbutbit[]={0x01,0x02};
@@ -75,7 +73,7 @@ short jcalibration=0,
 	 jctry,
 	 jlowx,jhighx,
 	 jlowy,jhighy,
-	 jmovespeed=16;
+	 jmovespeed=16,
 	 joyx,joyy,
 	 joykeys[4],
 	 jstickenabled=0,
@@ -304,7 +302,8 @@ dophysics(struct player *plr,int goalz,short flyupdn,int v)
 
 void processinput(struct player *plr) {
 
-	short bstatus,mousx,mousy;
+    short bstatus;
+    int mousx,mousy;
 	int goalz,hihit,hiz,i,lohit,loz,tics,xvect,yvect;
 	int dax,dax2,day,day2,odax,odax2,oday,oday2;
 	int  a,s,v;
@@ -416,7 +415,7 @@ void processinput(struct player *plr) {
 		keystatus[0x44]=0;
 		gbrightness=brightness++;
 		if (brightness > 8) brightness=0 , gbrightness=0;
-			setbrightness(brightness);
+			setbrightness(brightness,palette,0);
 	}
 
 
@@ -454,9 +453,7 @@ void processinput(struct player *plr) {
 			if( mousxspeed > 16 )
 				mousxspeed=16;
 
-			itoa(mousxspeed,tempbuf,10);
-			strcpy(displaybuf,"Mouse Speed x ");
-			strcat(displaybuf,tempbuf);
+			sprintf(displaybuf,"Mouse Speed x %d",mousxspeed);
 			displaytime=40;
 
 		}
@@ -465,9 +462,7 @@ void processinput(struct player *plr) {
 			if( mousxspeed < 1 )
 				mousxspeed=1;
 
-			itoa(mousxspeed,tempbuf,10);
-			strcpy(displaybuf,"Mouse Speed x ");
-			strcat(displaybuf,tempbuf);
+			sprintf(displaybuf,"Mouse Speed x %d",mousxspeed);
 			displaytime=40;
 
 		}
@@ -476,9 +471,7 @@ void processinput(struct player *plr) {
 			if( mousyspeed > 16 )
 				mousyspeed=16;
 
-			itoa(mousyspeed,tempbuf,10);
-			strcpy(displaybuf,"Mouse Speed y ");
-			strcat(displaybuf,tempbuf);
+			sprintf(displaybuf,"Mouse Speed y %d",mousyspeed);
 			displaytime=40;
 
 		}
@@ -487,16 +480,14 @@ void processinput(struct player *plr) {
 			if( mousyspeed < 1 )
 				mousyspeed=1;
 
-			itoa(mousyspeed,tempbuf,10);
-			strcpy(displaybuf,"Mouse Speed y ");
-			strcat(displaybuf,tempbuf);
+			sprintf(displaybuf,"Mouse Speed y %d",mousyspeed);
 			displaytime=40;
 
 		}
 	}
 
 	 if (jstickenabled) {
-		  jstick();
+		  //jstick();
 		  //sprintf(displaybuf,"%d %d %X",joyx,joyy,joyb);
 		  //displaytime=360;
 		  if (keystatus[0x57] != 0) {   // recalibrate joystick (F11)
@@ -554,7 +545,7 @@ void processinput(struct player *plr) {
 		  oldjoyb=joyb;
 	 }
 	 else if (jcalibration) {
-		  jstick();
+		  //jstick();
 		  switch (jcalibration) {
 		  case 1:
 			   strcpy(displaybuf,"center stick press button");
@@ -879,9 +870,7 @@ void processinput(struct player *plr) {
 	if(keystatus[keys[KEYMAP]] != 0) {                         // Les 07/24/95
 		if(plr->dimension == 3) {
 			plr->dimension=2;
-			strcpy(displaybuf,"map ");
-			itoa(mapon,tempbuf,10);
-			strcat(displaybuf,tempbuf);
+			sprintf(displaybuf,"map %d",mapon);
 			displaytime=720;
 		}
 		else {
@@ -900,9 +889,7 @@ void processinput(struct player *plr) {
 				plr->zoom+=(plr->zoom>>4);
 		if(keystatus[0x21] > 0) {
 			if(followmode == 0) {
-				strcpy(displaybuf,"Map ");
-				itoa(mapon,tempbuf,10);
-				strcat(displaybuf,tempbuf);
+				sprintf(displaybuf,"Map %d",mapon);
 				displaytime=360;
 				followmode=1;
 				followx=0L;
@@ -1015,7 +1002,7 @@ void processinput(struct player *plr) {
 
 		oldposx=plr->x; oldposy=plr->y;
 
-		clipmove(&plr->x,&plr->y,&plr->z,&plr->sector,xvect,yvect,128L,4<<8,4<<8,CLIPMOVE0);
+		clipmove(&plr->x,&plr->y,&plr->z,&plr->sector,xvect,yvect,128L,4<<8,4<<8,CLIPMASK0);
 
 
 //JSA BLORB
@@ -1314,7 +1301,7 @@ void nettypeletter(void) {
 				keystatus[i]=0;
 			}
 		}
-		printext256(0L,0L,31,-1,strupr(nettemp),1);
+		printext256(0L,0L,31,-1,Bstrupr(nettemp),1);
 	}
 
 }
@@ -1387,7 +1374,7 @@ void checkcheat(void) {
 
 	plr=&player[pyrn];
 
-	strupr(displaybuf);
+	Bstrupr(displaybuf);
 
 	if(strcmp(displaybuf,"RSVP") == 0) {
 		healthpic(-plr->health);
@@ -1488,15 +1475,11 @@ void dosoundthing(void) {
 				musiclevel--;
 				if( musiclevel < 0) {
 					musiclevel=0;
-					strcpy(displaybuf,"Music ");
-					itoa(musiclevel,tempbuf,10);
-					strcat(displaybuf,tempbuf);
+					sprintf(displaybuf,"Music %d",musiclevel);
 					displaytime=10;
 				}
 				else {
-					strcpy(displaybuf,"Music ");
-					itoa(musiclevel,tempbuf,10);
-					strcat(displaybuf,tempbuf);
+					sprintf(displaybuf,"Music %d",musiclevel);
 					displaytime=10;
 					SND_Mixer(1,musiclevel);
 				}
@@ -1507,15 +1490,11 @@ void dosoundthing(void) {
 				musiclevel++;
 				if( musiclevel > 16 ) {
 					musiclevel=16;
-					strcpy(displaybuf,"Music ");
-					itoa(musiclevel,tempbuf,10);
-					strcat(displaybuf,tempbuf);
+					sprintf(displaybuf,"Music %d",musiclevel);
 					displaytime=10;
 				}
 				else {
-					strcpy(displaybuf,"Music ");
-					itoa(musiclevel,tempbuf,10);
-					strcat(displaybuf,tempbuf);
+					sprintf(displaybuf,"Music %d",musiclevel);
 					displaytime=10;
 					SND_Mixer(1,musiclevel);
 				}
@@ -1523,9 +1502,7 @@ void dosoundthing(void) {
 			}
 
 			else {
-				strcpy(displaybuf,"Music ");
-				itoa(musiclevel,tempbuf,10);
-				strcat(displaybuf,tempbuf);
+				sprintf(displaybuf,"Music %d",musiclevel);
 				displaytime=10;
 			}
 			break;
@@ -1535,15 +1512,11 @@ void dosoundthing(void) {
 				digilevel--;
 				if( digilevel <0 ) {
 					digilevel=0;
-					strcpy(displaybuf,"Sounds ");
-					itoa(digilevel,tempbuf,10);
-					strcat(displaybuf,tempbuf);
+					sprintf(displaybuf,"Sounds %d",digilevel);
 					displaytime=10;
 				}
 				else {
-					strcpy(displaybuf,"Sounds ");
-					itoa(digilevel,tempbuf,10);
-					strcat(displaybuf,tempbuf);
+					sprintf(displaybuf,"Sounds %d",digilevel);
 					displaytime=10;
 					SND_Mixer(0,digilevel);
 					SND_Sound(S_LOUDCHAINWALK);
@@ -1555,15 +1528,11 @@ void dosoundthing(void) {
 				digilevel++;
 				if( digilevel > 16 ) {
 					digilevel=16;
-					strcpy(displaybuf,"Sounds ");
-					itoa(digilevel,tempbuf,10);
-					strcat(displaybuf,tempbuf);
+					sprintf(displaybuf,"Sounds %d",digilevel);
 					displaytime=10;
 				}
 				else {
-					strcpy(displaybuf,"Sounds ");
-					itoa(digilevel,tempbuf,10);
-					strcat(displaybuf,tempbuf);
+					sprintf(displaybuf,"Sounds %d",digilevel);
 					displaytime=10;
 					SND_Mixer(0,digilevel);
 					SND_Sound(S_LOUDCHAINWALK);
@@ -1572,9 +1541,7 @@ void dosoundthing(void) {
 			}
 
 			else {
-				strcpy(displaybuf,"Sounds ");
-				itoa(digilevel,tempbuf,10);
-				strcat(displaybuf,tempbuf);
+				sprintf(displaybuf,"Sounds %d",digilevel);
 				displaytime=10;
 			}
 			break;

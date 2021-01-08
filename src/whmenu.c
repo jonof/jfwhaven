@@ -111,7 +111,7 @@ void fancyfont(int x, int y, short tilenum, char *string, char pal) {
      int number;
      char temp[40];
 
-     strlwr(string);
+     Bstrlwr(string);
      len=strlen(string);
      strcpy(temp,string);
 
@@ -147,7 +147,7 @@ void fancyfontscreen(int x, int y, short tilenum, char *string) {
      int number;
      char temp[40];
 
-     strlwr(string);
+     Bstrlwr(string);
      len=strlen(string);
      strcpy(temp,string);
 
@@ -668,10 +668,7 @@ void startnewgame(struct player *plr) {
         goto skip;
     }
     if(loadedgame == 0) {
-        strcpy(boardname,"level");
-        itoa(mapon,temp,10);
-        strcat(boardname,temp);
-        strcat(boardname,".map");
+        sprintf(boardname,"level%d.map",mapon);
         setupboard(boardname);
         initplayersprite();
         cleanup();
@@ -765,13 +762,8 @@ void loadgame(struct player *plr) {
 
     if ( exit == 2 ) {
         keystatus[1]=keystatus[0x1c]=keystatus[0x9c]=0;
-        strcpy(boardname,"svgm");
-        itoa(select,temp,10);
-        strcat(boardname,temp);
-        strcpy(loadgamename,"svgn");
-        strcat(loadgamename,temp);
-        strcat(loadgamename,".dat");
-        strcat(boardname,".map");
+        sprintf(boardname,"svgm%d.map",select);
+        sprintf(loadgamename,"svgn%d.dat",select);
         loadedgame=1;
         gameactivated=1;
         startnewgame(plr);
@@ -922,18 +914,12 @@ void savegametext(int select) {
         if ( keystatus[0x1c] > 0 || keystatus[0x9c] > 0) {
             if( typemessageleng > 0 ) {
                 strcpy(savedgamenames[select].name,temp);
-                strcpy(tempbuf,"svgm");
-                itoa(select,temp2,10);
-                strcat(tempbuf,temp2);
-                strcat(tempbuf,".map");
+                sprintf(tempbuf,"svgm%d.map",select);
                 saveboard(tempbuf,&plr->x,&plr->y,&plr->z,&plr->ang,&plr->sector);
                 savedgamename(select);
             }
             else {
-                strcpy(tempbuf,"svgm");
-                itoa(select,temp2,10);
-                strcat(tempbuf,temp2);
-                strcat(tempbuf,".map");
+                sprintf(tempbuf,"svgm%d.map",select);
                 saveboard(tempbuf,&plr->x,&plr->y,&plr->z,&plr->ang,&plr->sector);
                 savedgamename(select);
             }
@@ -965,10 +951,7 @@ int savedgamename(int gn) {
     else
         plr->screensize=320;
 
-    strcpy(tempbuf,"svgn");
-    itoa(gn,temp,10);
-    strcat(tempbuf,temp);
-    strcat(tempbuf,".dat");
+    sprintf(tempbuf,"svgn%d.dat",gn);
 
     //if ((fil = open("save0000.gam"
     //,O_BINARY|O_TRUNC|O_CREAT|O_WRONLY,S_IWRITE)) == -1)
@@ -1044,15 +1027,9 @@ int savedgamedat(int gn) {
     char    savedgame[40];
     char    temp[20];
 
-    itoa(gn,temp,10);
-    strcpy(fname,"svgm");
-    strcat(fname,temp);
-    strcat(fname,".map");
+    sprintf(fname,"svgm%d.map",gn);
 
-    itoa(gn,temp,10);
-    strcpy(fsname,"svgn");
-    strcat(fsname,temp);
-    strcat(fsname,".dat");
+    sprintf(fsname,"svgn%d.dat",gn);
 
     if( access(fname, F_OK)!=0 )
         return 0;
@@ -1582,31 +1559,6 @@ flc_playseq(struct  player *plr, int num, int ftype)
  return;
 }
 #endif
-/***************************************************************************
- *   TEKERR    - crirical error handler for TEKWAR                         *
- *                                                                         *
- *                                                     12/15/94 Jeff S.    *
- ***************************************************************************/
-
-int criterr_flag;
-
-int
-cehndlr(unsigned deverr, unsigned errcode, unsigned far *devhdr)
-{
-      criterr_flag=errcode;
-      return(_HARDERR_IGNORE);
-}
-
-
-void
-installcrerrhndlr(void)
-{
-      _harderr(cehndlr);
-
- return;
-}
-
-
 
 /***************************************************************************
  *   screen effects for TEKWAR follow...fades, palette stuff, etc..        *
@@ -1655,19 +1607,10 @@ void screenfx(struct player *plr) {
 //    value           [eax]               /* Return value.                 */ \
 //    modify          [ecx]; // Non parameter registers that will be altered.
 
-extern    void asmwaitvrt(int parm1);
-extern    void asmsetpalette(char *pal);
-
 void
 clearpal(void)
 {
-      short     i;
-
-      outp(PEL_WRITE_ADR,0);
-    for(i=0;i<768;i++)
-          outp(PEL_DATA,0x00);
-
- return;
+    debugprintf("clearpal()\n");
 }
 
 
@@ -1676,24 +1619,13 @@ char  palette1[256][3],palette2[256][3];
 void
 getpalette(char *palette)
 {
-    int   i;
-
-    outp(PEL_READ_ADR,0);
-    for( i=0; i<768; i++)
-        *palette++ = inp(PEL_DATA);
+    debugprintf("getpalette()\n");
 }
 
 void
 fillpalette(int red, int green, int blue)
 {
-    int   i;
-
-    outp(PEL_WRITE_ADR,0);
-    for( i=0; i<256; i++ ) {
-        outp(PEL_DATA,red);
-        outp(PEL_DATA,green);
-        outp(PEL_DATA,blue);
-    }
+    debugprintf("fillpalette()\n");
 }
 
 
@@ -1705,7 +1637,6 @@ fadeout(int start, int end, int red, int green, int blue, int steps)
     int      i,j,orig,delta;
     char      *origptr,*newptr;
 
-      asmwaitvrt(1);
     getpalette(&palette1[0][0]);
     memcpy(palette2,palette1,768);
 
@@ -1724,8 +1655,7 @@ fadeout(int start, int end, int red, int green, int blue, int steps)
             *newptr++ = orig + delta * i / steps;
         }
 
-        asmwaitvrt(1);
-        asmsetpalette(&palette2[0][0]);
+        //asmsetpalette(&palette2[0][0]);
     }
 
       if( foggy == 0 )
@@ -1744,7 +1674,6 @@ fadein(int start, int end, int steps)
              return;
       }
 
-    asmwaitvrt(1);
     getpalette(&palette1[0][0]);
     memcpy(&palette2[0][0],&palette1[0][0],sizeof(palette1));
 
@@ -1758,12 +1687,11 @@ fadein(int start, int end, int steps)
             palette2[0][j]=palette1[0][j] + delta * i / steps;
         }
 
-        asmwaitvrt(1);
-        asmsetpalette(&palette2[0][0]);
+        //asmsetpalette(&palette2[0][0]);
     }
 
       // final color
-    asmsetpalette(palette);
+    //asmsetpalette(palette);
 
       dofadein=0;
       //clearkeys();
@@ -1829,7 +1757,6 @@ char      blueshifts[NUMBLUESHIFTS][768];
 int       redcount,whitecount,greencount,bluecount;
 char      palshifted;
 
-extern    char palette[];
 
 void
 initpaletteshifts(void)
@@ -2005,30 +1932,25 @@ updatepaletteshifts(void)
       }
 
     if( red ) {
-        asmwaitvrt(1);
-        asmsetpalette(redshifts[red-1]);
+        //asmsetpalette(redshifts[red-1]);
         palshifted = 1;
     }
     else if( white ) {
-        asmwaitvrt(1);
-        asmsetpalette(whiteshifts[white-1]);
+        //asmsetpalette(whiteshifts[white-1]);
         palshifted = 1;
     }
     else if( green ) {
-        asmwaitvrt(1);
-        asmsetpalette(greenshifts[green-1]);
+        //asmsetpalette(greenshifts[green-1]);
         palshifted=1;
     }
     else if( blue ) {
-        asmwaitvrt(1);
-        asmsetpalette(blueshifts[blue-1]);
+        //asmsetpalette(blueshifts[blue-1]);
         palshifted=1;
     }
 
     else if( palshifted ) {
-        asmwaitvrt(1);
-        asmsetpalette(&palette[0]);     // back to normal
-        setbrightness(gbrightness);
+        //asmsetpalette(&palette[0]);     // back to normal
+        setbrightness(gbrightness,palette,0);
         palshifted = 0;
     }
 
@@ -2041,8 +1963,7 @@ finishpaletteshifts(void)
 {
     if( palshifted == 1 ) {
         palshifted = 0;
-        asmwaitvrt(1);
-        asmsetpalette(&palette[0]);
+        //asmsetpalette(&palette[0]);
     }
 
  return;

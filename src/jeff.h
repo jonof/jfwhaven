@@ -11,7 +11,6 @@ extern    char      flicnum;
 extern    char      *flicnames[];
 extern    char      dofadein;
 
-extern    char      palette[];       // engine.obj
 extern    char      paletteloaded;   // engine.obj
 
 extern    int       flictype;

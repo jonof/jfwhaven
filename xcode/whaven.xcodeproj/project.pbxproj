@@ -33,6 +33,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		AB17554425AC812300C581C8 /* whaven.c in Sources */ = {isa = PBXBuildFile; fileRef = AB9E4AC82312995E0008A90E /* whaven.c */; };
 		AB3AE6C21A4D423600CE4329 /* b5compat.c in Sources */ = {isa = PBXBuildFile; fileRef = AB3AE6C11A4D423600CE4329 /* b5compat.c */; };
 		AB98B2DF1A6B87E6009E8749 /* config.c in Sources */ = {isa = PBXBuildFile; fileRef = AB98B2DE1A6B87E6009E8749 /* config.c */; };
 		AB9E4ABD23125D810008A90E /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BDC1A49C30C007D0D43 /* SDL2.framework */; };
@@ -196,19 +197,27 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		AB17551125A8029A00C581C8 /* sndmod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sndmod.h; sourceTree = "<group>"; usesTabs = 1; };
+		AB17551225A802C300C581C8 /* les.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = les.h; sourceTree = "<group>"; };
+		AB17551325A802C300C581C8 /* jeff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jeff.h; sourceTree = "<group>"; };
+		AB17551425A802C300C581C8 /* raf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = raf.h; sourceTree = "<group>"; };
+		AB17551525A802E300C581C8 /* whdefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = whdefs.h; sourceTree = "<group>"; };
+		AB17551625A802F600C581C8 /* extern.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = extern.h; sourceTree = "<group>"; };
+		AB17551725A8036900C581C8 /* keydefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keydefs.h; sourceTree = "<group>"; };
+		AB17551F25A9A9CD00C581C8 /* startwin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = startwin.h; sourceTree = "<group>"; };
+		AB17554A25AC898300C581C8 /* JFWitchaven.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = JFWitchaven.entitlements; sourceTree = "<group>"; };
 		AB3AE6C11A4D423600CE4329 /* b5compat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = b5compat.c; sourceTree = "<group>"; };
 		AB5BD5FD23123FA500BC4BEF /* version-auto.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "version-auto.c"; sourceTree = "<group>"; };
 		AB98B2DE1A6B87E6009E8749 /* config.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = config.c; sourceTree = "<group>"; };
 		AB9E4AC42312976F0008A90E /* Game Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Game Images.xcassets"; sourceTree = "<group>"; };
 		AB9E4AC82312995E0008A90E /* whaven.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = whaven.c; sourceTree = "<group>"; };
 		AB9E4ACF231299700008A90E /* icorp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = icorp.h; sourceTree = "<group>"; };
-		AB9E4AD123129A0D0008A90E /* whaven.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = whaven.h; sourceTree = "<group>"; };
 		AB9E4ADB2312ABAB0008A90E /* whmenu.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = whmenu.c; sourceTree = "<group>"; };
 		AB9E4ADC2312ABAB0008A90E /* whsndmod.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = whsndmod.c; sourceTree = "<group>"; };
 		AB9E4ADD2312ABAB0008A90E /* whnet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = whnet.c; sourceTree = "<group>"; };
-		AB9E4ADE2312ABAB0008A90E /* whani.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = whani.c; sourceTree = "<group>"; };
+		AB9E4ADE2312ABAB0008A90E /* whani.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = whani.c; sourceTree = "<group>"; usesTabs = 1; };
 		AB9E4ADF2312ABAB0008A90E /* whtag.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = whtag.c; sourceTree = "<group>"; };
-		AB9E4AE02312ABAB0008A90E /* whplr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = whplr.c; sourceTree = "<group>"; };
+		AB9E4AE02312ABAB0008A90E /* whplr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = whplr.c; sourceTree = "<group>"; usesTabs = 1; };
 		AB9E4AE12312ABAB0008A90E /* whinp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = whinp.c; sourceTree = "<group>"; };
 		AB9E4AE22312ABAB0008A90E /* whobj.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = whobj.c; sourceTree = "<group>"; };
 		AB9E4AE32312ABAB0008A90E /* whfx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = whfx.c; sourceTree = "<group>"; };
@@ -293,6 +302,7 @@
 			children = (
 				ABC75BE41A49C3DB007D0D43 /* src */,
 				ABC75BD61A49C19A007D0D43 /* startwin.game.nib */,
+				AB17554A25AC898300C581C8 /* JFWitchaven.entitlements */,
 				ABC75BA11A49BCC3007D0D43 /* JFWitchaven-Info.plist */,
 				AB9E4AC42312976F0008A90E /* Game Images.xcassets */,
 			);
@@ -313,13 +323,9 @@
 			children = (
 				AB3AE6C11A4D423600CE4329 /* b5compat.c */,
 				AB98B2DE1A6B87E6009E8749 /* config.c */,
-				AB9E4ACF231299700008A90E /* icorp.h */,
-				ABC75BE61A49C3DB007D0D43 /* names.h */,
-				ABD03E151A5181020012B9D1 /* StartupWinController.m */,
 				AB5BD5FD23123FA500BC4BEF /* version-auto.c */,
 				AB9E4ADE2312ABAB0008A90E /* whani.c */,
 				AB9E4AC82312995E0008A90E /* whaven.c */,
-				AB9E4AD123129A0D0008A90E /* whaven.h */,
 				AB9E4AE32312ABAB0008A90E /* whfx.c */,
 				AB9E4AE12312ABAB0008A90E /* whinp.c */,
 				AB9E4ADB2312ABAB0008A90E /* whmenu.c */,
@@ -328,6 +334,17 @@
 				AB9E4AE02312ABAB0008A90E /* whplr.c */,
 				AB9E4ADC2312ABAB0008A90E /* whsndmod.c */,
 				AB9E4ADF2312ABAB0008A90E /* whtag.c */,
+				AB17551625A802F600C581C8 /* extern.h */,
+				AB9E4ACF231299700008A90E /* icorp.h */,
+				AB17551325A802C300C581C8 /* jeff.h */,
+				AB17551725A8036900C581C8 /* keydefs.h */,
+				AB17551225A802C300C581C8 /* les.h */,
+				ABC75BE61A49C3DB007D0D43 /* names.h */,
+				AB17551425A802C300C581C8 /* raf.h */,
+				AB17551125A8029A00C581C8 /* sndmod.h */,
+				AB17551F25A9A9CD00C581C8 /* startwin.h */,
+				AB17551525A802E300C581C8 /* whdefs.h */,
+				ABD03E151A5181020012B9D1 /* StartupWinController.m */,
 			);
 			name = src;
 			path = ../src;
@@ -561,6 +578,7 @@
 				AB9E4AE42312ABAB0008A90E /* whmenu.c in Sources */,
 				AB9E4AE82312ABAB0008A90E /* whtag.c in Sources */,
 				AB98B2DF1A6B87E6009E8749 /* config.c in Sources */,
+				AB17554425AC812300C581C8 /* whaven.c in Sources */,
 				AB9E4AE52312ABAB0008A90E /* whsndmod.c in Sources */,
 				AB9E4AE72312ABAB0008A90E /* whani.c in Sources */,
 				ABD03E161A5181020012B9D1 /* StartupWinController.m in Sources */,
@@ -673,6 +691,8 @@
 				WARNING_CFLAGS = (
 					"-W",
 					"-Wall",
+					"-Wno-unused-variable",
+					"-Wno-unused-parameter",
 				);
 			};
 			name = Debug;
@@ -699,6 +719,8 @@
 				WARNING_CFLAGS = (
 					"-W",
 					"-Wall",
+					"-Wno-unused-variable",
+					"-Wno-unused-parameter",
 				);
 			};
 			name = Release;
@@ -707,10 +729,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = JFWitchaven.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = S7U4E54CHC;
+				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(USER_LIBRARY_DIR)/Frameworks";
 				INFOPLIST_FILE = "$(SRCROOT)/JFWitchaven-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks @executable_path/../Frameworks";
@@ -725,10 +749,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = JFWitchaven.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = S7U4E54CHC;
+				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(USER_LIBRARY_DIR)/Frameworks";
 				INFOPLIST_FILE = "$(SRCROOT)/JFWitchaven-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks @executable_path/../Frameworks";

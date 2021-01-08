@@ -8,8 +8,6 @@
 #define SVGA
 #include "icorp.h"
 
-jmp_buf jmpenv;
-
 int *animateptr[MAXANIMATES],
       animategoal[MAXANIMATES],
       animatevel[MAXANIMATES],
@@ -59,7 +57,7 @@ int   actorcnt,
       sexref[MAXSECTORS],
       swingcnt;
 
-short spikecnt;
+short spikecnt,
       spikesector[64];
 
 short goblinspritelist[100];
@@ -140,7 +138,7 @@ void rp_delay(int goal) {
 void
 showadditionalinfo(void)
 {
-      printf("average synctics = %ld\n",totsynctics/frames);
+      printf("average synctics = %d\n",totsynctics/frames);
 }
 
 int  crashflag;
@@ -152,7 +150,7 @@ shutdown(void)
        int  fil;
 
         fil=open("pref.dat",O_BINARY|O_TRUNC|O_CREAT|O_WRONLY,S_IWRITE );
-        if( fil != NULL ) {
+        if( fil >= 0 ) {
             write(fil,&goreon,2);
             write(fil,&brightness,2);
             write(fil,&gbrightness,2);
@@ -174,7 +172,6 @@ shutdown(void)
       if(SoundMode)
           SND_UnDoBuffers();
 
-        uninitkeys();
         uninitgroupfile();
 
       if (crashflag) {
@@ -185,14 +182,17 @@ shutdown(void)
 
 }
 
-void crash(char *fmt) {
+void crashgame(char *fmt,...) {
+      va_list argptr;
 
       crashflag=1;
       shutdown();
 
-      printf("\n%s\n",fmt);
-      printf("\n\n\n\n\n\n\n\n");
-      longjmp(jmpenv,1);
+      va_start(argptr,fmt);
+      vprintf(fmt,argptr);
+      va_end(argptr);
+      printf("\n");
+      exit(0);
 
 }
 
@@ -311,7 +311,7 @@ void setup3dscreen(void) {
     int i, dax, day, dax2, day2;
 
     plr=&player[0];
-    setgamemode();
+    setgamemode(0,vesares[option[6]&15][0],vesares[option[6]&15][1],8);
 
     videoinitflag=1;
 
@@ -360,8 +360,8 @@ void setupboard(char *fname) {
 
     randomseed = 17L;
 
-    if (loadboard(fname,&plr->x,&plr->y,&plr->z,&daang,&plr->sector) == -1) {
-        crash("Board not found");
+    if (loadboard(fname,0,&plr->x,&plr->y,&plr->z,&daang,&plr->sector) == -1) {
+        crashgame("Board not found");
     }
 
     plr->ang=daang;
@@ -1068,7 +1068,7 @@ char option2[];
 extern
 short mousekeys[];
 
-void main(int argc,char *argv[]) {
+int app_main(int argc,const char * const argv[]) {
 
     int fil;
     int i, j, k, l;
@@ -1081,12 +1081,6 @@ void main(int argc,char *argv[]) {
 
     plr=&player[0];
 
-
-    if (setjmp(jmpenv) != 0) {
-        printf("!! Program abnormally terminated !!");
-        exit(1);
-    }
-    installcrerrhndlr();
 
     netcheckargs(argc,argv);
 
@@ -1110,7 +1104,7 @@ void main(int argc,char *argv[]) {
         digilevel=11;
         musiclevel=11;
         fil=open("pref.dat",O_BINARY|O_TRUNC|O_CREAT|O_WRONLY,S_IWRITE );
-        if( fil != NULL ) {
+        if( fil >= 0 ) {
             write(fil,&goreon,2);
             write(fil,&brightness,2);
             write(fil,&gbrightness,2);
@@ -1122,7 +1116,7 @@ void main(int argc,char *argv[]) {
      }
      else {
         fil=open("pref.dat", O_RDONLY | O_BINARY);
-        if( fil != NULL ) {
+        if( fil >= 0 ) {
             read(fil,&goreon,2);
             read(fil,&brightness,2);
             read(fil,&gbrightness,2);
@@ -1156,27 +1150,21 @@ void main(int argc,char *argv[]) {
 
      if (option2[2] != 0) {                                      // Les 07/27/95
           initjstick();                                          // Les 07/27/95
-     }                                                           // Les 07/27/95
+     }
 
-    switch(option[0]) {
-    case 1:
-        initengine(1,vesares[option[6]&15][0],vesares[option[6]&15][1]);
-        if(vesares[option[6]&15][0] == 640)
-            svga=1;
-    break;
-    default:
-        initengine(1,320,200);
-    break;
+    if (initengine()) {
+        crashgame("There was a problem initialising the Build engine: %s", engineerrstr);
     }
-    initkeys();
+    svga = 1;
     engineinitflag=1;
 
     pskyoff[0] = 0; pskyoff[1] = 0; pskybits = 1;
 
+    inittimer(120);
     SND_Startup();
     buildputs(" loadpics()\n");
     buildputs(" tiles000.art\n");
-    loadpics("tiles000.art");
+    loadpics("tiles000.art",8*1048576);
 
 
 #if 0
@@ -1444,7 +1432,7 @@ void drawoverheadmap(struct player *plr) {
                                 daang = (spr->ang-cang)&2047;
                                 if (j == plr->spritenum )
                                     { x1 = 0; y1 = (yxaspect<<2); daang = 0; }
-                                rotatesprite((x1<<4)+(xdim<<15),(y1<<4)+(ydim<<15),mulscale(czoom*spr->yrepeat,yxaspect,16),daang,spr->picnum,spr->shade,spr->pal,(spr->cstat&2)>>1);
+                                rotatesprite((x1<<4)+(xdim<<15),(y1<<4)+(ydim<<15),mulscale(czoom*spr->yrepeat,yxaspect,16),daang,spr->picnum,spr->shade,spr->pal,(spr->cstat&2)>>1,0,0,xdim-1,ydim-1);
                             }
                         }
                         break;

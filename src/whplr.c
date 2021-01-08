@@ -1621,7 +1621,7 @@ void plruse(struct player *plr) {
 				sintable[(daang2+2560)&2047],           //X vector of 3D ang
 				sintable[(daang2+2048)&2047],           //Y vector of 3D ang
 				daz2,                                   //Z vector of 3D ang
-				&hitsect,&hitwall,&hitsprite,&hitx,&hity,&hitz);
+				&hitsect,&hitwall,&hitsprite,&hitx,&hity,&hitz,CLIPMASK1);
 				if( hitwall >= 0 ) {
 					if( (labs(plr->x-hitx)+labs(plr->y-hity) < 512) && (labs((plr->z>>8)-((hitz>>8)-(64))) <= (512>>3)) ) {
 						switch(wall[hitwall].picnum) {
@@ -1672,10 +1672,7 @@ void loadnewlevel(int mapon) {
 
 	plr=&player[pyrn];
 
-	strcpy(mapbuf,"level");
-	itoa(mapon,tempbuf,10);
-	strcat(mapbuf,tempbuf);
-	strcat(mapbuf,".map");
+	sprintf(mapbuf,"level%d.map",mapon);
 
 //JSA_DEMO2
 	 SND_SongFlush();
@@ -1813,12 +1810,12 @@ void drawweapons(struct player *plr) {
 		}
 		if(svga == 1) {
 			overwritesprite(dax<<1,day,spellbookframe,0,0,0);
-			itoa(plr->orbammo[currentorb],tempbuf,10);
+			sprintf(tempbuf,"%d",plr->orbammo[currentorb]);
 			fancyfont(126<<1,439,SSCOREFONT-26,tempbuf,0);
 		}
 		else {
 			overwritesprite(dax,day,spellbookframe,0,0,0);
-			itoa(plr->orbammo[currentorb],tempbuf,10);
+			sprintf(tempbuf,"%d",plr->orbammo[currentorb]);
 			fancyfont(126,181,SCOREFONT-26,tempbuf,0);
 		}
 	}
@@ -1909,7 +1906,7 @@ void drawweapons(struct player *plr) {
 				dax=lefthandanimtics[currweapon][currweaponanim].currx;
 				day=lefthandanimtics[currweapon][currweaponanim].curry+8;
 			}
-			if ( currweapon == 0 && currweaponframe != NULL) {
+			if ( currweapon == 0 && currweaponframe != 0) {
 				if( dahand == 1 )
 					overwritesprite(dax,day,currweaponframe,dashade,dabits,dapalnum);
 				else if ( dahand == 2 ) {
@@ -1919,20 +1916,20 @@ void drawweapons(struct player *plr) {
 				}
 			}
 			else {
-				if( currweaponframe != NULL ) {
+				if( currweaponframe != 0 ) {
 					dax=lefthandanimtics[currweapon][currweaponanim].currx;
 					overwritesprite(dax,day,currweaponframe,dashade,dabits,dapalnum);
 				}
 			}
 
-		if( currweapon == 0 && currweaponframe == NULL) {
+		if( currweapon == 0 && currweaponframe == 0) {
 			dahand=0;
 			oldmousestatus=0;
 			currweaponanim=0;
 			currweaponfired=0;
 		}
 
-		if ( selectedgun == 4 && currweaponframe == NULL ) {
+		if ( selectedgun == 4 && currweaponframe == 0 ) {
 				currweaponanim=0;
 				currweaponfired=0;
 				currweaponflip=0;
@@ -2127,7 +2124,7 @@ void drawweapons(struct player *plr) {
 				}
 
 			}
-			if ( currweapon == 0 && currweaponframe != NULL) {
+			if ( currweapon == 0 && currweaponframe != 0) {
 				if( dahand == 1 )
 					overwritesprite(dax,day,currweaponframe,dashade,dabits,dapalnum);
 				else if ( dahand == 2 ) {
@@ -2137,7 +2134,7 @@ void drawweapons(struct player *plr) {
 				}
 			}
 			else {
-				if( currweaponframe != NULL ) {
+				if( currweaponframe != 0 ) {
 					if( currweaponattackstyle == 0 )
 						//flip
 						dax=weaponanimtics[currweapon][currweaponanim].currx;
@@ -2149,7 +2146,7 @@ void drawweapons(struct player *plr) {
 				}
 			}
 
-		if( currweapon == 0 && currweaponframe == NULL) {
+		if( currweapon == 0 && currweaponframe == 0) {
 			dahand=0;
 			oldmousestatus=0; // NEW
 			currweaponanim=0;
@@ -2202,12 +2199,12 @@ void drawweapons(struct player *plr) {
 					day=weaponanimtics[currweapon][0].curry+3;
 				}
 			}
-			if ( currweapon == 0 && currweaponframe != NULL) {
+			if ( currweapon == 0 && currweaponframe != 0) {
 				overwritesprite(dax,day,currweaponframe,dashade,dabits,dapalnum);
 				overwritesprite(0,day+8,currweaponframe+6,dashade,dabits,dapalnum);
 			}
 			else  {
-				if( currweaponframe != NULL ) {
+				if( currweaponframe != 0 ) {
 					overwritesprite(dax+snakex,day,currweaponframe,dashade,dabits,dapalnum);
 				}
 			}
@@ -2242,13 +2239,13 @@ void drawweapons(struct player *plr) {
 				day=weaponanimtics[currweapon][0].curry+(weapondrop);
 			}
 
-			if ( currweapon == 0 && currweaponframe != NULL) {
+			if ( currweapon == 0 && currweaponframe != 0) {
 				overwritesprite(dax,day,currweaponframe,dashade,dabits,dapalnum);
 				overwritesprite(0,day,currweaponframe+6,dashade,dabits,dapalnum);
 			}
 
 			else  {
-				if( currweaponframe != NULL ) {
+				if( currweaponframe != 0 ) {
 					dax=weaponanimtics[currweapon][0].currx;
 					overwritesprite(dax,day,currweaponframe,dashade,dabits,dapalnum);
 				}
@@ -2266,12 +2263,12 @@ void drawweapons(struct player *plr) {
 				dax=readyanimtics[currweapon][11].currx;
 				day=readyanimtics[currweapon][11].curry+8;
 
-			if ( currweapon == 0 && currweaponframe != NULL) {
+			if ( currweapon == 0 && currweaponframe != 0) {
 				overwritesprite(dax,day,currweaponframe,dashade,dabits,dapalnum);
 				overwritesprite(0,day,currweaponframe+6,dashade,dabits,dapalnum);
 			}
 			else  {
-				if( currweaponframe != NULL ) {
+				if( currweaponframe != 0 ) {
 					overwritesprite(dax,day,currweaponframe,dashade,dabits,dapalnum);
 				}
 			}
@@ -2289,12 +2286,12 @@ void drawweapons(struct player *plr) {
 				dax=readyanimtics[currweapon][currweaponanim].currx;
 				day=readyanimtics[currweapon][currweaponanim].curry+8;
 			}
-			if ( currweapon == 0 && currweaponframe != NULL) {
+			if ( currweapon == 0 && currweaponframe != 0) {
 				overwritesprite(dax,day,currweaponframe,dashade,dabits,dapalnum);
 				overwritesprite(0,day,currweaponframe+6,dashade,dabits,dapalnum);
 			}
 			else  {
-				if( currweaponframe != NULL ) {
+				if( currweaponframe != 0 ) {
 					overwritesprite(dax,day,currweaponframe,dashade,dabits,dapalnum);
 				}
 			}
@@ -2312,7 +2309,7 @@ void drawweapons(struct player *plr) {
 					dax=cockanimtics[3].currx+3;
 					day=cockanimtics[3].curry+3;
 
-					if( currweaponframe != NULL )
+					if( currweaponframe != 0 )
 						overwritesprite(dax,day,currweaponframe,dashade,dabits,dapalnum);
 					break;
 				}
@@ -2326,14 +2323,14 @@ void drawweapons(struct player *plr) {
 				dax=cockanimtics[currweaponanim].currx;
 				day=cockanimtics[currweaponanim].curry+8;
 			}
-			if( currweaponframe != NULL )
+			if( currweaponframe != 0 )
 				overwritesprite(dax,day,currweaponframe,dashade,dabits,dapalnum);
 
 		break;
 
 		case 4: // throw the orb
 
-			if(currweaponframe == NULL) {
+			if(currweaponframe == 0) {
 				castaorb(plr);
 			}
 
@@ -2349,12 +2346,12 @@ void drawweapons(struct player *plr) {
 				dax=throwanimtics[currentorb][currweaponanim].currx;
 				day=throwanimtics[currentorb][currweaponanim].curry+8;
 
-				if ( currweapon == 0 && currweaponframe != NULL) {
+				if ( currweapon == 0 && currweaponframe != 0) {
 					overwritesprite(dax,day,currweaponframe,dashade,dabits,dapalnum);
 					//overwritesprite(0,day,currweaponframe+6,dashade,dabits,0);
 				}
 				else  {
-					if( currweaponframe != NULL ) {
+					if( currweaponframe != 0 ) {
 						overwritesprite(dax,day,currweaponframe,dashade,dabits,dapalnum);
 					}
 				}
@@ -2372,7 +2369,7 @@ void drawweapons(struct player *plr) {
 				dax=throwanimtics[currentorb][currweaponanim].currx;
 				day=throwanimtics[currentorb][currweaponanim].curry+8;
 			}
-			if( currweaponframe != NULL ) {
+			if( currweaponframe != 0 ) {
 				overwritesprite(dax,day,currweaponframe,dashade,dabits,dapalnum);
 			}
 		break;
@@ -2755,7 +2752,7 @@ void shootgun ( struct player *plr, short daang, char guntype ) {
 			sintable[(daang2+2560)&2047],           //X vector of 3D ang
 			sintable[(daang2+2048)&2047],           //Y vector of 3D ang
 			daz2,                                   //Z vector of 3D ang
-			&hitsect,&hitwall,&hitsprite,&hitx,&hity,&hitz);
+			&hitsect,&hitwall,&hitsprite,&hitx,&hity,&hitz,CLIPMASK1);
 
 		if(hitsprite >= 0)
 			madeahit=1;
@@ -2906,7 +2903,7 @@ void shootgun ( struct player *plr, short daang, char guntype ) {
 				}
 
 				if(invisibletime > 0)
-					if( krand()&32 > 15 )
+					if( (krand()&32) > 15 )
 						invisibletime=-1;
 						switch(selectedgun) {
 						case 0: // fist
@@ -3366,7 +3363,7 @@ void shootgun ( struct player *plr, short daang, char guntype ) {
 			sintable[(daang2+2560)&2047],           //X vector of 3D ang
 			sintable[(daang2+2048)&2047],           //Y vector of 3D ang
 			daz2,                                   //Z vector of 3D ang
-			&hitsect,&hitwall,&hitsprite,&hitx,&hity,&hitz);
+			&hitsect,&hitwall,&hitsprite,&hitx,&hity,&hitz,CLIPMASK1);
 
 		if(hitwall > 0 && hitsprite < 0) {
 			neartag(hitx,hity,hitz,hitsect,daang,
@@ -3550,7 +3547,7 @@ void shootgun ( struct player *plr, short daang, char guntype ) {
 			sintable[(daang2+2560)&2047],           //X vector of 3D ang
 			sintable[(daang2+2048)&2047],           //Y vector of 3D ang
 			daz2,                                   //Z vector of 3D ang
-			&hitsect,&hitwall,&hitsprite,&hitx,&hity,&hitz);
+			&hitsect,&hitwall,&hitsprite,&hitx,&hity,&hitz,CLIPMASK1);
 
 		if( hitsect < 0 && hitsprite < 0 || hitwall >= 0) {
 
@@ -3869,7 +3866,7 @@ void potionpic(int currentpotion) {
 			else
 				overwritesprite(262+(i*10),169,potiontilenum,0,0,0);
 
-			itoa(plr->potion[i],potionbuf,10);
+			sprintf(potionbuf,"%d",plr->potion[i]);
 
 			if( svga == 1)
 				fancyfont((266<<1)+(i*20),394,SPOTIONFONT-26,potionbuf,0);
@@ -3961,7 +3958,7 @@ void orbpic(int currentorb) {
 	if( plr->orbammo[currentorb] < 0)
 		plr->orbammo[currentorb]=0;
 
-	itoa(plr->orbammo[currentorb],tempbuf,10);
+	sprintf(tempbuf,"%d",plr->orbammo[currentorb]);
 
 	if( svga == 1)
 		spellbookpage=sspellbookanim[currentorb][8].daweaponframe;
@@ -3990,7 +3987,7 @@ void healthpic(int hp) {
 	if(plr->health < 0)
 		plr->health=0;
 
-	itoa(plr->health,healthbuf,10);
+	sprintf(healthbuf,"%d",plr->health);
 
 	if(svga == 0) {
 		if( plr->screensize <= 320 ) {
@@ -4034,7 +4031,7 @@ void armorpic(int arm) {
 		plr->armortype=0;
 	}
 
-	itoa(plr->armor,armorbuf,10);
+	sprintf(armorbuf,"%d",plr->armor);
 
 	if( svga == 0 ) {
 		if( plr->screensize <= 320 ) {
@@ -4065,7 +4062,7 @@ void levelpic(void) {
 	if( selectedgun == 6) {
 		if( plr->ammo[6] < 0)
 			plr->ammo[6]=0;
-			itoa(plr->ammo[6],temp,10);
+			sprintf(temp,"%d",plr->ammo[6]);
 			strcpy(temp2,temp);
 			if( svga == 0) {
 				overwritesprite(3,181,ARROWS,0,0,0);
@@ -4079,7 +4076,7 @@ void levelpic(void) {
 	else if( selectedgun == 7 && plr->weapon[7] == 2) {
 		if( plr->ammo[7] < 0)
 			plr->ammo[7]=0;
-			itoa(plr->ammo[7],temp,10);
+			sprintf(temp,"%d",plr->ammo[7]);
 			strcpy(temp2,temp);
 			// need pike pic
 			if( svga == 0 ) {
@@ -4121,7 +4118,7 @@ void score(int score) {
 
 	tilenum=SCOREFONT-26;
 
-	itoa(plr->score,tempbuf,10);
+	sprintf(tempbuf,"%d",plr->score);
 
 	if( svga == 1)
 		overwritesprite(6,394,SSCOREBACKPIC,0,0,0);
@@ -4296,14 +4293,14 @@ void captureflagpic(void) {
 		if( svga == 1) {
 			if( teaminplay[i] ) {
 				 overwritesprite((sflag[i].x<<1)+6,sflag[i].y+8,STHEFLAG,0,0,sflag[i].palnum);
-				 itoa(teamscore[i],tempbuf,10);
+				 sprintf(tempbuf,"%d",teamscore[i]);
 				 fancyfont((sflag[i].x<<1)+16,sflag[i].y+16,SPOTIONFONT-26,tempbuf,0);
 			}
 		}
 		else {
 			if( teaminplay[i] ) {
 				overwritesprite(flag[i].x+3,flag[i].y+3,THEFLAG,0,0,flag[i].palnum);
-				itoa(teamscore[i],tempbuf,10);
+				sprintf(tempbuf,"%d",teamscore[i]);
 				fancyfont(flag[i].x+6,flag[i].y+6,SMFONT-26,tempbuf,0);
 			}
 		}
@@ -4319,7 +4316,7 @@ void fragspic(void) {
 	if( svga == 1) {
 		if( plr->screensize == 320) {
 			overwritesprite(260<<1,387,SPOTIONBACKPIC,0,0,0);
-			itoa(teamscore[pyrn],tempbuf,10);
+			sprintf(tempbuf,"%d",teamscore[pyrn]);
 			//overwritesprite(74<<1,406,SHEALTHBACK,0,0,0);
 			fancyfont((260<<1)+10,387+10,SHEALTHFONT-26,tempbuf,0);
 		}
@@ -4327,7 +4324,7 @@ void fragspic(void) {
 	else {
 		if( plr->screensize <= 320) {
 			overwritesprite(260,161,POTIONBACKPIC,0,0,0);
-			itoa(teamscore[pyrn],tempbuf,10);
+			sprintf(tempbuf,"%d",teamscore[pyrn]);
 			//overwritesprite(72,168,HEALTHBACKPIC,0,0,0);
 			fancyfont(260+15,161+5,BGZERO-26,tempbuf,0);
 		}

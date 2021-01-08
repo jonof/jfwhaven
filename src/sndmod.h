@@ -226,12 +226,12 @@ struct ambsounds {
 
 
 
-	VOID _far _loadds timerevent(VOID);
+	void timerevent(void);
 
 	//Callback functions
-	VOID _far cdecl sosDIGISampleCallback(  WORD, WORD, WORD  );
-	VOID _far sosMIDISongCallback( WORD );
-   VOID _far cdecl _loadds sosMIDITriggerCallback(  WORD, BYTE, BYTE );
+	void sosDIGISampleCallback(  unsigned short, unsigned short, unsigned short  );
+	void sosMIDISongCallback( unsigned short );
+   void sosMIDITriggerCallback(  unsigned short, unsigned char, unsigned char );
 
 	//
 	//defs for hmi Setup
@@ -240,23 +240,23 @@ struct ambsounds {
 	typedef  struct   _tagINIInstance
 			{
 
-				WORD  wFlags;           // misc. flags
-				BYTE  szName[ 128 ];    // name of .ini file
+				unsigned short  wFlags;           // misc. flags
+				unsigned char  szName[ 128 ];    // name of .ini file
 
-				PSTR  pData;            // pointer to .ini file in memory
-				WORD  wSize;            // size, in bytes, of file
-				WORD  wMaxSize;         // maximum size in bytes of the .ini
+				char *  pData;            // pointer to .ini file in memory
+				unsigned short  wSize;            // size, in bytes, of file
+				unsigned short  wMaxSize;         // maximum size in bytes of the .ini
 
-				PSTR  pCurrent;         // current location in file
-				WORD  wCurrent;         // current location in file
+				char *  pCurrent;         // current location in file
+				unsigned short  wCurrent;         // current location in file
 
-				PSTR  pSection;         // pointer to section start
+				char *  pSection;         // pointer to section start
 
-				PSTR  pItemPtr;         // pointer to the start of line w/item
-				PSTR  pItem;            // pointer to last item
-				PSTR  pList;            // pointer to last item location, for list
+				char *  pItemPtr;         // pointer to the start of line w/item
+				char *  pItem;            // pointer to last item
+				char *  pList;            // pointer to last item location, for list
 												// management.
-				PSTR  pListPtr;         // pointer for raw string list
+				char *  pListPtr;         // pointer for raw string list
 
 			} _INI_INSTANCE;
 
@@ -284,9 +284,7 @@ struct ambsounds {
 
 	// function prototypes
 
-	BOOL  cdecl sosEZGetConfig( PSTR );
-
-	WORD  wMIDIDeviceID,wDIGIDeviceID;
+	unsigned short  wMIDIDeviceID,wDIGIDeviceID;
 
 
 	//
@@ -312,7 +310,7 @@ struct ambsounds {
 	#define _LSAMPLE1                   0x100c
 	#define _LSAMPLE2                   0x100d
 
-	UINT  PanArray[] = {
+	unsigned short  PanArray[] = {
 		//REAR to HARD LEFT (angle = 0->512)
 	0x8000,0x7000,0x6000,0x5000,0x4000,0x3000,0x2000,0x1000,0x0000,
 		//HARD LEFT to CENTER (angle = 513-1024)
@@ -324,39 +322,11 @@ struct ambsounds {
 	};
 
 	volatile    SampleType  SampleRay[MAX_ACTIVE_SAMPLES];
-	BYTE        ActiveSampleBits = 0x00;
+	unsigned char        ActiveSampleBits = 0x00;
 
 	volatile    SampleType  FXLoopRay[MAX_ACTIVE_FXLOOPS];
 
-	_SOS_CAPABILITIES sSOSDeviceCaps;
-	_SOS_HARDWARE     sDIGIHardware;
-	_SOS_INIT_DRIVER  sSOSInitDriver = {
-		_SOS_DMA_BUFFERSIZE,
-		_NULL,
-		_TRUE,
-		_SOS_SAMPLE_RATE,
-		19,
-		0L,
-		_NULL,
-		_NULL,
-		_NULL,
-		_SOS_NORMAL_TIMER
-		};
-
-	_SOS_INIT_DRIVER  sSOSInitDriver1 = {
-		_SOS_DMA_BUFFERSIZE,
-		_NULL,
-		_TRUE,
-		_SOS_SAMPLE_RATE,
-		19,
-		0L,
-		_NULL,
-		_NULL,
-		_NULL,
-		_SOS_NORMAL_TIMER
-		};
-
-
+    /*
 	_SOS_START_SAMPLE sSOSSampleData[12] = {
 
 		{  _NULL, 0L, 0, _CENTER_CHANNEL, 0x7fff,
@@ -434,34 +404,31 @@ struct ambsounds {
 			0L, 0L, 0L, 0L, 0, 0, 0, 0x8000, 0, 0, 0, 0,
 			0L, 0, 0, 0L, 0L, 0L},
 		};
+     */
 
+	unsigned short     LoopHandles[2];
+	unsigned short     LoopPending=0,LoopIndex=0,looptoggle=0,loopmusepauseflag=0;
+	unsigned short     Metronome;
 
-	WORD     LoopHandles[2];
-	WORD     LoopPending=0,LoopIndex=0,looptoggle=0,loopmusepauseflag=0;
-	WORD     Metronome;
-
-	DWORD    *DigiList;
-	DWORD    *LoopList;
-	DWORD    *SongList;
-	DWORD    SeekIndex;
+	unsigned int    *DigiList;
+	unsigned int    *LoopList;
+	unsigned int    *SongList;
+	unsigned int    SeekIndex;
 
 	//
 	//    MIDI SPECIFIC
 	//
-	_SOS_MIDI_HARDWARE         sMIDIHardware;
-	_SOS_MIDI_INIT_DRIVER      sSOSMIDIInitDriver;
-	_SOS_MIDI_DIGI_INIT_DRIVER sSOSMIDIDIGIInitDriver;
 
 //midimusic vars
-	WORD        Metronome;
-	WORD        SongPending,BranchPending;
+	unsigned short        Metronome;
+	unsigned short        SongPending,BranchPending;
 
-	WORD     hSOSSongHandles[MAX_ACTIVE_SONGS];
-	BYTE     ActiveSongBits = 0x00;
+	unsigned short     hSOSSongHandles[MAX_ACTIVE_SONGS];
+	unsigned char     ActiveSongBits = 0x00;
 
-	BYTE     *m_bnkptr,*d_bnkptr,*digi_bnkptr;
-	BYTE _huge *lpMIDISong;
-
+	unsigned char     *m_bnkptr,*d_bnkptr,*digi_bnkptr;
+	unsigned char  *lpMIDISong;
+    /*
 	_SOS_MIDI_INIT_SONG        sSOSInitSongs[MAX_ACTIVE_SONGS];
 
 	_SOS_MIDI_TRACK_DEVICE   sSOSTrackMap[MAX_ACTIVE_SONGS] = {
@@ -490,47 +457,47 @@ struct ambsounds {
 		_MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK
 		}
 	};
-
+    */
 
 	//
 	//    MISC/COMMON STUFF
 	//
-	WORD     hSOSDriverHandles[3];
-	WORD     hSOSDriverHandles1;
+	unsigned short     hSOSDriverHandles[3];
+	unsigned short     hSOSDriverHandles1;
 
-	WORD     SD_Started=0;
-	BOOL     Midi_Loaded,Digi_Loaded,DigMidi_Loaded;
-	WORD     wError,wIndex;
+	unsigned short     SD_Started=0;
+	int     Midi_Loaded,Digi_Loaded,DigMidi_Loaded;
+	unsigned short     wError,wIndex;
 
-	WORD     hSoundFile  =  -1;       // Handle for Sound F/X file
-	WORD     hLoopFile   =  -1;       // Handle for Loop file
-	WORD     hSongFile   =  -1;
-	WORD     hMiscHandle =  -1;
+	unsigned short     hSoundFile  =  -1;       // Handle for Sound F/X file
+	unsigned short     hLoopFile   =  -1;       // Handle for Loop file
+	unsigned short     hSongFile   =  -1;
+	unsigned short     hMiscHandle =  -1;
 
 
 
 	//
 	//    TIMER STUFF
 	//
-	WORD     hTimerT_ClockHandle;    // Handle for the game timer (TotalClock)
-	WORD     hTimerDig_FillHandle;   // Handle for the sSOSInitDriver.lpFillHandler
-	WORD     hTimerRec_FillHandle;   // Handle for the sSOSInitDriver.lpFillHandler
+	unsigned short     hTimerT_ClockHandle;    // Handle for the game timer (TotalClock)
+	unsigned short     hTimerDig_FillHandle;   // Handle for the sSOSInitDriver.lpFillHandler
+	unsigned short     hTimerRec_FillHandle;   // Handle for the sSOSInitDriver.lpFillHandler
 
-	WORD     AuxTimerList[MAX_AUX_TIMERS];
-	BYTE     ActiveTimerBits = 0x00;
+	unsigned short     AuxTimerList[MAX_AUX_TIMERS];
+	unsigned char     ActiveTimerBits = 0x00;
 
-	WORD     LoopSndsPlaying=0;
+	unsigned short     LoopSndsPlaying=0;
 
 
 	struct ambsounds ambsoundarray[] = {
-		0,0,
-		S_WINDLOOP1,-1,
-		S_WINDLOOP2,-1,
-		S_WAVELOOP1,-1,
-		S_LAVALOOP1,-1,
-		S_WATERY,-1,
-		S_STONELOOP1,-1,
-		S_BATSLOOP,-1
+		{ 0,0 },
+		{ S_WINDLOOP1,-1 },
+		{ S_WINDLOOP2,-1 },
+		{ S_WAVELOOP1,-1 },
+		{ S_LAVALOOP1,-1 },
+		{ S_WATERY,-1 },
+		{ S_STONELOOP1,-1 },
+		{ S_BATSLOOP,-1 }
 	};
 
 
@@ -539,16 +506,14 @@ struct ambsounds {
 	//
 	//          GLOBAL VARIABLES
 	//
-	WORD     SoundMode,wDIGIVol;
-	WORD     MusicMode,wMIDIVol;
-	WORD     use_rec_driver,voicecom_enabled;
+	unsigned short     SoundMode,wDIGIVol;
+	unsigned short     MusicMode,wMIDIVol;
+	unsigned short     use_rec_driver,voicecom_enabled;
 
 
 	//
 	//          EXTERN STUFF
 	//
-	extern keytimerstuff();
-	extern volatile int totalclock;
 	extern int posx[],posy[];
 
 	//JSA temp int to show vol and pan

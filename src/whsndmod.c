@@ -18,22 +18,22 @@ extern int digilevel;
 extern int loopinstuff;
 
 // local data for hmi INI
-static   PSTR  szHexNumbers  =  "0123456789ABCDEF";
-static   WORD  wMultiplier[]   =  { 1, 16, 256, 4096, 65536, 1048576, 16777216, 268435456 };
+static   char *  szHexNumbers  =  "0123456789ABCDEF";
+static   unsigned short  wMultiplier[]   =  { 1, 16, 256, 4096, 65536, 1048576, 16777216, 268435456 };
 // local function prototypes
 
 //TEMP!!
 volatile  unsigned joetime;
 
-static WORD songelements=3;
-static WORD arrangements=3;
-static WORD songsperlevel;
-static WORD totallevels=6;              //really thre use two to test menusong
+static unsigned short songelements=3;
+static unsigned short arrangements=3;
+static unsigned short songsperlevel;
+static unsigned short totallevels=6;              //really thre use two to test menusong
 
 //JSA_DEMO move these to sndmod.h if they work
-LPSTR       BaseSongPtr;
-LPSTR       EmbSongPtr;
-LPSTR       SpiceSongPtr;
+char *       BaseSongPtr;
+char *       EmbSongPtr;
+char *       SpiceSongPtr;
 
 
 //
@@ -42,28 +42,11 @@ LPSTR       SpiceSongPtr;
 
 //////////////////////////////////////////////////////////////////////////////
 //                                                                          //
-//    SND_InitSOSTimer() : Registers the timerevent() function to be        //
-//          called by SOS.                                                  //
-//                                                                          //
-//////////////////////////////////////////////////////////////////////////////
-VOID
-SND_InitSOSTimer(VOID)
-{
-	if( ( wError  = sosTIMERRegisterEvent( 120, (VOID(far *))timerevent, &hTimerT_ClockHandle ) ) )
-	{
-		sosTIMERUnInitSystem( 0 );
-		sosDIGIUnInitSystem();
-		crash( "TIMER FAILURE!" );
-	}
-}
-
-//////////////////////////////////////////////////////////////////////////////
-//                                                                          //
 //    timerevent() : Handles timer functions originally in game.c           //
 //                                                                          //
 //////////////////////////////////////////////////////////////////////////////
-VOID
-_far _loadds timerevent(VOID)
+void
+timerevent(void)
 {
    joetime++;
 	totalclock++;
@@ -78,14 +61,14 @@ _far _loadds timerevent(VOID)
 //          hSample is the particular sample handle.                        //
 //                                                                          //
 //////////////////////////////////////////////////////////////////////////////
-VOID
-_far cdecl sosDIGISampleCallback(  WORD wDriverHandle, WORD wCallSource, WORD hSample )
+void
+sosDIGISampleCallback(  unsigned short wDriverHandle, unsigned short wCallSource, unsigned short hSample )
 {
 //
 // recording driver will also use this callback for future!
 // will have to switch wDriverHandle as well...
 //
-
+/*
 	switch(wCallSource)
 	{
 		case _SAMPLE_DONE:
@@ -117,7 +100,7 @@ _far cdecl sosDIGISampleCallback(  WORD wDriverHandle, WORD wCallSource, WORD hS
 			break;
 #endif
 	}
-
+*/
 }
 
 
@@ -128,10 +111,10 @@ _far cdecl sosDIGISampleCallback(  WORD wDriverHandle, WORD wCallSource, WORD hS
 //              song is complete (handle from sosMIDIInitSong).                      //
 //          NEEDS WORK FOR JUGGLING AND MIXING SONGS!!!!!!!                 //
 //////////////////////////////////////////////////////////////////////////////
-VOID
-_far sosMIDISongCallback( WORD hSong )
+void
+sosMIDISongCallback( unsigned short hSong )
 {
-
+/*
 	for(wIndex=0; wIndex<MAX_ACTIVE_SONGS; wIndex++)
 		if(hSong == hSOSSongHandles[wIndex])
 			break;
@@ -139,13 +122,15 @@ _far sosMIDISongCallback( WORD hSong )
 	//sosMIDIStopSong(hSOSSongHandles[wIndex]);
 	sosMIDIUnInitSong(hSOSSongHandles[wIndex]);
 	hSOSSongHandles[wIndex] = 0x7fff;
+ */
 }
 
 
 
-VOID
-_far cdecl _loadds sosMIDITriggerCallback( WORD hSong, BYTE bTrack, BYTE bID )
+void
+sosMIDITriggerCallback( unsigned short hSong, unsigned char bTrack, unsigned char bID )
 {
+    /*
 	if(SongPending) {
 		SND_StartMIDISong(SongPending);
 		SongPending=0;
@@ -156,13 +141,14 @@ _far cdecl _loadds sosMIDITriggerCallback( WORD hSong, BYTE bTrack, BYTE bID )
 	  sosMIDIBranchToSongLocation(hSOSSongHandles[BASE_SONG],0);
 	  BranchPending=0;
   }
+     */
 }
 
 
-VOID
-SND_SetupTables(VOID)
+void
+SND_SetupTables(void)
 {
-
+/*
 	if(SoundMode) {
 		hSoundFile = open("JOESND",O_RDONLY | O_BINARY);
 		if( hSoundFile == -1 ) {
@@ -170,7 +156,7 @@ SND_SetupTables(VOID)
 		}
 		DigiList = malloc(0x1000);
 		lseek(hSoundFile,-4096L,SEEK_END);
-		readfile(hSoundFile,(void *)FP_OFF(DigiList),4096);
+		readfile(hSoundFile,DigiList,4096);
 	}
 
 	if(MusicMode==_LOOP_MUSIC) {
@@ -180,7 +166,7 @@ SND_SetupTables(VOID)
 		}
 		LoopList = malloc(0x1000);
 		lseek(hLoopFile,-4096L,SEEK_END);
-		readfile(hLoopFile,(void *)FP_OFF(LoopList),4096);
+		readfile(hLoopFile,LoopList,4096);
 	}
 	else if(MusicMode) {
 		hSongFile = open("SONGS",O_RDONLY | O_BINARY);
@@ -189,9 +175,9 @@ SND_SetupTables(VOID)
 		}
 		SongList = malloc(0x1000);
 		lseek(hSongFile,-4096L,SEEK_END);
-		readfile(hSongFile,(void *)FP_OFF(SongList),4096);
+		readfile(hSongFile,SongList,4096);
 	}
-
+*/
 	return;
 }
 
@@ -206,10 +192,10 @@ SND_SetupTables(VOID)
 void
 SND_LoadMidiIns(void)
 {
-static WORD  wLength;
+static unsigned short  wLength;
 
 //JSA_DEMO check port address to verify FM device
-
+/*
 	if( (MusicMode==_STANDARD_MUSIC || MusicMode==_DIG_MIDI_MUSIC) &&
 			sMIDIHardware.wPort==0x388 ) {
 //              (wMIDIDeviceID != _MIDI_MPU_401 && wMIDIDeviceID != _MIDI_MT_32
@@ -218,7 +204,7 @@ static WORD  wLength;
 		if( hMiscHandle == -1 )
 			crash("MELODIC BANK FILE FAILED!");
 		m_bnkptr = malloc(0x152c);
-		read( hMiscHandle,( void * )FP_OFF(m_bnkptr),0x152c );
+		read( hMiscHandle,m_bnkptr,0x152c );
 		close( hMiscHandle );
 		if( ( wError = sosMIDISetInsData( hSOSDriverHandles[MIDI], m_bnkptr, 0x00 ) ) )
 			crash("BAD SetInsData MEL!" );
@@ -227,7 +213,7 @@ static WORD  wLength;
 		if( hMiscHandle == -1 )
 			crash("PERCUSSIVE BANK FILE FAILED!");
 		d_bnkptr = malloc(0x152c);
-		read( hMiscHandle,( void * )FP_OFF(d_bnkptr),0x152c );
+		read( hMiscHandle,d_bnkptr,0x152c );
 		close( hMiscHandle );
 		if( ( wError = sosMIDISetInsData( hSOSDriverHandles[MIDI], d_bnkptr, 0x00 ) ) )
 			printf("BAD SetInsData DRUM!" );
@@ -240,11 +226,12 @@ static WORD  wLength;
 	wLength  =  lseek( hMiscHandle, 0L, SEEK_END );
 	lseek( hMiscHandle, 0L, SEEK_SET );
 		digi_bnkptr = malloc(wLength);
-		read( hMiscHandle,( void * )FP_OFF(digi_bnkptr),wLength );
+		read( hMiscHandle,digi_bnkptr,wLength );
 		close( hMiscHandle );
 		if( ( wError = sosMIDISetInsData( hSOSDriverHandles[DIG_MIDI], digi_bnkptr, 0x00 ) ) )
 			crash("BAD SetInsData digmidi!" );
 	}
+ */
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -253,14 +240,14 @@ static WORD  wLength;
 //                                  (LPSTR = BYTE far *)                                         //
 //                                                                          //
 //////////////////////////////////////////////////////////////////////////////
-LPSTR SND_LoadMIDISong( WORD which )
+char * SND_LoadMIDISong( unsigned short which )
 {
-LPSTR lpDataPtr;
-PSTR  pDataPtr;
-WORD  wLength;
+char * lpDataPtr;
+char *  pDataPtr;
+unsigned short  wLength;
 
 
-   wLength  = (WORD)SongList[(which * 3) + 1];
+   wLength  = (unsigned short)SongList[(which * 3) + 1];
 	SeekIndex = ( SongList[(which * 3) + 0] * 4096 );
    pDataPtr =  malloc( wLength );
 
@@ -269,7 +256,7 @@ WORD  wLength;
    read( hSongFile, pDataPtr, wLength );
 
    // create far pointer  !!!!!
-   lpDataPtr   =  (LPSTR)pDataPtr;
+   lpDataPtr   =  (char *)pDataPtr;
    return( lpDataPtr );
 }
 
@@ -279,101 +266,28 @@ WORD  wLength;
 //
 
 
-
-//////////////////////////////////////////////////////////////////////////////
-//                                                                          //
-//       SND_AddTimerEvent( WORD, VOID (_far _loadds *)() ) : Register an   //
-//             event with SOS. Save the handle it returns, it is needed     //
-//             to release the event. The event routine must be declared as  //
-//             _far _loadds routine(void) in the calling module             //
-//                                                                          //
-//////////////////////////////////////////////////////////////////////////////
-
-WORD
-SND_AddTimerEvent( WORD wEventRate, VOID ( _far _loadds *TimerRoutine)(void) )
-{
-
-	for( wIndex=0; wIndex<MAX_AUX_TIMERS; wIndex++ )
-		if( !AuxTimerList[wIndex] )
-			break;
-
-	if( ( wError = sosTIMERRegisterEvent( wEventRate, (VOID(far *))TimerRoutine,
-		&AuxTimerList[wIndex] ) ) )
-	{
-		crash( "Could not register TimerRoutine!" );
-	}
-
-	ActiveTimerBits |= (0x01<<wIndex);
-	return(AuxTimerList[wIndex]);
-
-}
-
-//////////////////////////////////////////////////////////////////////////////
-//                                                                          //
-//       SND_RemoveTimerEvent( WORD ) : Release the timer event registerd   //
-//             with handle wTimerHandle.                                    //
-//                                                                          //
-//////////////////////////////////////////////////////////////////////////////
-
-VOID
-SND_RemoveTimerEvent( WORD wTimerHandle )
-{
-
-	for( wIndex=0; wIndex<MAX_AUX_TIMERS; wIndex++ )
-		if( AuxTimerList[wIndex]==wTimerHandle )
-			break;
-
-	sosTIMERRemoveEvent( AuxTimerList[wIndex] );
-	ActiveTimerBits ^= (0x01<<wIndex);
-	AuxTimerList[wIndex] = 0;
-
-}
-
-
-//////////////////////////////////////////////////////////////////////////////
-//                                                                          //
-//       SND_GetNumAuxEvents( VOID ) : Returns the number of currenly       //
-//             registered SOSTimer events.                                  //
-//                                                                          //
-//////////////////////////////////////////////////////////////////////////////
-WORD
-SND_GetNumAuxEvents( VOID )
-{
-WORD  wTimerCount=0;
-BYTE  temp;
-
-	temp = ActiveTimerBits;
-	for( wIndex=0; wIndex<MAX_AUX_TIMERS; wIndex++ )
-		if( (temp>>wIndex) & 0x01 )
-			wTimerCount++;
-
-	return(wTimerCount);
-
-}
-
-
-VOID
+void
 SND_DoBuffers(void)
 {
 
-
+/*
 	for( wIndex=0; wIndex<MAX_ACTIVE_SAMPLES; wIndex++ ) {
-		sSOSSampleData[wIndex].lpSamplePtr = (LPSTR)malloc((int)55000);
+		sSOSSampleData[wIndex].lpSamplePtr = (char *)malloc((int)55000);
 		if(sSOSSampleData[wIndex].lpSamplePtr==_NULL)
 			crash("Could Not get a Sound Buffer!!");
 	}
-
+*/
 }
 
-VOID
+void
 SND_UnDoBuffers(void)
 {
-
+/*
 	for( wIndex=0; wIndex<MAX_ACTIVE_SAMPLES; wIndex++ ) {
 		if( sSOSSampleData[wIndex].lpSamplePtr != NULL )
-			free((void *)FP_OFF(sSOSSampleData[wIndex].lpSamplePtr));
+			free(sSOSSampleData[wIndex].lpSamplePtr);
 	}
-
+*/
 }
 
 
@@ -383,25 +297,16 @@ SND_UnDoBuffers(void)
 //             service.                                                     //
 //                                                                          //
 //////////////////////////////////////////////////////////////////////////////
-VOID
-SND_Startup(VOID)
+void
+SND_Startup(void)
 {
 
 	if (SD_Started)
 		return;
-
+/*
 //GET Volume values
 		wMIDIVol = (musiclevel<<3);
 		wDIGIVol = (digilevel<<11);
-
-
-//TIMERSYSTEM
-
-	wError = sosTIMERInitSystem( _TIMER_DOS_RATE, _SOS_DEBUG_NORMAL );
-	if(wError!=_ERR_NO_ERROR)
-		crash( "Problem with Timer SysInit!" );
-
-	SND_InitSOSTimer();
 
 	if(wDIGIDeviceID == 0xffffffff)
 		SoundMode=_OFF;
@@ -472,10 +377,10 @@ SND_Startup(VOID)
 		for( wIndex=0; wIndex<MAX_ACTIVE_SAMPLES; wIndex++ )
 			SampleRay[wIndex].number = -1;
 	}
-
+*/
 	// read in offset page list's
 	SND_SetupTables();
-	SD_Started = _TRUE;
+	SD_Started = 1;
 }
 
 
@@ -485,13 +390,13 @@ SND_Startup(VOID)
 //             timer service(s).                                            //
 //                                                                          //
 //////////////////////////////////////////////////////////////////////////////
-VOID
-SND_Shutdown(VOID)
+void
+SND_Shutdown(void)
 {
 
 	if (!SD_Started)
 		return;
-
+/*
 	if( SoundMode && Digi_Loaded )
 	{
 	  SND_DIGIFlush();
@@ -522,19 +427,15 @@ SND_Shutdown(VOID)
 		if( digi_bnkptr!=NULL )
 			free( digi_bnkptr );
 		if( lpMIDISong!=NULL )
-			free( ( PSTR )FP_OFF(lpMIDISong) );
+			free( lpMIDISong );
 		Midi_Loaded=_FALSE;
 	}
 
 	sosMIDIUnInitSystem();
 
 	sosDIGIUnInitSystem();
-
-	sosTIMERRemoveEvent( hTimerT_ClockHandle );
-
-	sosTIMERUnInitSystem( 0 );
-
-	SD_Started = _FALSE;
+*/
+	SD_Started = 0;
 
 }
 
@@ -544,10 +445,10 @@ SND_Shutdown(VOID)
 //       SND_Mixer(WORD wSource,WORD wVolume) : Change Music or SFX Volume  //
 //                                                                          //
 //////////////////////////////////////////////////////////////////////////////
-VOID
-SND_Mixer( WORD wSource, WORD wVolume )
+void
+SND_Mixer( unsigned short wSource, unsigned short wVolume )
 {
-
+/*
 	if(wSource==MIDI) {
 		wMIDIVol = (wVolume<<3);
 		sosMIDISetMasterVolume((BYTE)wMIDIVol);
@@ -557,13 +458,14 @@ SND_Mixer( WORD wSource, WORD wVolume )
 		wDIGIVol = (wVolume<<11);
 		sosDIGISetMasterVolume(hSOSDriverHandles[DIGI],wDIGIVol);
 	}
+ */
 }
 
 
-VOID
+void
 SND_MenuMusic(int choose)
 {
-
+/*
 	if(!MusicMode || !SD_Started)
 		return;
 
@@ -584,17 +486,17 @@ SND_MenuMusic(int choose)
 	SongPending = SND_PrepareMIDISong(BASE_SONG);
 	SND_StartMIDISong(SongPending);
 	SongPending=0;
-
+*/
 }
 
 //
 //  SND_StartMusic() will only be called at the beginning of a new level
 //      will be used in all other cases.
 
-VOID
-SND_StartMusic(WORD level)
+void
+SND_StartMusic(unsigned short level)
 {
-
+/*
 	if((!MusicMode) || !SD_Started)
 		return;
 
@@ -613,15 +515,15 @@ SND_StartMusic(WORD level)
 		SND_StartMIDISong(SongPending);
 		SongPending=0;
 	}
-
+*/
 }
 
 
-VOID
-SND_LoadSongs(WORD which)
+void
+SND_LoadSongs(unsigned short which)
 {
 static int index;
-
+/*
 			index=songsperlevel*which;                  //vanilla
 
 
@@ -636,6 +538,7 @@ static int index;
 			BaseSongPtr = SND_LoadMIDISong(index+BASE_SONG);
 			EmbSongPtr = SND_LoadMIDISong(index+EMB_SONG);
 			SpiceSongPtr = SND_LoadMIDISong(index+SPICE_SONG);
+ */
 }
 
 
@@ -647,6 +550,7 @@ static int index;
 int
 SND_PrepareMIDISong(int SongIndex)
 {
+    /*
    if(!MusicMode)
 	  return(0x7fff);
 
@@ -661,28 +565,32 @@ SND_PrepareMIDISong(int SongIndex)
 		sSOSInitSongs[SongIndex].lpSongData = SpiceSongPtr;
 
 
-	sSOSInitSongs[SongIndex].lpSongCallback = (VOID(far *))sosMIDISongCallback;
+	sSOSInitSongs[SongIndex].lpSongCallback = (void(*))sosMIDISongCallback;
 	if( ( wError = sosMIDIInitSong( &sSOSInitSongs[SongIndex], &sSOSTrackMap[SongIndex], &hSOSSongHandles[SongIndex] ) ) )
 	{
 			crash("Init Song Failed!");
 	}
 
 	return((int)hSOSSongHandles[SongIndex]);
-
+*/
+    return 0x7fff;
 }
 
 int
-SND_StartMIDISong(WORD wSongHandle)
+SND_StartMIDISong(unsigned short wSongHandle)
 {
+    /*
 	sosMIDISetMasterVolume((BYTE)wMIDIVol);
 	return(sosMIDIStartSong(wSongHandle));
+     */
+    return 0x7fff;
 }
 
 
-VOID
-SND_StopMIDISong(WORD wSongHandle)
+void
+SND_StopMIDISong(unsigned short wSongHandle)
 {
-
+    /*
 	for(wIndex=0; wIndex<MAX_ACTIVE_SONGS; wIndex++)
 		if(hSOSSongHandles[wIndex]==wSongHandle)
 			break;
@@ -695,15 +603,16 @@ SND_StopMIDISong(WORD wSongHandle)
 		sosMIDIStopSong(hSOSSongHandles[wIndex]);
 		sosMIDIUnInitSong( hSOSSongHandles[wIndex] );
 		hSOSSongHandles[wIndex] = 0x7fff;
-		free((void *)FP_OFF(sSOSInitSongs[wIndex].lpSongData));
+		free(sSOSInitSongs[wIndex].lpSongData);
 	}
-
+*/
 }
 
 
-VOID
+void
 SND_SongFlush(void)
 {
+    /*
 	if(!MusicMode)
 		return;
 
@@ -714,11 +623,11 @@ SND_SongFlush(void)
 		SND_StopMIDISong(hSOSSongHandles[EMB_SONG]);
 	if(hSOSSongHandles[SPICE_SONG] != 0x7fff)
 		SND_StopMIDISong(hSOSSongHandles[SPICE_SONG]);
-
+*/
 }
 
 
-VOID
+void
 SND_FadeMusic(void)
 {
 	if(!MusicMode)
@@ -726,10 +635,10 @@ SND_FadeMusic(void)
 //  sosMIDIFadeSong(hSOSSongHandles[BASE_SONG],_SOS_MIDI_FADE_OUT,200,(BYTE)wMIDIVol,(BYTE)0,10);
 }
 
-VOID
+void
 SND_MIDIFlush(void)
 {
-
+/*
 	for(wIndex=0; wIndex<MAX_ACTIVE_SONGS; wIndex++) {
 		if( !sosMIDISongDone(hSOSSongHandles[wIndex]) )
 			sosMIDIStopSong(hSOSSongHandles[wIndex]);
@@ -738,52 +647,40 @@ SND_MIDIFlush(void)
 		hSOSSongHandles[wIndex] = 0x7fff;
 	}
 
-	free((void *)FP_OFF(BaseSongPtr));
-	free((void *)FP_OFF(EmbSongPtr));
-	free((void *)FP_OFF(SpiceSongPtr));
-
+	free(BaseSongPtr);
+	free(EmbSongPtr);
+	free(SpiceSongPtr);
+*/
 }
 
 //////////////////////////////////////////////////////////////////////////////
 //                                                                          //
-//    SND_TriggerHook(WORD) : Set the pending song metronome call.          //
-//                                                                          //
-//////////////////////////////////////////////////////////////////////////////
-VOID
-SND_TriggerHook(WORD wSongNum)
-{
-	sosMIDIRegisterTriggerFunction( hSOSSongHandles[wSongNum], 0x04,(VOID(far *))sosMIDITriggerCallback );
-}
-
-
-//////////////////////////////////////////////////////////////////////////////
-//                                                                          //
-//    SND_LoadLoop(VOID) : Load and start digiloop - use looppending        //
+//    SND_LoadLoop(void) : Load and start digiloop - use looppending        //
 //          in the callback to cue.                                         //
 //                                                                          //
 //////////////////////////////////////////////////////////////////////////////
-VOID
-SND_LoadLoop(WORD load_start)
+void
+SND_LoadLoop(unsigned short load_start)
 {
-
+/*
 	if(!SoundMode)
 		return;
 
 	SeekIndex = ( LoopList[(LoopIndex * 3)+0] * 4096 );
-	LoopSampleData[looptoggle].dwSampleSize= (WORD)LoopList[(LoopIndex * 3) + 1];
+	LoopSampleData[looptoggle].dwSampleSize= (unsigned short)LoopList[(LoopIndex * 3) + 1];
 
 
 	lseek(hLoopFile,SeekIndex,0x00);
 
    if(!load_start) {
-	readfile(hLoopFile,( void * )FP_OFF(LoopSampleData[looptoggle].lpSamplePtr),
+	readfile(hLoopFile,LoopSampleData[looptoggle].lpSamplePtr,
 			LoopSampleData[looptoggle].dwSampleSize);
    }
 
 	else {
-	LoopSampleData[0].lpSamplePtr = (LPSTR)malloc( 40000 );
-	LoopSampleData[1].lpSamplePtr = (LPSTR)malloc( 40000 );
-	readfile(hLoopFile,( void * )FP_OFF(LoopSampleData[looptoggle].lpSamplePtr),
+	LoopSampleData[0].lpSamplePtr = (char *)malloc( 40000 );
+	LoopSampleData[1].lpSamplePtr = (char *)malloc( 40000 );
+	readfile(hLoopFile,LoopSampleData[looptoggle].lpSamplePtr,
 			LoopSampleData[looptoggle].dwSampleSize);
 
 		LoopHandles[looptoggle] = sosDIGIStartSample(hSOSDriverHandles[DIGI],&LoopSampleData[looptoggle] );
@@ -793,7 +690,7 @@ SND_LoadLoop(WORD load_start)
 	LoopIndex++;
 	if(LoopIndex>MAX_SND_LOOPS-1)
 		LoopIndex = 0;
-
+*/
 }
 
 
@@ -803,11 +700,11 @@ SND_LoadLoop(WORD load_start)
 //          in the callback to cue.                                         //
 //                                                                          //
 //////////////////////////////////////////////////////////////////////////////
-VOID
-SND_SwapLoops(VOID)
+void
+SND_SwapLoops(void)
 {
 int temp;
-
+/*
 	if(!SoundMode)
 		return;
 
@@ -816,21 +713,22 @@ int temp;
 	if( !sosDIGISampleDone(hSOSDriverHandles[DIGI], LoopHandles[temp]) )
 	{
 		sosDIGIStopSample( hSOSDriverHandles[DIGI], LoopHandles[temp]);
-//      free(( void * )FP_OFF(LoopSampleData[temp].lpSamplePtr));
+//      free(LoopSampleData[temp].lpSamplePtr);
 		LoopHandles[looptoggle] = sosDIGIStartSample(hSOSDriverHandles[DIGI],&LoopSampleData[looptoggle] );
 	}
 
 	looptoggle^=1;
-
+*/
 }
 
 
-VOID
-SND_Sting(WORD sound)
+void
+SND_Sting(unsigned short sound)
 {
 //make sure a sting sound is never 0
 int temp;
 
+    /*
 	if(!SoundMode)
 		return;
 
@@ -846,20 +744,22 @@ int temp;
 		loopmusepauseflag=sound;
 	}
 	SND_PlaySound(sound,0L,0L,0,0);
+ */
 }
 
 
-//WORD
+//unsigned short
 int
-SND_PlaySound(WORD sound, int x,int y, WORD Pan,WORD loopcount)
+SND_PlaySound(unsigned short sound, int x,int y, unsigned short Pan,unsigned short loopcount)
 {
-WORD  wVol,flag=0;
+unsigned short  wVol,flag=0;
 int  sqrdist;
 int  prioritize;
 
+    /*
 	if(!SoundMode)
 		return(0);
-		//return((WORD)0);
+		//return((unsigned short)0);
 
 
 	prioritize = DigiList[(sound * 3) + 2];
@@ -915,13 +815,13 @@ int  prioritize;
 	}
 
 
-	sSOSSampleData[wIndex].dwSampleSize= (WORD)DigiList[(sound * 3) + 1];
+	sSOSSampleData[wIndex].dwSampleSize= (unsigned short)DigiList[(sound * 3) + 1];
 
 	SeekIndex = ( DigiList[(sound * 3) + 0] * 4096 );
 
 	lseek(hSoundFile,SeekIndex,0x00);
-	memset(( void *)FP_OFF(sSOSSampleData[wIndex].lpSamplePtr),'0',55000);
-	read(hSoundFile,( void *)FP_OFF(sSOSSampleData[wIndex].lpSamplePtr),sSOSSampleData[wIndex].dwSampleSize);
+	memset(sSOSSampleData[wIndex].lpSamplePtr,'0',55000);
+	read(hSoundFile,sSOSSampleData[wIndex].lpSamplePtr,sSOSSampleData[wIndex].dwSampleSize);
 
 	if(loopcount)
 		sSOSSampleData[wIndex].wLoopCount = loopcount;
@@ -941,14 +841,15 @@ int  prioritize;
 	ActiveSampleBits |= (0x01<<wIndex);
 
 	return(SampleRay[wIndex].SOSHandle);
-
+*/
+    return 0;
 }
 
 
-WORD
-SND_Sound(WORD sound )
+unsigned short
+SND_Sound(unsigned short sound )
 {
-static WORD handle;
+static unsigned short handle;
 
 	if(!SoundMode)
 		return(-1);
@@ -956,7 +857,7 @@ static WORD handle;
 
 }
 
-VOID
+void
 SND_CheckLoops(void)
 {
 
@@ -987,10 +888,10 @@ SND_CheckLoops(void)
 
 }
 
-VOID
-SND_StopLoop(WORD which)
+void
+SND_StopLoop(unsigned short which)
 {
-
+/*
 	if(!SoundMode)
 		return;
 
@@ -1003,13 +904,14 @@ SND_StopLoop(WORD which)
 		SampleRay[wIndex].SOSHandle = -1;
 		SampleRay[wIndex].playing = 0;
 		SampleRay[wIndex].number = -1;
-
+*/
 }
 
 
-VOID
-SND_DIGIFLush(void)
+void
+SND_DIGIFlush(void)
 {
+    /*
 	if(!SoundMode)
 		return;
 
@@ -1018,12 +920,12 @@ SND_DIGIFLush(void)
 		if( SampleRay[wIndex].playing)
 			sosDIGIStopSample(hSOSDriverHandles[DIGI],SampleRay[wIndex].SOSHandle );
 		//if( sSOSSampleData[wIndex].lpSamplePtr != NULL )
-		//  free((void *)FP_OFF(sSOSSampleData[wIndex].lpSamplePtr));
+		//  free(sSOSSampleData[wIndex].lpSamplePtr);
 		SampleRay[wIndex].SOSHandle = -1;
 		SampleRay[wIndex].playing = 0;
 		SampleRay[wIndex].number = -1;
 		ActiveSampleBits |= (0x01<<wIndex);
-	}
+	}*/
 }
 
 
@@ -1033,17 +935,21 @@ SND_DIGIFLush(void)
 //
 
 
-VOID
-SND_UpdateSoundLoc(WORD which,WORD Volume,WORD Pan)
+void
+SND_UpdateSoundLoc(unsigned short which,unsigned short Volume,unsigned short Pan)
 {
-
+/*
 	gVol=Volume;
 	gPan=sosDIGISetPanLocation(hSOSDriverHandles[DIGI],SampleRay[which].SOSHandle,PanArray[Pan]);
 	sosDIGISetSampleVolume(hSOSDriverHandles[DIGI],SampleRay[which].SOSHandle,Volume);
-
+*/
 }
 
 
+void
+dolevelmusic(int level)
+{
+}
 
 // JOE START functions called often from external modules
 
@@ -1067,7 +973,7 @@ updatesound_loc(void)
 int wIndex;
 unsigned wVol,wPan;
 int sqrdist;
-
+/*
 	if(!SoundMode)
 		return;
 
@@ -1092,7 +998,7 @@ int sqrdist;
 			}
 
 		  }
-
+*/
 }
 
 // Location Stuff End

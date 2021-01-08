@@ -13,7 +13,7 @@
 int vampiretime=0;
 
 int    justwarpedcnt=0;
-extern justwarpedfx;
+extern int justwarpedfx;
 
 extern int difficulty;
 
@@ -80,7 +80,7 @@ void monitor(void) {
 	if(justwarpedfx > 0) {
 		justwarpedfx-=synctics;
 		justwarpedcnt+=synctics<<6;
-		rotatesprite(320<<15,200<<15,justwarpedcnt<<9,0,ANNIHILATE,0,0,1+2);
+		rotatesprite(320<<15,200<<15,justwarpedcnt<<9,0,ANNIHILATE,0,0,1+2,0,0,xdim-1,ydim-1);
 		//rotatesprite(320<<15,200<<15,16384,0,ANNIHILATE,0,0,1+2);
 		if( justwarpedfx <= 0)
 			justwarpedcnt=0;
@@ -114,9 +114,9 @@ void monitor(void) {
 	if( helmettime > 0 ) {
 		helmettime-=synctics;
 		if(svga == 1)
-			rotatesprite(270L<<16,(0L+tilesizy[HELMET]>>2)<<16,32768,0,HELMET,0,0,0x02);
+			rotatesprite(270L<<16,(tilesizy[HELMET]>>2)<<16,32768,0,HELMET,0,0,0x02,0,0,xdim-1,ydim-1);
 		else
-			rotatesprite(300L<<16,(0L+tilesizy[HELMET]>>1)<<16,32768,0,HELMET,0,0,0x02);
+			rotatesprite(300L<<16,(tilesizy[HELMET]>>1)<<16,32768,0,HELMET,0,0,0x02,0,0,xdim-1,ydim-1);
 	}
 
 	if( displaytime > 0 ) {
@@ -157,15 +157,11 @@ void monitor(void) {
 	if(svga == 1) {
 		if( svgahealth > 0) {
 			svgahealth-=synctics;
-			strcpy(svgah,"health ");
-			itoa(plr->health,temph,10);
-			strcat(svgah,temph);
+			sprintf(svgah,"health %d",plr->health);
 			fancyfontscreen(18,44,THEFONT,svgah);
-			strcpy(svgah,"armor ");
 			if(plr->armor < 0)
 				plr->armor=0;
-			itoa(plr->armor,temph,10);
-			strcat(svgah,temph);
+            sprintf(svgah,"armor %d",plr->armor);
 			fancyfontscreen(18,64,THEFONT,svgah);
 		}
 	}
@@ -173,9 +169,7 @@ void monitor(void) {
 	return;
 	for(i=0x00;i<0xff;i++)
 		if( keystatus[i] > 0 ) {
-			strcpy(displaybuf,"key ");
-			itoa(i,tempbuf,10);
-			strcat(displaybuf,tempbuf);
+			sprintf(displaybuf,"key %d",i);
 			displaytime=120;
 			keystatus[i]=0;
 		}
@@ -529,7 +523,7 @@ void processobjs(struct player *plr) {
 			break;
 			case 5:
 				//poison chest
-				if(krand()&2 == 0) {
+				if((krand()&2) == 0) {
 					poisoned=1;
 					poisontime=7200;
 					healthpic(-10);
@@ -2317,7 +2311,7 @@ int checkheat(int i) {
 			  sintable[(daang2+2560)&2047],           //X vector of 3D ang
 			  sintable[(daang2+2048)&2047],           //Y vector of 3D ang
 			  daz2,                                   //Z vector of 3D ang
-			  &hitsect,&hitwall,&hitsprite,&hitx,&hity,&hitz);
+			  &hitsect,&hitwall,&hitsprite,&hitx,&hity,&hitz,CLIPMASK1);
 
 	if( hitsprite > 0 && hitsprite != plr->spritenum) {
 		sprite[i].ang = (getangle(sprite[hitsprite].x-sprite[i].x,sprite[hitsprite].y-sprite[i].y)&2047);
@@ -2511,7 +2505,7 @@ void checkmove(int i,int dax,int day,short *movestat) {
 	*movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,2);
 
 	if( *movestat!=0 ) {
-		if( krand()&1 == 0 ) {
+		if( (krand()&1) == 0 ) {
 			//if(plr->x-sprite[i].x == 0 && plr->y-sprite[i].y == 0) {
 			//    tempx=sprite[i].x;
 			//    tempy=sprite[i].y;
@@ -2542,10 +2536,10 @@ void attack(int i) {
 	if(invincibletime > 0)
 		return;
 
-	if(plr->treasure[6] == 1 && krand()&32 > 16)
+	if(plr->treasure[6] == 1 && (krand()&32) > 16)
 		return;
 
-	if(krand()&15 < plr->armortype+10 )
+	if((krand()&15) < plr->armortype+10 )
 		return;
 
 	if(shieldpoints > 0 && selectedgun < 5) {
@@ -2656,7 +2650,7 @@ void attack(int i) {
 		break;
 		case 3: //plate
 			armorpic(-1);
-			if(krand()&32 > 24)
+			if((krand()&32) > 24)
 				healthpic(-k>>2);
 		break;
 	}
@@ -3168,7 +3162,7 @@ int movesprite(short spritenum, int dx, int dy, int dz, int ceildist, int flordi
 	switch (cliptype) {
 		case 0: clipmask = CLIPMASK0; break;
 		case 1: clipmask = CLIPMASK1; break;
-		case 2: clipmask = CLIPMASK2; break;
+		case 2: clipmask = CLIPMASK0; break;
 	}
 
 	spr = &sprite[spritenum];
