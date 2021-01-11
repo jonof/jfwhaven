@@ -938,8 +938,8 @@ void thunder(void) {
 		if(thundertime < 0) {
 			thunderflash=0;
 			//brightness=0;
-			brightness=gbrightness;
-			setbrightness(brightness,palette,0);
+			//   brightness=gbrightness;
+			//   setbrightness(brightness,palette,0);
 			//JSA_DEMO3
 			SND_Sound(S_THUNDER1+(rand()%4));
 			//visibility=2048;
@@ -950,7 +950,7 @@ void thunder(void) {
 	if(thunderflash == 1) {
 		if(waloff[SKY]!=-1) {
 			val=rand()%4;
-			brightness+=val;
+			//   brightness+=val;
 			switch(val) {
 			case 0:
 				visibility=2048;
@@ -968,9 +968,9 @@ void thunder(void) {
 				visibility=4096;
 			break;
 			}
-			if(brightness > 8)
-				brightness=0;
-			setbrightness(brightness,palette,0);
+			//   if(brightness > 8)
+			//   	brightness=0;
+			//   setbrightness(brightness,palette,0);
 		}
 	}
 }
