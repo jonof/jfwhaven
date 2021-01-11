@@ -7,6 +7,7 @@
 #define GAME
 #define SVGA
 #include "icorp.h"
+#include "version.h"
 
 int *animateptr[MAXANIMATES],
       animategoal[MAXANIMATES],
@@ -39,16 +40,29 @@ int  difficulty=2;
 int    totsynctics,
         frames;
 
+int xdimgame = 640, ydimgame = 480, bppgame = 8;
+int forcesetup = 1;
+
+int keys[NUMKEYS]={
+     0xC8,0xD0,0xCB,0xCD,0x2A,0x9D,0x1D,0x39,
+     0x2D,0x2E,0xC9,0xD1,0xC7,0x33,0x34,
+     0x0F,0x1C,0x0D,0x0C,0x9C,0x13,0x16,
+     0x23,0x1E,0x14,0x1F,0x35,0x45
+};
+
 extern int followmode;
 extern int loadedgame;
 extern char tempbuf[50];
 extern int  spiked;
 
-extern short brightness, gbrightness;
+extern short brightness;
 extern int goreon;
 extern int musiclevel;
 extern int digilevel;
 
+int synctics;
+int globhiz, globloz, globhihit, globlohit;
+char option[NUMOPTIONS] = {0,0,0,0,0,0,1,0};
 
 struct delayitem delayitem[MAXSECTORS];
 
@@ -103,6 +117,26 @@ int  ironbarsgoal[16];
 
 extern int mapon;
 int mapflag;
+
+point3d osprite[MAXSPRITESONSCREEN];
+int   smoothratio;
+int shieldpoints=0;
+int poisoned=0;
+int poisontime=0;
+int  shockme=-1;
+int  svgahealth=0;
+int  victor=0;
+int  autohoriz=0;
+int  svga=0;
+char boardname[80];
+char tempboard[80];
+char loadgamename[80];
+int   delaycnt,
+      engineinitflag,
+      timerinitflag,
+      videoinitflag;
+
+
 //
 //
 //
@@ -147,19 +181,7 @@ void
 shutdown(void)
 {
 
-       int  fil;
-
-        fil=open("pref.dat",O_BINARY|O_TRUNC|O_CREAT|O_WRONLY,S_IWRITE );
-        if( fil >= 0 ) {
-            write(fil,&goreon,2);
-            write(fil,&brightness,2);
-            write(fil,&gbrightness,2);
-            write(fil,&digilevel,2);
-            write(fil,&musiclevel,2);
-            write(fil,&difficulty,2);
-            close(fil);
-        }
-
+      writesetup("whaven.ini");
 
       SND_Shutdown();
 
@@ -311,26 +333,12 @@ void setup3dscreen(void) {
     int i, dax, day, dax2, day2;
 
     plr=&player[0];
-    setgamemode(0,vesares[option[6]&15][0],vesares[option[6]&15][1],8);
+    setgamemode(fullscreen, xdimgame, ydimgame, bppgame);
+    svga=xdimgame > 320 || ydimgame > 200;
 
     videoinitflag=1;
 
-    switch(option[0]) {
-    case 1:
-       if( svga == 0 ) {
-            dax=160-(plr->screensize>>1);
-            dax2=dax+plr->screensize-1;
-            day=84-(((plr->screensize*168)/320)>>1);
-            day2=STATUSSCREEN-1;
-            setview(dax,day,dax2,day2);
-       }
-       else
-        setview(0L,0L,vesares[option[6]&15][0]-1,vesares[option[6]&15][1]-1);
-    break;
-    default:
-        setview(0L,0L,319L,199L);
-    break;
-    }
+    setview(0L,0L,xdim-1,ydim-1);
 
     if(svga == 0) {
         if(plr->screensize <= 320)
@@ -360,7 +368,9 @@ void setupboard(char *fname) {
 
     randomseed = 17L;
 
-    if (loadboard(fname,0,&plr->x,&plr->y,&plr->z,&daang,&plr->sector) == -1) {
+    i = loadboard(fname,0,&plr->x,&plr->y,&plr->z,&daang,&plr->sector);
+    if (i == -2) i = loadoldboard(fname,0,&plr->x,&plr->y,&plr->z,&daang,&plr->sector);
+    if (i < 0) {
         crashgame("Board not found");
     }
 
@@ -1081,51 +1091,92 @@ int app_main(int argc,const char * const argv[]) {
 
     plr=&player[0];
 
+#if defined(DATADIR)
+    {
+        const char *datadir = DATADIR;
+        if (datadir && datadir[0]) {
+            addsearchpath(datadir);
+        }
+    }
+#endif
+
+    {
+        char *supportdir = Bgetsupportdir(1);
+        char *appdir = Bgetappdir();
+        char dirpath[BMAX_PATH+1];
+
+        // the OSX app bundle, or on Windows the directory where the EXE was launched
+        if (appdir) {
+            addsearchpath(appdir);
+            free(appdir);
+        }
+
+        // the global support files directory
+        if (supportdir) {
+            Bsnprintf(dirpath, sizeof(dirpath), "%s/JFWitchaven", supportdir);
+            addsearchpath(dirpath);
+            free(supportdir);
+        }
+    }
 
     netcheckargs(argc,argv);
 
+    // default behaviour is to write to the user profile directory, but
+    // creating a 'user_profiles_disabled' file in the current working
+    // directory where the game was launched makes the installation
+    // "portable" by writing into the working directory
+    if (access("user_profiles_disabled", F_OK) == 0) {
+        char cwd[BMAX_PATH+1];
+        if (getcwd(cwd, sizeof(cwd))) {
+            addsearchpath(cwd);
+        }
+    } else {
+        char *supportdir;
+        char dirpath[BMAX_PATH+1];
+        int asperr;
+
+        if ((supportdir = Bgetsupportdir(0))) {
+    #if defined(_WIN32) || defined(__APPLE__)
+            const char *confdir = "JFWitchaven";
+    #else
+            const char *confdir = ".jfwhaven";
+    #endif
+            Bsnprintf(dirpath, sizeof(dirpath), "%s/%s", supportdir, confdir);
+            asperr = addsearchpath(dirpath);
+            if (asperr == -2) {
+                if (Bmkdir(dirpath, S_IRWXU) == 0) {
+                    asperr = addsearchpath(dirpath);
+                } else {
+                    asperr = -1;
+                }
+            }
+            if (asperr == 0) {
+                chdir(dirpath);
+            }
+            free(supportdir);
+        }
+    }
+
+    buildsetlogfile("whaven.log");
+
+    wm_setapptitle("JFWitchaven");
+    buildprintf("\nJFWitchaven\n"
+        "Based on WITCHAVEN Copyright (C) 1995 IntraCorp, Inc.\n"
+        "Version %s.\nBuilt %s %s.\n",
+      game_version, game_date, game_time);
+
+    if (preinitengine()) {
+        wm_msgbox("Build Engine Initialisation Error",
+            "There was a problem initialising the Build engine: %s", engineerrstr);
+        exit(1);
+    }
+
     initgroupfile("stuff.dat");
 
-    buildputs("WITCHAVEN Copyright (C) 1995 IntraCorp, Inc. ver 1.1\n");
     buildprintf(" map name: level%d\n",mapon);
     buildputs(" initengine()\n");
 
-    if ((fil = open("setup.dat",O_BINARY|O_RDWR,S_IREAD)) != -1) {
-        read(fil,&option,NUMOPTIONS);
-        read(fil,keys,NUMKEYS);                                  // Les 07/24/95
-        read(fil,option2,7);                                     // Les 07/27/95
-        close(fil);
-    }
-
-
-    if (access("pref.dat",F_OK) != 0) {
-        goreon=1;
-        brightness=gbrightness=0;
-        digilevel=11;
-        musiclevel=11;
-        fil=open("pref.dat",O_BINARY|O_TRUNC|O_CREAT|O_WRONLY,S_IWRITE );
-        if( fil >= 0 ) {
-            write(fil,&goreon,2);
-            write(fil,&brightness,2);
-            write(fil,&gbrightness,2);
-            write(fil,&digilevel,2);
-            write(fil,&musiclevel,2);
-            write(fil,&difficulty,2);
-            close(fil);
-        }
-     }
-     else {
-        fil=open("pref.dat", O_RDONLY | O_BINARY);
-        if( fil >= 0 ) {
-            read(fil,&goreon,2);
-            read(fil,&brightness,2);
-            read(fil,&gbrightness,2);
-            read(fil,&digilevel,2);
-            read(fil,&musiclevel,2);
-            read(fil,&difficulty,2);
-            close(fil);
-        }
-     }
+    loadsetup("whaven.ini");
 
     if( option[8] == 1 || option[9] == 1)
         MusicMode=1;
@@ -1153,14 +1204,15 @@ int app_main(int argc,const char * const argv[]) {
      }
 
     if (initengine()) {
-        crashgame("There was a problem initialising the Build engine: %s", engineerrstr);
+        wm_msgbox("Build Engine Initialisation Error",
+            "There was a problem initialising the Build engine: %s", engineerrstr);
+        exit(1);
     }
-    svga = 1;
     engineinitflag=1;
 
     pskyoff[0] = 0; pskyoff[1] = 0; pskybits = 1;
 
-    inittimer(120);
+    inittimer(CLKIPS);
     SND_Startup();
     buildputs(" loadpics()\n");
     buildputs(" tiles000.art\n");
@@ -1274,6 +1326,7 @@ void playloop(void) {
     }
 
     while (!exit) {
+        handleevents();
 
         if(gameactivated == 0 || escapetomenu == 1) {
             exit=menuscreen(plr);

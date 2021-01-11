@@ -31,4 +31,4 @@
 #define   KEYUNCAST      24
 #define   KEYFLYUP       25
 #define   KEYFLYDN       26
-
+#define   KEYCONSOLE     27

@@ -100,7 +100,7 @@ extern int showstatusbar;
 extern int showheart;
 extern int showbook;
 
-short  oldmousestatus, brightness, gbrightness;
+short  oldmousestatus, brightness;
 extern short  compass;
 extern int playerdie;
 
@@ -413,8 +413,8 @@ void processinput(struct player *plr) {
 
 	if (keystatus[0x44] > 0) {  //F10 - brightness
 		keystatus[0x44]=0;
-		gbrightness=brightness++;
-		if (brightness > 8) brightness=0 , gbrightness=0;
+		brightness++;
+		if (brightness > 8) brightness=0;
 			setbrightness(brightness,palette,0);
 	}
 
@@ -687,6 +687,7 @@ void processinput(struct player *plr) {
 	synctics=tics=i;
 	lockclock+=(int)synctics;
 
+  keytimerstuff();
 
 	sprite[plr->spritenum].cstat^=1;
 	getzrange(plr->x,plr->y,plr->z,plr->sector,&hiz,&hihit,&loz,&lohit,128L,CLIPMASK0);
@@ -1321,7 +1322,7 @@ void typeletter(void) {
 	strcpy(temp,"");
 
 	while( !exit ) {
-
+		handleevents();
 		if(typemessageleng <= 10)
 		for(i=0;i<128;i++) {
 			if(keystatus[i] > 0

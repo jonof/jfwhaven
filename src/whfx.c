@@ -65,7 +65,7 @@ int revolvesyncx, revolvesyncy;
 
 extern int mapon;
 
-extern short brightness, gbrightness;
+extern short brightness;
 
 extern int  displaytime;
 extern char displaybuf[50];

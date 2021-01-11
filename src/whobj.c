@@ -8,8 +8,6 @@
 //extern int poisoned;
 //extern int poisontime;
 
-//extern short gbrightness;
-
 int vampiretime=0;
 
 int    justwarpedcnt=0;
@@ -2656,7 +2654,7 @@ void attack(int i) {
 	}
 
 	startredflash(k);
-	//setbrightness(gbrightness);
+	//setbrightness(brightness);
 
 }
 

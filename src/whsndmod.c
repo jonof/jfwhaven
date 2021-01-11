@@ -42,20 +42,6 @@ char *       SpiceSongPtr;
 
 //////////////////////////////////////////////////////////////////////////////
 //                                                                          //
-//    timerevent() : Handles timer functions originally in game.c           //
-//                                                                          //
-//////////////////////////////////////////////////////////////////////////////
-void
-timerevent(void)
-{
-   joetime++;
-	totalclock++;
-	keytimerstuff();
-}
-
-
-//////////////////////////////////////////////////////////////////////////////
-//                                                                          //
 //    sosDIGISampleCallback(WORD,WORD,WORD) : Call back routine from SOS    //
 //          Digi functions. wCallSource indicates which process is complete //
 //          hSample is the particular sample handle.                        //

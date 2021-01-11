@@ -12,8 +12,6 @@ extern int vampiretime;
 extern int musiclevel;
 extern int digilevel;
 
-extern short gbrightness;
-
 //JSA 4_27 cart and elevator sound variables
 extern int  cartsnd,gratesnd,lavasnd,batsnd;
 
@@ -214,6 +212,7 @@ int menuscreen(struct player *plr) {
     }
 
     while( !exit ) {
+        handleevents();
 
             overwritesprite(0,0,MAINMENU,0,0,0);
             overwritesprite(127,58,MENUSELECTIONS,0,0,0);
@@ -337,6 +336,7 @@ void help(void) {
     int exit=0;
 
     while (!exit) {
+        handleevents();
         if(totalclock >= goaltime) {
             overwritesprite(0,0,MAINMENU,0,0,0);
             overwritesprite(0,0,thenames[select].helpnames,0,0,0);
@@ -390,6 +390,7 @@ void loadsave(struct player *plr) {
     overwritesprite(182,119,SAVERED,0,0,0);
 
     while ( !exit ) {
+        handleevents();
         if(select == 0) {
             overwritesprite(182,80,LOADGREEN,0,0,0);
             overwritesprite(182,119,SAVERED,0,0,0);
@@ -447,7 +448,7 @@ void quit(void) {
     nextpage();
 
     while( !exit ) {
-
+        handleevents();
         if ( keystatus[0x9c] > 0 || keystatus[0x1c] > 0 || keystatus[0x15] > 0 ) {
             exit=1;
             keystatus[0x1c]=keystatus[0x9c]=0;
@@ -468,6 +469,7 @@ void quit(void) {
             nextpage();
             exit=0;
             while( !exit ){
+                handleevents();
                 if(keystatus[0x39] > 0 || keystatus[1] > 0)
                     exit=1;
             }
@@ -479,6 +481,7 @@ void quit(void) {
             keystatus[1]=0;
             exit=0;
             while( !exit ){
+                handleevents();
                 if(keystatus[0x39] > 0 || keystatus[1] > 0)
                     exit=1;
                 overwritesprite(0,0,ORDER1,0,0,0);
@@ -552,6 +555,7 @@ void thedifficulty(void) {
         goaltime=totalclock+10L;
 
         while ( !exit ) {
+            handleevents();
 
         if( totalclock >= goaltime ) {
             goaltime=totalclock+10L;
@@ -712,6 +716,7 @@ void loadgame(struct player *plr) {
             strcpy(savedgamenames[i].name,"empty");
 
     while ( !exit ) {
+        handleevents();
 
         overwritesprite(0,0,MAINMENU,0,0,0);
         overwritesprite(138,84,SAVENUMBERS,0,0,0);
@@ -788,6 +793,7 @@ void savegame(struct player *plr) {
     goaltime=totalclock+10L;
 
     while ( !exit ) {
+        handleevents();
 
         overwritesprite(0,0,MAINMENU,0,0,0);
         overwritesprite(138,84,SAVENUMBERS,0,0,0);
@@ -857,6 +863,7 @@ void savegametext(int select) {
     strcpy(temp,"-");
 
     while( !exit ) {
+        handleevents();
 
         overwritesprite(0,0,MAINMENU,0,0,0);
         overwritesprite(138,84,SAVENUMBERS,0,0,0);
@@ -973,7 +980,6 @@ int savedgamename(int gn) {
         write(file,&shadowtime,sizeof(shadowtime));
         write(file,&nightglowtime,sizeof(nightglowtime));
         write(file,&visibility,sizeof(visibility));
-        write(file,&brightness,sizeof(brightness));
         write(file,&strongtime,sizeof(strongtime));
         write(file,&invisibletime,sizeof(invisibletime));
         write(file,&manatime,sizeof(manatime));
@@ -1071,7 +1077,6 @@ void loadplayerstuff(void) {
     read(fh,&shadowtime,sizeof(shadowtime));
     read(fh,&nightglowtime,sizeof(nightglowtime));
     read(fh,&visibility,sizeof(visibility));
-    read(fh,&brightness,sizeof(brightness));
     read(fh,&strongtime,sizeof(strongtime));
     read(fh,&invisibletime,sizeof(invisibletime));
     read(fh,&manatime,sizeof(manatime));
@@ -1950,7 +1955,7 @@ updatepaletteshifts(void)
 
     else if( palshifted ) {
         //asmsetpalette(&palette[0]);     // back to normal
-        setbrightness(gbrightness,palette,0);
+        setbrightness(brightness,palette,0);
         palshifted = 0;
     }
 

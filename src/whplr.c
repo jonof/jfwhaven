@@ -591,6 +591,7 @@ void playerdead(struct player *plr) {
 	netsendmove();
 
 	while ( totalclock < clockgoal ) {
+		handleevents();
 		if (plr->horiz < 100+(YDIM>>1)) {
 			plr->horiz+=(synctics<<1);
 		}
@@ -605,6 +606,7 @@ void playerdead(struct player *plr) {
 	goaltime=totalclock+240;
 
 	while( !exit ) {
+		handleevents();
 		if(totalclock > goaltime)
 			exit=1;
 		if(keystatus[0x39] > 0)

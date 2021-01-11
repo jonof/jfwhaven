@@ -1,2 +1,0 @@
-//#line "whani.c" 54
-extern void animateobjs(struct player *plr);

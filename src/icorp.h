@@ -14,7 +14,6 @@
 #include "jeff.h"
 #include "raf.h"
 #include "whdefs.h"
-#include "extern.h"
 #include "keydefs.h"
 
 
@@ -125,12 +124,49 @@ short neartagsector,
 extern
 int lockclock;
 
-void lb_printf(int,int,char *,...);
+extern int xdimgame, ydimgame, bppgame;
+extern int forcesetup;
+extern int goreon, difficulty;
+extern short brightness;
+
+
+//#define NUMOPTIONS 8
+#define NUMOPTIONS 12
+#define NUMKEYS 28                                               // Les 07/24/95
+#define XDIM    320
+#define YDIM    200
+
+#define KEYFIFOSIZ 64
+
+extern point3d osprite[];
+extern int   smoothratio;
+extern int shieldpoints;
+extern int poisoned;
+extern int poisontime;
+extern int  shockme;
+extern int  svgahealth;
+extern int  victor;
+extern int  autohoriz;
+extern int  svga;
+extern char boardname[];
+extern char tempboard[];
+extern char loadgamename[];
+extern int  delaycnt,
+            engineinitflag,
+            timerinitflag,
+            videoinitflag;
+
+extern
+char option2[];
+
+extern int synctics;
+extern int globhiz, globloz, globhihit, globlohit;
+extern char option[];
+extern int keys[];
+
 
 // b5compat.c
 void permanentwritesprite(int thex, int they, short tilenum, signed char shade,
-        int cx1, int cy1, int cx2, int cy2, unsigned char dapalnum);
-void permanentwritespritetile(int UNUSED(thex), int UNUSED(they), short tilenum, signed char shade,
         int cx1, int cy1, int cx2, int cy2, unsigned char dapalnum);
 void overwritesprite(int thex, int they, short tilenum, signed char shade,
         char stat, unsigned char dapalnum);
@@ -312,3 +348,7 @@ void playsound_loc(int soundnum,int xplc,int yplc);
 void operatesprite(int s);
 void operatesector(int s);
 void animatetags(struct player *plr);
+
+// config.c
+int loadsetup(const char *fn);
+int writesetup(const char *fn);
