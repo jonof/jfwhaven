@@ -1490,7 +1490,7 @@ void animateobjs(struct player *plr) {
 
 		setsprite(i,sprite[i].x,sprite[i].y,sprite[i].z);
 
-		if( sprite[i].picnum == FBARRELFALL || sprite[i].picnum >= BOULDER && sprite[i].picnum <= BOULDER+3 &&
+		if( (sprite[i].picnum == FBARRELFALL || (sprite[i].picnum >= BOULDER && sprite[i].picnum <= BOULDER+3)) &&
 			(checkdist(i,plr->x,plr->y,plr->z)) ) {
 			healthpic(-50);
 			startredflash(50);

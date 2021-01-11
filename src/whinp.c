@@ -302,7 +302,7 @@ dophysics(struct player *plr,int goalz,short flyupdn,int v)
 
 void processinput(struct player *plr) {
 
-    short bstatus;
+    int bstatus;
     int mousx,mousy;
 	int goalz,hihit,hiz,i,lohit,loz,tics,xvect,yvect;
 	int dax,dax2,day,day2,odax,odax2,oday,oday2;
@@ -1129,7 +1129,7 @@ void processinput(struct player *plr) {
 		}
 
 
-		if( vel > 199 || vel < -199 && dist > 10)
+		if( (vel > 199 || vel < -199) && dist > 10)
 			runningtime+=synctics;
 		else
 			runningtime-=synctics;

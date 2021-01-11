@@ -2418,8 +2418,8 @@ int checkdist(int i,int x,int y,int z) {
 				attackdist=512;
 		}
 
-		if( sprite[i].picnum > DRAGONATTACK+2 && sprite[i].picnum < DRAGONATTACK+17
-			|| sprite[i].picnum > DRAGONATTACK2 && sprite[i].picnum < DRAGONATTACK2+5 )
+		if( (sprite[i].picnum > DRAGONATTACK+2 && sprite[i].picnum < DRAGONATTACK+17)
+			|| (sprite[i].picnum > DRAGONATTACK2 && sprite[i].picnum < DRAGONATTACK2+5) )
 			attackdist=2048;
 
 

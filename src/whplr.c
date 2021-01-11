@@ -1834,11 +1834,12 @@ void drawweapons(struct player *plr) {
 	if( currweaponflip == 1 )
 		dabits+=0x08;
 
-	if( currweapon == 0 && dahand == 0 )
+	if( currweapon == 0 && dahand == 0 ) {
 		if( rand()%2 == 0 )
 			dahand=1;
 		else
 			dahand=2;
+	}
 
 	switch( currweaponfired ) {
 	case 6:
@@ -2771,7 +2772,7 @@ void shootgun ( struct player *plr, short daang, char guntype ) {
 						if(currweaponanim == 8 && currweapontics == 8 )
 							swingdapunch(currweapon);
 					if(currweaponframe == KNIFEATTACK2+2)
-						if(currweaponanim == 5 || currweaponanim == 9 && currweapontics == 8)
+						if((currweaponanim == 5 || currweaponanim == 9) && currweapontics == 8)
 							swingdapunch(currweapon);
 				break;
 				case 2: // short sword
@@ -2986,7 +2987,7 @@ void shootgun ( struct player *plr, short daang, char guntype ) {
 									if(currweaponanim == 8 && currweapontics == 8 )
 										swingdacrunch(currweapon);
 								if(currweaponframe == KNIFEATTACK2+2)
-									if(currweaponanim == 5 || currweaponanim == 9 && currweapontics == 8)
+									if((currweaponanim == 5 || currweaponanim == 9) && currweapontics == 8)
 										swingdacrunch(currweapon);
 							break;
 							case 2: // short sword
@@ -3070,7 +3071,7 @@ void shootgun ( struct player *plr, short daang, char guntype ) {
 									if(currweaponanim == 8 && currweapontics == 8 )
 										chunksofmeat(plr, hitsprite, hitx, hity, hitz, hitsect, daang);
 								if(currweaponframe == KNIFEATTACK2+2)
-									if(currweaponanim == 5 || currweaponanim == 9 && currweapontics == 8)
+									if((currweaponanim == 5 || currweaponanim == 9) && currweapontics == 8)
 										chunksofmeat(plr, hitsprite, hitx, hity, hitz, hitsect, daang);
 							break;
 							case 2: // short sword
@@ -3147,7 +3148,7 @@ void shootgun ( struct player *plr, short daang, char guntype ) {
 									if(currweaponanim == 8 && currweapontics == 8 )
 										swingdacrunch(currweapon);
 								if(currweaponframe == KNIFEATTACK2+2)
-									if(currweaponanim == 5 || currweaponanim == 9 && currweapontics == 8)
+									if((currweaponanim == 5 || currweaponanim == 9) && currweapontics == 8)
 										swingdacrunch(currweapon);
 							break;
 							case 2: // SHORT SWORD
@@ -3231,7 +3232,7 @@ void shootgun ( struct player *plr, short daang, char guntype ) {
 									if(currweaponanim == 8 && currweapontics == 8 )
 										chunksofmeat(plr, hitsprite, hitx, hity, hitz, hitsect, daang);
 								if(currweaponframe == KNIFEATTACK2+2)
-									if(currweaponanim == 5 || currweaponanim == 9 && currweapontics == 8)
+									if((currweaponanim == 5 || currweaponanim == 9) && currweapontics == 8)
 										chunksofmeat(plr, hitsprite, hitx, hity, hitz, hitsect, daang);
 							break;
 							case 2: // short sword

@@ -230,7 +230,7 @@ int getanimationgoal(int *animptr)
 
     j = -1;
     for(i=0;i<animatecnt;i++)
-        if (*animptr == animateptr[i])
+        if (animptr == animateptr[i])
         {
             j = i;
             break;
