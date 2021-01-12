@@ -763,11 +763,11 @@ int scarysize=0;
 
 void scary(void) {
 
-	if( rand() > 32600 && rand() > 32600 && scarytime < 0) {
+	/*if( rand() > 32600 && rand() > 32600 && scarytime < 0) {
 		scarytime=180;
 		scarysize=30;
 		SND_PlaySound(S_SCARYDUDE,0,0,0,0);
-	}
+	}*/
 	if(scarytime >= 0) {
 		scarytime-=synctics<<1;
 		scarysize+=synctics<<1;
