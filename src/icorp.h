@@ -188,6 +188,7 @@ void dodelayitems(int tics);
 void setup3dscreen(void);
 void setupboard(char *fname);
 void drawscreen(struct player *plr);
+void drawbackground(void);
 void playloop(void);
 void drawoverheadmap(struct player *plr);
 void readpalettetable(void);
@@ -221,7 +222,8 @@ void dosoundthing(void);
 
 // whmenu.c
 void fancyfont(int x,int y,short tilenum,char *string,char pal);
-void fancyfontscreen(int x, int y, short tilenum, char *string);
+void fancyfontscreen(int x, int y, short tilenum, char *string,char pal);
+void fancyfontperm(int x, int y, short tilenum, char *string, char pal);
 void svgafullscreenpic(short pic1, short pic2);
 int menuscreen(struct player *plr);
 void help(void);

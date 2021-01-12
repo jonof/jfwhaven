@@ -904,59 +904,51 @@ void processinput(struct player *plr) {
 
 
 	else if(plr->dimension == 3 && svga == 0) {
+		int didchange = 0;
+
 		if (keystatus[keys[KEYZOOMO]] != 0 && plr->screensize > 64) { // Les 07/24/95
-			if(plr->screensize <= 320) {
-				updatepics();
-			}
 			plr->screensize-=8;
-			dax=(XDIM>>1)-(plr->screensize>>1);
-			dax2=dax+plr->screensize-1;
-			day=(STATUSSCREEN>>1)-(((plr->screensize*STATUSSCREEN)/XDIM)>>1);
-			day2=day+((plr->screensize*STATUSSCREEN)/XDIM)-1;
-			setview(dax,day,dax2,day2);
-			odax=(YDIM>>1)-((plr->screensize+8)>>1);
-			odax2=dax+(plr->screensize+8)-1;
-			oday=(STATUSSCREEN>>1)-((((plr->screensize+8)*STATUSSCREEN)/XDIM)>>1);
-			oday2=day+(((plr->screensize+8)*STATUSSCREEN)/XDIM)-1;
-			permanentwritesprite(0,0,BACKGROUND,0,odax,oday,dax-1,oday2,0);
-			permanentwritesprite(0,0,BACKGROUND,0,dax2+1,oday,odax2,oday2,0);
-			permanentwritesprite(0,0,BACKGROUND,0,dax,oday,dax2,day-1,0);
-			permanentwritesprite(0,0,BACKGROUND,0,dax,day2+1,dax2,oday2,0);
-			if(plr->screensize == XDIM) {
-				permanentwritesprite(0,200-46,NEWSTATUSBAR,0,0,0,XDIM-1,YDIM-1,0);
-				updatepics();
-			}
+			didchange = 1;
+		}
+		if (keystatus[keys[KEYZOOMI]] != 0 && plr->screensize <= 320) { // Les 07/24/95
+			plr->screensize+=8;
+			didchange = 1;
 		}
 
-		if (keystatus[keys[KEYZOOMI]] != 0 && plr->screensize <= XDIM) { // Les 07/24/95
-			plr->screensize+=8;
-			if(plr->screensize > XDIM) {
+		if (didchange) {
+			if(plr->screensize > 320) {
 				dax=day=0;
-				dax2=XDIM-1;
-				day2=YDIM-1;
+				dax2=xdim;
+				day2=ydim;
 			}
 			else {
-				dax=(XDIM>>1)-(plr->screensize>>1);
-				dax2=dax+plr->screensize-1;
-				day=(STATUSSCREEN>>1)-(((plr->screensize*STATUSSCREEN)/XDIM)>>1);
-				day2=day+((plr->screensize*STATUSSCREEN)/XDIM)-1;
+				int width = scale(xdim, plr->screensize, 320);
+				int statusheight = scale(STATUSHEIGHT, ydim, 200);
+				int height = scale(ydim - statusheight, plr->screensize, 320);
+
+				dax=(xdim - width)>>1;
+				dax2=(xdim + width)>>1;
+				day=(ydim - statusheight - height)>>1;
+				day2=(ydim - statusheight + height)>>1;
 			}
-			setview(dax,day,dax2,day2);
+			setview(dax,day,dax2-1,day2-1);
+			drawbackground();
 		}
 	}
 
 //SVGA STUFF WANGO
 	if(plr->dimension == 3 && svga == 1) {
 		if (keystatus[keys[KEYZOOMO]] != 0) {
+			int statusheight = scale(STATUSHEIGHT, ydim, 200);
 			plr->screensize=320;
-			setview(0,0,640-1,372-1);
-			overwritesprite(0,372,SSTATUSBAR,0,0,0);
-			updatepics();
+			setview(0,0,xdim-1,ydim-statusheight-1);
+			drawbackground();
 		}
 
 		if (keystatus[keys[KEYZOOMI]] != 0 ) {
 			plr->screensize=328;
-			setview(0,0,640-1,480-1);
+			setview(0,0,xdim-1,ydim-1);
+			drawbackground();
 		}
 	}
 // SVGA END WANGO
@@ -1353,7 +1345,7 @@ void typeletter(void) {
 			keystatus[0x1c]=keystatus[0x9c]=0;
 		}
 		strcpy(displaybuf,temp);
-		fancyfontscreen(18,24,THEFONT,displaybuf);
+		fancyfontscreen(18,24,THEFONT,displaybuf,7);
 		nextpage();
 	}
 

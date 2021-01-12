@@ -72,7 +72,7 @@ void monitor(void) {
 
 	if(plr->health < 21) {
 		strcpy(tempbuf,"health critical");
-		fancyfontscreen(18,48,THEFONT,tempbuf);
+		fancyfontscreen(18,48,THEFONT,tempbuf,7);
 	}
 
 	if(justwarpedfx > 0) {
@@ -118,7 +118,7 @@ void monitor(void) {
 	}
 
 	if( displaytime > 0 ) {
-		fancyfontscreen(18,24,THEFONT,displaybuf);
+		fancyfontscreen(18,24,THEFONT,displaybuf,7);
 		displaytime-=((int)synctics);
 	}
 
@@ -156,11 +156,11 @@ void monitor(void) {
 		if( svgahealth > 0) {
 			svgahealth-=synctics;
 			sprintf(svgah,"health %d",plr->health);
-			fancyfontscreen(18,44,THEFONT,svgah);
+			fancyfontscreen(18,44,THEFONT,svgah,7);
 			if(plr->armor < 0)
 				plr->armor=0;
             sprintf(svgah,"armor %d",plr->armor);
-			fancyfontscreen(18,64,THEFONT,svgah);
+			fancyfontscreen(18,64,THEFONT,svgah,7);
 		}
 	}
 

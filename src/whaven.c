@@ -353,18 +353,7 @@ void setup3dscreen(void) {
     videoinitflag=1;
 
     setview(0L,0L,xdim-1,ydim-1);
-
-    if(svga == 0) {
-        if(plr->screensize <= 320)
-            permanentwritesprite(0,0,BACKGROUND,0,0,0,319,199,0);
-        if(plr->screensize <= 320)
-            permanentwritesprite(0,200-46,NEWSTATUSBAR,0,0,0,319,199,0);
-    }
-    else if(svga == 1) {
-        // permanentwritesprite(0,0,SVGAMENU,0,0,0,639,239,0);
-        // permanentwritesprite(0,240,SVGAMENU2,0,0,240,639,479,0);
-    }
-
+    drawbackground();
 }
 
 
@@ -1328,6 +1317,25 @@ void intro(void) {
 
 }
 
+void drawbackground(void) {
+    struct player *plr;
+
+    plr=&player[pyrn];
+
+    flushperms();
+
+    if(plr->screensize > 320) return;
+
+    if(plr->screensize < 320) {
+        rotatesprite(0,0,65536L,0,BACKGROUND,0,0,2+8+16+64+128,0,0,xdim-1,windowy1-1);
+        rotatesprite(0,0,65536L,0,BACKGROUND,0,0,2+8+16+64+128,0,windowy1,windowx1-1,windowy2);
+        rotatesprite(0,0,65536L,0,BACKGROUND,0,0,2+8+16+64+128,windowx2+1,windowy1,xdim-1,windowy2);
+        rotatesprite(0,0,65536L,0,BACKGROUND,0,0,2+8+16+64+128,0,windowy2+1,xdim-1,ydim-1);
+    }
+    rotatesprite(0,(200-46)<<16,65536L,0,NEWSTATUSBAR,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+    updatepics();
+}
+
 void playloop(void) {
 
     struct player *plr;
@@ -1344,17 +1352,7 @@ void playloop(void) {
 
         if(gameactivated == 0 || escapetomenu == 1) {
             exit=menuscreen(plr);
-            if( svga == 0 ) {
-                permanentwritesprite(0,0,BACKGROUND,0,0,0,319,199,0);
-                permanentwritesprite(0,200-46,STATUSBAR,0,0,0,319,199,0);
-                updatepics();
-            }
-            if( svga == 1) {
-                if(plr->screensize == 320) {
-                    overwritesprite(0,372,SSTATUSBAR,0,0,0);
-                    updatepics();
-                }
-            }
+            drawbackground();
             plr->z=sector[plr->sector].floorz-(PLAYERHEIGHT<<8);
         }
 

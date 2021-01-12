@@ -132,16 +132,16 @@ struct daweapons spellbookanim[MAXNUMORBS][9] =
   // FREEZE
   { {8,SPELLBOOK3,121,161},{8,SPELLBOOK3+1,121,161},
 	{8,SPELLBOOK3+2,121,156},{8,SPELLBOOK3+3,121,158},
-	{8,SPELLBOOK3+4,121,159},{8,SPELLBOOK3+5,120,161},
-	{8,SPELLBOOK3+6,120,160},{8,SPELLBOOK3+7,120,161},
+	{8,SPELLBOOK3+4,121,159},{8,SPELLBOOK3+5,121,161},
+	{8,SPELLBOOK3+6,121,160},{8,SPELLBOOK3+7,121,161},
 	{8,SPELLBOOK3+7,121,161}
   },
   // MAGIC ARROW
   { {8,SPELLBOOKBLANK,121,161},{8,SPELLBOOKBLANK+1,121,161},
 	{8,SPELLBOOKBLANK+2,121,156},{8,SPELLBOOKBLANK+3,121,158},
 	{8,SPELLBOOKBLANK+4,121,159},{8,SPELLBOOKBLANK+5,121,161},
-	{8,SPELLBOOKBLANK+6,120,160},{8,SPELLBOOKBLANK+7,121,161},
-	{8,SPELLBOOKBLANK+7,122,161}
+	{8,SPELLBOOKBLANK+6,121,160},{8,SPELLBOOKBLANK+7,121,161},	//JonoF: frame 6 of the art aligns the page but the arrow is off
+	{8,SPELLBOOKBLANK+7,121,161}
   },
   // OPEN DOORS
   { {8,SPELLBOOK7,121,161},{8,SPELLBOOK7+1,121,161},
@@ -698,19 +698,10 @@ void playerdead(struct player *plr) {
 
 	helmettime=-1;
 
-	if(svga == 0) {
-		if( plr->screensize <= 320 ) {
-			spellbookpage=spellbookanim[currentorb][8].daweaponframe;
-			overwritesprite(121,161,spellbookpage,0,0,0);
-		}
+	if( plr->screensize <= 320 ) {
+		spellbookpage=spellbookanim[currentorb][8].daweaponframe;
+		rotatesprite(121<<16,161<<16,65536,0,spellbookpage,0,0,2+8+16,0,0,xdim-1,ydim-1);
 	}
-	if(svga == 1){
-		if( plr->screensize == 320 ) {
-			spellbookpage=sspellbookanim[currentorb][8].daweaponframe;
-			overwritesprite(121<<1,389,spellbookpage,0,0,0);
-		}
-	}
-
 
 	justteleported=1;
 
@@ -926,17 +917,9 @@ void initplayersprite(void) {
 
 		spellbookflip=0;
 
-		if(svga == 0) {
-			if( plr->screensize <= 320 ) {
-				spellbookpage=spellbookanim[currentorb][8].daweaponframe;
-				overwritesprite(121,161,spellbookpage,0,0,0);
-			}
-		}
-		if(svga == 1) {
-			if( plr->screensize == 320 ) {
-				spellbookpage=sspellbookanim[currentorb][8].daweaponframe;
-				overwritesprite(121<<1,389,spellbookpage,0,0,0);
-			}
+		if( plr->screensize <= 320 ) {
+			spellbookpage=spellbookanim[currentorb][8].daweaponframe;
+			rotatesprite(121<<16,161<<16,65536,0,spellbookpage,0,0,2+8+16,0,0,xdim-1,ydim-1);
 		}
 
 		invincibletime=manatime=-1;
@@ -1800,26 +1783,12 @@ void drawweapons(struct player *plr) {
 		spelltime-=synctics;
 
 	if( spellbook == 8 && spelltime > 0 && plr->screensize > 320) {
-		if( svga == 1) {
-			spellbookframe=sspellbookanim[currentorb][8].daweaponframe;
-			dax=sspellbookanim[currentorb][8].currx;
-			day=sspellbookanim[currentorb][8].curry;
-		}
-		else {
-			spellbookframe=spellbookanim[currentorb][8].daweaponframe;
-			dax=spellbookanim[currentorb][8].currx;
-			day=spellbookanim[currentorb][8].curry;
-		}
-		if(svga == 1) {
-			overwritesprite(dax<<1,day,spellbookframe,0,0,0);
-			sprintf(tempbuf,"%d",plr->orbammo[currentorb]);
-			fancyfont(126<<1,439,SSCOREFONT-26,tempbuf,0);
-		}
-		else {
-			overwritesprite(dax,day,spellbookframe,0,0,0);
-			sprintf(tempbuf,"%d",plr->orbammo[currentorb]);
-			fancyfont(126,181,SCOREFONT-26,tempbuf,0);
-		}
+		spellbookframe=spellbookanim[currentorb][8].daweaponframe;
+		dax=spellbookanim[currentorb][8].currx;
+		day=spellbookanim[currentorb][8].curry;
+		rotatesprite(dax<<16,day<<16,65536,0,spellbookframe,0,0,2+8+16,0,0,xdim-1,ydim-1);
+		sprintf(tempbuf,"%d",plr->orbammo[currentorb]);
+		fancyfontscreen(126,181,SCOREFONT-26,tempbuf,0);
 	}
 
 
@@ -2411,14 +2380,8 @@ void drawweapons(struct player *plr) {
 	//
 
 	if( spellbookflip == 1) {
-		if(svga == 0) {
-			if( plr->screensize <= 320 )
-				overwritesprite(122,154,SPELLBOOKBACK,0,0,0);
-		}
-		if(svga == 1) {
-			if( plr->screensize == 320 )
-				overwritesprite(120<<1,372,SSPELLBACK,0,0,0);
-		}
+		if( plr->screensize <= 320 )
+			rotatesprite(122<<16,154<<16,65536,0,SPELLBOOKBACK,0,0,2+8+16,0,0,xdim-1,ydim-1);
 
 		spellbooktics-=synctics;
 		if( spellbooktics < 0 ) {
@@ -2427,63 +2390,26 @@ void drawweapons(struct player *plr) {
 				spellbook=8;
 			if( spellbook == 8 ) {
 				spellbooktics=spellbookanim[currentorb][8].daweapontics;
-				if( svga == 1) {
-					spellbookframe=sspellbookanim[currentorb][8].daweaponframe;
-					dax=sspellbookanim[currentorb][8].currx;
-					day=sspellbookanim[currentorb][8].curry;
-				}
-				else {
-					spellbookframe=spellbookanim[currentorb][8].daweaponframe;
-					dax=spellbookanim[currentorb][8].currx;
-					day=spellbookanim[currentorb][8].curry;
-				}
-				if(svga == 1) {
-					overwritesprite(dax<<1,day,spellbookframe,0,0,0);
-				}
-				else
-					overwritesprite(dax,day,spellbookframe,0,0,0);
+				spellbookframe=spellbookanim[currentorb][8].daweaponframe;
+				dax=spellbookanim[currentorb][8].currx;
+				day=spellbookanim[currentorb][8].curry;
+				rotatesprite(dax<<16,day<<16,65536,0,spellbookframe,0,0,2+8+16,0,0,xdim-1,ydim-1);
 				spellbookflip=0;
 				return;
 			}
 			else {
 				spellbooktics=spellbookanim[currentorb][spellbook].daweapontics;
-
-				if(svga == 1) {
-					spellbookframe=sspellbookanim[currentorb][spellbook].daweaponframe;
-					dax=sspellbookanim[currentorb][spellbook].currx;
-					day=sspellbookanim[currentorb][spellbook].curry;
-
-				}
-				else {
-					spellbookframe=spellbookanim[currentorb][spellbook].daweaponframe;
-					dax=spellbookanim[currentorb][spellbook].currx;
-					day=spellbookanim[currentorb][spellbook].curry;
-				}
-				if(svga == 1) {
-					overwritesprite(dax<<1,day,spellbookframe,0,0,0);
-				}
-				else
-					overwritesprite(dax,day,spellbookframe,0,0,0);
-			}
-		}
-		else {
-
-			if(svga == 1) {
-				spellbookframe=sspellbookanim[currentorb][spellbook].daweaponframe;
-				dax=sspellbookanim[currentorb][spellbook].currx;
-				day=sspellbookanim[currentorb][spellbook].curry;
-			}
-			else {
 				spellbookframe=spellbookanim[currentorb][spellbook].daweaponframe;
 				dax=spellbookanim[currentorb][spellbook].currx;
 				day=spellbookanim[currentorb][spellbook].curry;
+				rotatesprite(dax<<16,day<<16,65536,0,spellbookframe,0,0,2+8+16,0,0,xdim-1,ydim-1);
 			}
-			if(svga == 1) {
-				overwritesprite(dax<<1,day,spellbookframe,0,0,0);
-			}
-			else
-				overwritesprite(dax,day,spellbookframe,0,0,0);
-
+		}
+		else {
+			spellbookframe=spellbookanim[currentorb][spellbook].daweaponframe;
+			dax=spellbookanim[currentorb][spellbook].currx;
+			day=spellbookanim[currentorb][spellbook].curry;
+			rotatesprite(dax<<16,day<<16,65536,0,spellbookframe,0,0,2+8+16,0,0,xdim-1,ydim-1);
 		}
 	}
 
@@ -3816,14 +3742,8 @@ void potionpic(int currentpotion) {
 	if( netgame )
 		return;
 
-	if( svga == 1) {
-		overwritesprite(260<<1,387,SPOTIONBACKPIC,0,0,0);
-		overwritesprite((260<<1)-4,379+1,SPOTIONARROW+currentpotion,0,0,0);
-	}
-	else {
-		overwritesprite(260,161,POTIONBACKPIC,0,0,0);
-		overwritesprite(260-2,161-4,POTIONARROW+currentpotion,0,0,0);
-	}
+	rotatesprite(260<<16,161<<16,65536,0,POTIONBACKPIC,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+	rotatesprite((260-2)<<16,(161-4)<<16,65536,0,POTIONARROW+currentpotion,0,0,2+8+16+128,0,0,xdim-1,ydim-1);
 
 	for(i=0;i<MAXPOTIONS;i++) {
 		if(plr->potion[i] < 0)
@@ -3831,57 +3751,33 @@ void potionpic(int currentpotion) {
 		if(plr->potion[i] > 0) {
 			switch(i) {
 			case 0:
-				if( svga == 1)
-					tilenum=SFLASKBLUE;
-				else
-					tilenum=FLASKBLUE;
+				tilenum=FLASKBLUE;
 			break;
 			case 1:
-				if( svga == 1)
-					tilenum=SFLASKGREEN;
-				else
-					tilenum=FLASKGREEN;
+				tilenum=FLASKGREEN;
 			break;
 			case 2:
-				if( svga == 1)
-					tilenum=SFLASKOCHRE;
-				else
-					tilenum=FLASKOCHRE;
+				tilenum=FLASKOCHRE;
 			break;
 			case 3:
-				if( svga == 1)
-					tilenum=SFLASKRED;
-				else
-					tilenum=FLASKRED;
+				tilenum=FLASKRED;
 			break;
 			case 4:
-				if( svga == 1)
-					tilenum=SFLASKTAN;
-				else
-					tilenum=FLASKTAN;
+				tilenum=FLASKTAN;
 			break;
 			}
 
 			potiontilenum=tilenum;
 
-			if( svga == 1)
-				overwritesprite((262<<1)+(i*20),406,potiontilenum,0,0,0);
-			else
-				overwritesprite(262+(i*10),169,potiontilenum,0,0,0);
+			rotatesprite((262+i*10)<<16,169<<16,65536,0,potiontilenum,0,0,2+8+16+128,0,0,xdim-1,ydim-1);
 
 			sprintf(potionbuf,"%d",plr->potion[i]);
 
-			if( svga == 1)
-				fancyfont((266<<1)+(i*20),394,SPOTIONFONT-26,potionbuf,0);
-			else
-				fancyfont(266+(i*10),164,SMFONT-26,potionbuf,0);
+			fancyfontperm(266+(i*10),164,SMFONT-26,potionbuf,0);
 
 		}
 		else {
-			if( svga == 1)
-				overwritesprite((262<<1)+(i*20),406,SFLASKBLACK,0,0,0);
-			else
-				overwritesprite(262+(i*10),161+8,FLASKBLACK,0,0,0);
+			rotatesprite((262+i*10)<<16,(161+8)<<16,65536,0,FLASKBLACK,0,0,2+8+16+128,0,0,xdim-1,ydim-1);
 		}
 	}
 
@@ -3963,19 +3859,10 @@ void orbpic(int currentorb) {
 
 	sprintf(tempbuf,"%d",plr->orbammo[currentorb]);
 
-	if( svga == 1)
-		spellbookpage=sspellbookanim[currentorb][8].daweaponframe;
-	else
-		spellbookpage=spellbookanim[currentorb][8].daweaponframe;
+	spellbookpage=spellbookanim[currentorb][8].daweaponframe;
 
-	if(svga == 1) {
-		overwritesprite(121<<1,389,spellbookpage,0,0,0);
-		fancyfont(126<<1,439,SSCOREFONT-26,tempbuf,0);
-	}
-	else {
-		overwritesprite(121,161,spellbookpage,0,0,0);
-		fancyfont(126,181,SCOREFONT-26,tempbuf,0);
-	}
+	rotatesprite(121<<16,161<<16,65536,0,spellbookpage,0,0,2+8+16+128,0,0,xdim-1,ydim-1);
+	fancyfontperm(126,181,SCOREFONT-26,tempbuf,0);
 
 }
 
@@ -3992,31 +3879,16 @@ void healthpic(int hp) {
 
 	sprintf(healthbuf,"%d",plr->health);
 
-	if(svga == 0) {
-		if( plr->screensize <= 320 ) {
-			if( poisoned == 1 ) {
-				overwritesprite(72,168,HEALTHBACKPIC,0,0,6);
-				fancyfont(74,170,BGZERO-26,healthbuf,6);
-			}
-			else {
-				overwritesprite(72,168,HEALTHBACKPIC,0,0,0);
-				fancyfont(74,170,BGZERO-26,healthbuf,0);
-			}
+	if( plr->screensize <= 320 ) {
+		if( poisoned == 1 ) {
+			rotatesprite(72<<16,168<<16,65536,0,HEALTHBACKPIC,0,6,2+8+16+64+128,0,0,xdim-1,ydim-1);
+			fancyfontperm(74,170,BGZERO-26,healthbuf,6);
+		}
+		else {
+			rotatesprite(72<<16,168<<16,65536,0,HEALTHBACKPIC,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+			fancyfontperm(74,170,BGZERO-26,healthbuf,0);
 		}
 	}
-	else if(svga == 1) {
-		if( plr->screensize == 320 ) {
-			if ( poisoned == 1 ) {
-				overwritesprite(74<<1,406,SHEALTHBACK,0,0,6);
-				fancyfont(76<<1,409,SHEALTHFONT-26,healthbuf,6);
-			}
-			else {
-				overwritesprite(74<<1,406,SHEALTHBACK,0,0,0);
-				fancyfont(76<<1,409,SHEALTHFONT-26,healthbuf,0);
-			}
-		}
-	}
-
 
 }
 
@@ -4036,19 +3908,10 @@ void armorpic(int arm) {
 
 	sprintf(armorbuf,"%d",plr->armor);
 
-	if( svga == 0 ) {
-		if( plr->screensize <= 320 ) {
-			overwritesprite(196+1,168,HEALTHBACKPIC,0,0,0);
-			fancyfont(200+1,170,BGZERO-26,armorbuf,0);
-		}
+	if( plr->screensize <= 320 ) {
+		rotatesprite((196+1)<<16,168<<16,65536,0,HEALTHBACKPIC,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+		fancyfontperm(200+1,170,BGZERO-26,armorbuf,0);
 	}
-	else {
-		if( plr->screensize == 320 ) {
-			overwritesprite(200<<1,406,SHEALTHBACK,0,0,0);
-			fancyfont(204<<1,409,SHEALTHFONT-26,armorbuf,0);
-		}
-	}
-
 
 }
 
@@ -4067,14 +3930,8 @@ void levelpic(void) {
 			plr->ammo[6]=0;
 			sprintf(temp,"%d",plr->ammo[6]);
 			strcpy(temp2,temp);
-			if( svga == 0) {
-				overwritesprite(3,181,ARROWS,0,0,0);
-				fancyfont(42,183,SCOREFONT-26,temp2,0);
-			}
-			else {
-				overwritesprite(3<<1,434,SARROWS,0,0,0);
-				fancyfont(42<<1,439,SSCOREFONT-26,temp2,0);
-			}
+			rotatesprite(3<<16,181<<16,65536,0,ARROWS,0,0,2+8+16+128,0,0,xdim-1,ydim-1);
+			fancyfontperm(42,183,SCOREFONT-26,temp2,0);
 	}
 	else if( selectedgun == 7 && plr->weapon[7] == 2) {
 		if( plr->ammo[7] < 0)
@@ -4082,27 +3939,12 @@ void levelpic(void) {
 			sprintf(temp,"%d",plr->ammo[7]);
 			strcpy(temp2,temp);
 			// need pike pic
-			if( svga == 0 ) {
-				overwritesprite(3,181,PIKES,0,0,0);
-				fancyfont(42,183,SCOREFONT-26,temp2,0);
-			}
-			else {
-				overwritesprite(3<<1,434,SPIKES,0,0,0);
-				fancyfont(42<<1,439,SSCOREFONT-26,temp2,0);
-			}
+			rotatesprite(3<<16,181<<16,65536,0,PIKES,0,0,2+8+16+128,0,0,xdim-1,ydim-1);
+			fancyfontperm(42,183,SCOREFONT-26,temp2,0);
 	}
 	else {
-
-		if( svga == 0 )
-			tilenum=PLAYERLVL+(plr->lvl-1);
-		else
-			tilenum=SPLAYERLVL+(plr->lvl-1);
-
-		if( svga == 0)
-			overwritesprite(3,181,tilenum,0,0,0);
-		else
-			overwritesprite(3<<1,436,tilenum,0,0,0);
-
+		tilenum=PLAYERLVL+(plr->lvl-1);
+		rotatesprite(3<<16,181<<16,65536,0,tilenum,0,0,2+8+16+128,0,0,xdim-1,ydim-1);
 	}
 
 }
@@ -4123,21 +3965,12 @@ void score(int score) {
 
 	sprintf(tempbuf,"%d",plr->score);
 
-	if( svga == 1)
-		overwritesprite(6,394,SSCOREBACKPIC,0,0,0);
-	else
-		overwritesprite(29,163,SCOREBACKPIC,0,0,0);
+	rotatesprite(29<<16,163<<16,65536,0,SCOREBACKPIC,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
 
 	strcpy(scorebuf,tempbuf);
 
-	if( svga == 1 ) {
-		if( plr->screensize == 320)
-			fancyfont(60,396+1,SSCOREFONT-26,scorebuf,0);
-	}
-	else {
-		if( plr->screensize <= 320)
-			fancyfont(30,165,SCOREFONT-26,scorebuf,0);
-	}
+	if( plr->screensize <= 320)
+		fancyfontperm(30,165,SCOREFONT-26,scorebuf,0);
 
 	goesupalevel(plr);
 
@@ -4285,27 +4118,13 @@ void captureflagpic(void) {
 							{ 260, 417, 11},
 							{ 286, 417, 12}};
 
-	if( svga == 1) {
-		overwritesprite(260<<1,387,SPOTIONBACKPIC,0,0,0);
-	}
-	else {
-		overwritesprite(260,161,POTIONBACKPIC,0,0,0);
-	}
+	rotatesprite(260<<16,161<<16,65536,0,POTIONBACKPIC,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
 
 	for(i=0;i<4;i++) {
-		if( svga == 1) {
-			if( teaminplay[i] ) {
-				 overwritesprite((sflag[i].x<<1)+6,sflag[i].y+8,STHEFLAG,0,0,sflag[i].palnum);
-				 sprintf(tempbuf,"%d",teamscore[i]);
-				 fancyfont((sflag[i].x<<1)+16,sflag[i].y+16,SPOTIONFONT-26,tempbuf,0);
-			}
-		}
-		else {
-			if( teaminplay[i] ) {
-				overwritesprite(flag[i].x+3,flag[i].y+3,THEFLAG,0,0,flag[i].palnum);
-				sprintf(tempbuf,"%d",teamscore[i]);
-				fancyfont(flag[i].x+6,flag[i].y+6,SMFONT-26,tempbuf,0);
-			}
+		if( teaminplay[i] ) {
+			rotatesprite((flag[i].x+3)<<16,(flag[i].y+3)<<16,65536,0,THEFLAG,0,flag[i].palnum,2+8+16+128,0,0,xdim-1,ydim-1);
+			sprintf(tempbuf,"%d",teamscore[i]);
+			fancyfontperm(flag[i].x+6,flag[i].y+6,SMFONT-26,tempbuf,0);
 		}
 	}
 }
@@ -4316,21 +4135,11 @@ void fragspic(void) {
 
 	plr=&player[pyrn];
 
-	if( svga == 1) {
-		if( plr->screensize == 320) {
-			overwritesprite(260<<1,387,SPOTIONBACKPIC,0,0,0);
-			sprintf(tempbuf,"%d",teamscore[pyrn]);
-			//overwritesprite(74<<1,406,SHEALTHBACK,0,0,0);
-			fancyfont((260<<1)+10,387+10,SHEALTHFONT-26,tempbuf,0);
-		}
-	}
-	else {
-		if( plr->screensize <= 320) {
-			overwritesprite(260,161,POTIONBACKPIC,0,0,0);
-			sprintf(tempbuf,"%d",teamscore[pyrn]);
-			//overwritesprite(72,168,HEALTHBACKPIC,0,0,0);
-			fancyfont(260+15,161+5,BGZERO-26,tempbuf,0);
-		}
+	if( plr->screensize <= 320) {
+		rotatesprite(260<<16,161<<16,65536,0,POTIONBACKPIC,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+		sprintf(tempbuf,"%d",teamscore[pyrn]);
+		//overwritesprite(72,168,HEALTHBACKPIC,0,0,0);
+		fancyfontperm(260+15,161+5,BGZERO-26,tempbuf,0);
 	}
 
 }
@@ -4342,48 +4151,25 @@ void keyspic(void) {
 
 	plr=&player[pyrn];
 
-	if( svga == 1) {
-		if( plr->treasure[14] == 1 )
-			overwritesprite(242<<1,387,SKEYBRASS,0,0,0);
-		else
-			overwritesprite(242<<1,387,SKEYBLANK,0,0,0);
+	if( plr->treasure[14] == 1 )
+		rotatesprite(242<<16,160<<16,65536,0,KEYBRASS,0,0,2+8+16+128,0,0,xdim-1,ydim-1);
+	else
+		rotatesprite(242<<16,160<<16,65536,0,KEYBLANK,0,0,2+8+16+128,0,0,xdim-1,ydim-1);
 
-		if( plr->treasure[15] == 1 )
-			overwritesprite(242<<1,408,SKEYBLACK,0,0,0);
-		else
-			overwritesprite(242<<1,408,SKEYBLANK,0,0,0);
+	if( plr->treasure[15] == 1 )
+		rotatesprite(242<<16,169<<16,65536,0,KEYBLACK,0,0,2+8+16+128,0,0,xdim-1,ydim-1);
+	else
+		rotatesprite(242<<16,169<<16,65536,0,KEYBLANK,0,0,2+8+16+128,0,0,xdim-1,ydim-1);
 
-		if( plr->treasure[16] == 1 )
-			overwritesprite(242<<1,430,SKEYGLASS,0,0,0);
-		else
-			overwritesprite(242<<1,430,SKEYBLANK,0,0,0);
+	if( plr->treasure[16] == 1 )
+		rotatesprite(242<<16,178<<16,65536,0,KEYGLASS,0,0,2+8+16+128,0,0,xdim-1,ydim-1);
+	else
+		rotatesprite(242<<16,178<<16,65536,0,KEYBLANK,0,0,2+8+16+128,0,0,xdim-1,ydim-1);
 
-		if( plr->treasure[17] == 1 )
-			overwritesprite(242<<1,452,SKEYIVORY,0,0,0);
-		else
-			overwritesprite(242<<1,452,SKEYBLANK,0,0,0);
-	}
-	else {
-		if( plr->treasure[14] == 1 )
-			overwritesprite(242,160,KEYBRASS,0,0,0);
-		else
-			overwritesprite(242,160,KEYBLANK,0,0,0);
-
-		if( plr->treasure[15] == 1 )
-			overwritesprite(242,169,KEYBLACK,0,0,0);
-		else
-			overwritesprite(242,169,KEYBLANK,0,0,0);
-
-		if( plr->treasure[16] == 1 )
-			overwritesprite(242,178,KEYGLASS,0,0,0);
-		else
-			overwritesprite(242,178,KEYBLANK,0,0,0);
-
-		if( plr->treasure[17] == 1 )
-			overwritesprite(242,187,KEYIVORY,0,0,0);
-		else
-			overwritesprite(242,187,KEYBLANK,0,0,0);
-	}
+	if( plr->treasure[17] == 1 )
+		rotatesprite(242<<16,187<<16,65536,0,KEYIVORY,0,0,2+8+16+128,0,0,xdim-1,ydim-1);
+	else
+		rotatesprite(242<<16,187<<16,65536,0,KEYBLANK,0,0,2+8+16+128,0,0,xdim-1,ydim-1);
 
 }
 

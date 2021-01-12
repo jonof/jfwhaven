@@ -136,7 +136,7 @@ void fancyfont(int x, int y, short tilenum, char *string, char pal) {
 
 
 
-void fancyfontscreen(int x, int y, short tilenum, char *string) {
+void fancyfontscreen(int x, int y, short tilenum, char *string, char pal) {
 
      int i, j;
      int len;
@@ -157,17 +157,53 @@ void fancyfontscreen(int x, int y, short tilenum, char *string) {
             }
         }
         if( i == 0 ) {
-            overwritesprite(x,y,tilenum+number,0,0x02,7);
+            rotatesprite(x<<16,y<<16,65536L,0,tilenum+number,0,pal,
+                         2+8+16,0,0,xdim-1,ydim-1);
             incr+=tilesizx[tilenum+number]+1;
         }
         else if( tempbuf[i] != ' ' ) {
-            overwritesprite(x+incr,y,tilenum+number,0,0x02,7);
+            rotatesprite((x+incr)<<16,y<<16,65536L,0,tilenum+number,0,pal,
+                         2+8+16,0,0,xdim-1,ydim-1);
             incr+=tilesizx[tilenum+number]+1;
         }
         else
             incr+=8;
      }
+}
 
+void fancyfontperm(int x, int y, short tilenum, char *string, char pal) {
+
+     int i, j;
+     int len;
+     int incr=0;
+     int exit=0;
+     int number;
+     char temp[40];
+
+     Bstrlwr(string);
+     len=strlen(string);
+     strcpy(temp,string);
+
+     for(i=0;i<len;i++) {
+        tempbuf[i]=temp[i];
+        for(j=0;j<40;j++) {
+            if(tempbuf[i]==fancy[j]) {
+                number=j;
+            }
+        }
+        if( i == 0 ) {
+            rotatesprite(x<<16,y<<16,65536L,0,tilenum+number,0,pal,
+                         2+8+16+128,0,0,xdim-1,ydim-1);
+            incr+=tilesizx[tilenum+number]+1;
+        }
+        else if( tempbuf[i] != ' ' ) {
+            rotatesprite((x+incr)<<16,y<<16,65536L,0,tilenum+number,0,pal,
+                         2+8+16+128,0,0,xdim-1,ydim-1);
+            incr+=tilesizx[tilenum+number]+1;
+        }
+        else
+            incr+=8;
+     }
 }
 
 void svgafullscreenpic(short pic1, short pic2) {
@@ -238,6 +274,8 @@ int menuscreen(struct player *plr) {
         svgastat = 2+8+16+64;
         svgaoverstat = 2+8+16;
     }
+
+    flushperms();
 
     while( !exit ) {
         handleevents();
