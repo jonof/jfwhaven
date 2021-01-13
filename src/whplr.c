@@ -1652,8 +1652,7 @@ void plruse(struct player *plr) {
 void loadnewlevel(int mapon) {
 
 	struct player *plr;
-	char mapbuf[10];
-	char tempbuf[10];
+	char mapbuf[16];
 
 	plr=&player[pyrn];
 
