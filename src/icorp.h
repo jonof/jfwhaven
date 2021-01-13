@@ -164,6 +164,8 @@ extern int globhiz, globloz, globhihit, globlohit;
 extern char option[];
 extern int keys[];
 
+extern int svgascale, svgaxoff, svgastat, svgaoverstat;
+
 
 // b5compat.c
 void permanentwritesprite(int thex, int they, short tilenum, signed char shade,
@@ -220,6 +222,7 @@ void dosoundthing(void);
 // whmenu.c
 void fancyfont(int x,int y,short tilenum,char *string,char pal);
 void fancyfontscreen(int x, int y, short tilenum, char *string);
+void svgafullscreenpic(short pic1, short pic2);
 int menuscreen(struct player *plr);
 void help(void);
 void loadsave(struct player *plr);

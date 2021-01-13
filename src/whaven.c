@@ -136,6 +136,7 @@ int   delaycnt,
       timerinitflag,
       videoinitflag;
 
+int svgascale, svgaxoff, svgastat, svgaoverstat;
 
 //
 //
@@ -334,7 +335,20 @@ void setup3dscreen(void) {
 
     plr=&player[0];
     setgamemode(fullscreen, xdimgame, ydimgame, bppgame);
-    svga=xdimgame > 320 || ydimgame > 200;
+    svga=!(xdim == 320 && ydim == 200) && !(xdim == 640 && ydim == 400);
+
+    if(svga) {
+        svgascale = scale(65536L, ydim, 480);
+        svgaxoff = (xdim<<15) - scale(640, ydim<<15, 480);
+        svgastat = 8+16+64;
+        svgaoverstat = 8+16;
+    }
+    else {
+        svgascale = 65536;
+        svgaxoff = 0;
+        svgastat = 2+8+16+64;
+        svgaoverstat = 2+8+16;
+    }
 
     videoinitflag=1;
 
@@ -347,8 +361,8 @@ void setup3dscreen(void) {
             permanentwritesprite(0,200-46,NEWSTATUSBAR,0,0,0,319,199,0);
     }
     else if(svga == 1) {
-        permanentwritesprite(0,0,SVGAMENU,0,0,0,639,239,0);
-        permanentwritesprite(0,240,SVGAMENU2,0,0,240,639,479,0);
+        // permanentwritesprite(0,0,SVGAMENU,0,0,0,639,239,0);
+        // permanentwritesprite(0,240,SVGAMENU2,0,0,240,639,479,0);
     }
 
 }

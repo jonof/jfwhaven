@@ -170,6 +170,26 @@ void fancyfontscreen(int x, int y, short tilenum, char *string) {
 
 }
 
+void svgafullscreenpic(short pic1, short pic2) {
+    rotatesprite(svgaxoff,0<<15,svgascale,0,pic1,0,
+                0,8+16+64,0,0,xdim-1,ydim-1);
+    rotatesprite(svgaxoff,ydim<<15,svgascale,0,pic2,0,
+                0,8+16+64,0,0,xdim-1,ydim-1);
+}
+
+static void menubackground(void) {
+    if (svga)
+        svgafullscreenpic(SVGAMENU, SVGAMENU2);
+
+    rotatesprite(svgaxoff,0<<15,svgascale,0,MAINMENU,0,
+                0,svgastat,0,0,xdim-1,ydim-1);
+}
+
+static void menuwritesprite(int thex, int they, short tilenum, signed char shade,
+        char stat, unsigned char dapalnum) {
+    rotatesprite(svgaxoff+thex*svgascale,they*svgascale,svgascale,0,tilenum,shade,dapalnum,
+                 svgaoverstat,0,0,xdim-1,ydim-1);
+}
 
 int menuscreen(struct player *plr) {
 
@@ -206,23 +226,31 @@ int menuscreen(struct player *plr) {
     //goaltime=totalclock-20L;
     goaltime=totalclock+10L;
 
-    if(svga == 1) {
-        permanentwritesprite(0,0,SVGAMENU,0,0,0,639,239,0);
-        permanentwritesprite(0,240,SVGAMENU2,0,0,240,639,479,0);
+    if(svga) {
+        svgascale = scale(65536L, ydim, 480);
+        svgaxoff = (xdim<<15) - scale(640, ydim<<15, 480);
+        svgastat = 8+16+64;
+        svgaoverstat = 8+16;
+    }
+    else {
+        svgascale = 65536;
+        svgaxoff = 0;
+        svgastat = 2+8+16+64;
+        svgaoverstat = 2+8+16;
     }
 
     while( !exit ) {
         handleevents();
+        menubackground();
+        menuwritesprite(127,58,MENUSELECTIONS,0,0,0);
 
-            overwritesprite(0,0,MAINMENU,0,0,0);
-            overwritesprite(127,58,MENUSELECTIONS,0,0,0);
+        if( select < 5) {
+            redpicnum=NEWGAMEGREEN+select;
+            menuwritesprite(redpic[select].x,redpic[select].y,redpicnum,0,0,0);
+        }
 
-            if( select < 5) {
-                redpicnum=NEWGAMEGREEN+select;
-                overwritesprite(redpic[select].x,redpic[select].y,redpicnum,0,0,0);
-            }
+        nextpage();
 
-            nextpage();
             if( totalclock >= goaltime ) {
                 goaltime=totalclock+10L;
                 if( keystatus[0xd0] || keystatus[0x50] ) {
@@ -337,10 +365,11 @@ void help(void) {
 
     while (!exit) {
         handleevents();
+        menubackground();
+        menuwritesprite(0,0,thenames[select].helpnames,0,0,0);
+        nextpage();
+
         if(totalclock >= goaltime) {
-            overwritesprite(0,0,MAINMENU,0,0,0);
-            overwritesprite(0,0,thenames[select].helpnames,0,0,0);
-            nextpage();
             goaltime=totalclock+10L;
                 if( keystatus[0xd0]
                     || keystatus[keys[KEYRIGHT]]
@@ -385,20 +414,19 @@ void loadsave(struct player *plr) {
 
     goaltime=totalclock+10L;
 
-    overwritesprite(0L,0L,MAINMENU,0,0,0);
-    overwritesprite(182,80,LOADGREEN,0,0,0);
-    overwritesprite(182,119,SAVERED,0,0,0);
-
     while ( !exit ) {
         handleevents();
+        menubackground();
         if(select == 0) {
-            overwritesprite(182,80,LOADGREEN,0,0,0);
-            overwritesprite(182,119,SAVERED,0,0,0);
+            menuwritesprite(182,80,LOADGREEN,0,0,0);
+            menuwritesprite(182,119,SAVERED,0,0,0);
         }
         else {
-            overwritesprite(182,80,LOADRED,0,0,0);
-            overwritesprite(182,119,SAVEGREEN,0,0,0);
+            menuwritesprite(182,80,LOADRED,0,0,0);
+            menuwritesprite(182,119,SAVEGREEN,0,0,0);
         }
+        nextpage();
+
         if( totalclock >= goaltime ) {
             goaltime=totalclock+10L;
                 if( keystatus[keys[KEYBACK]] || keystatus[RDN] ) {
@@ -418,7 +446,6 @@ void loadsave(struct player *plr) {
                     keystatus[0x1c]=keystatus[0x9c]=0;
                 }
             }
-            nextpage();
     }
 
     keystatus[1]=0;
@@ -443,12 +470,12 @@ void quit(void) {
     int goaltime;
     char temp[20];
 
-    overwritesprite(0L,0L,MAINMENU,0,0,0);
-    overwritesprite(123,79,AREYOUSURE,0,0,0);
-    nextpage();
-
     while( !exit ) {
         handleevents();
+        menubackground();
+        menuwritesprite(123,79,AREYOUSURE,0,0,0);
+        nextpage();
+
         if ( keystatus[0x9c] > 0 || keystatus[0x1c] > 0 || keystatus[0x15] > 0 ) {
             exit=1;
             keystatus[0x1c]=keystatus[0x9c]=0;
@@ -463,13 +490,13 @@ void quit(void) {
         keystatus[1]=0;
     }
     else {
-        if(svga == 1) {
-            permanentwritesprite(0,0,SVGAORDER1,0,0,0,639,239,0);
-            permanentwritesprite(0,240,SVGAORDER2,0,0,240,639,479,0);
-            nextpage();
+        if(svga) {
             exit=0;
             while( !exit ){
                 handleevents();
+                svgafullscreenpic(SVGAORDER1, SVGAORDER2);
+                nextpage();
+
                 if(keystatus[0x39] > 0 || keystatus[1] > 0)
                     exit=1;
             }
@@ -482,10 +509,11 @@ void quit(void) {
             exit=0;
             while( !exit ){
                 handleevents();
+                menuwritesprite(0,0,ORDER1,0,0,0);
+                nextpage();
+
                 if(keystatus[0x39] > 0 || keystatus[1] > 0)
                     exit=1;
-                overwritesprite(0,0,ORDER1,0,0,0);
-                nextpage();
             }
             keystatus[0x39]=0;
             keystatus[1]=0;
@@ -539,19 +567,6 @@ void thedifficulty(void) {
 
         //loadtile(MAINMENU);
 
-        overwritesprite(0,0,MAINMENU,0,0,0);
-        overwritesprite(127,58,BLOODGOREGREEN,0,0,0);
-        overwritesprite(148,114,DIFFICULTRED,0,0,0);
-
-        if( goreon == 1 ) {
-            overwritesprite(180,84,NOGORESHADOW,0,0x04,0);
-            overwritesprite(214,81,GORESOLID,0,0,0);
-        }
-        else {
-            overwritesprite(180,84,NOGORESOLID,0,0,0);
-            overwritesprite(214,81,GORESHADOW,0,0x04,0);
-        }
-
         goaltime=totalclock+10L;
 
         while ( !exit ) {
@@ -575,27 +590,28 @@ void thedifficulty(void) {
 
             redpicnum=HORNYSKULL1+select;
 
-            overwritesprite(0,0,MAINMENU,0,0,0);
+            menubackground();
 
             if(select2 == 0) {
-                overwritesprite(148,114,DIFFICULTRED,0,0,0);
-                overwritesprite(127,58,BLOODGOREGREEN,0,0,0);
+                menuwritesprite(148,114,DIFFICULTRED,0,0,0);
+                menuwritesprite(127,58,BLOODGOREGREEN,0,0,0);
             }
             else {
-                overwritesprite(148,114,DIFFICULTGREEN,0,0,0);
-                overwritesprite(127,58,BLOODGORERED,0,0,0);
+                menuwritesprite(148,114,DIFFICULTGREEN,0,0,0);
+                menuwritesprite(127,58,BLOODGORERED,0,0,0);
             }
-            overwritesprite(147,143,HORNYBACK,0,0,0);
-            overwritesprite(redpic[select].x,redpic[select].y,redpicnum,0,0,0);
+            menuwritesprite(147,143,HORNYBACK,0,0,0);
+            menuwritesprite(redpic[select].x,redpic[select].y,redpicnum,0,0,0);
 
             if( goreon == 1 ) {
-                overwritesprite(180,84,NOGORESHADOW,0,0x04,0);
-                overwritesprite(214,81,GORESOLID,0,0,0);
+                menuwritesprite(180,84,NOGORESHADOW,0,0x04,0);
+                menuwritesprite(214,81,GORESOLID,0,0,0);
             }
             else {
-                overwritesprite(180,84,NOGORESOLID,0,0,0);
-                overwritesprite(214,81,GORESHADOW,0,0x04,0);
+                menuwritesprite(180,84,NOGORESOLID,0,0,0);
+                menuwritesprite(214,81,GORESHADOW,0,0x04,0);
             }
+            nextpage();
 
             if( pickone == 1 ) {
                 if( keystatus[keys[KEYLEFT]] > 0 || keystatus[RLEFT] > 0) {
@@ -634,7 +650,6 @@ void thedifficulty(void) {
                 exit=2;
                 keystatus[1]=0;
             }
-        nextpage();
         } // IF
 
         } // WHILE
@@ -718,9 +733,9 @@ void loadgame(struct player *plr) {
     while ( !exit ) {
         handleevents();
 
-        overwritesprite(0,0,MAINMENU,0,0,0);
-        overwritesprite(138,84,SAVENUMBERS,0,0,0);
-        overwritesprite(190,48,LOADPIC,0,0,0);
+        menubackground();
+        menuwritesprite(138,84,SAVENUMBERS,0,0,0);
+        menuwritesprite(190,48,LOADPIC,0,0,0);
 
         for(i=0;i<MAXSAVEDGAMES;i++) {
             if( i == select )
@@ -795,9 +810,9 @@ void savegame(struct player *plr) {
     while ( !exit ) {
         handleevents();
 
-        overwritesprite(0,0,MAINMENU,0,0,0);
-        overwritesprite(138,84,SAVENUMBERS,0,0,0);
-        overwritesprite(188,50,SAVEPIC,0,0,0);
+        menubackground();
+        menuwritesprite(138,84,SAVENUMBERS,0,0,0);
+        menuwritesprite(188,50,SAVEPIC,0,0,0);
 
         for( i=0;i<MAXSAVEDGAMES;i++) {
             if(i == select)
@@ -865,9 +880,9 @@ void savegametext(int select) {
     while( !exit ) {
         handleevents();
 
-        overwritesprite(0,0,MAINMENU,0,0,0);
-        overwritesprite(138,84,SAVENUMBERS,0,0,0);
-        overwritesprite(188,50,SAVEPIC,0,0,0);
+        menubackground();
+        menuwritesprite(138,84,SAVENUMBERS,0,0,0);
+        menuwritesprite(188,50,SAVEPIC,0,0,0);
 
         for(i=0;i<MAXSAVEDGAMES;i++) {
             if( i == select ) {
@@ -879,6 +894,8 @@ void savegametext(int select) {
                 fancyfont(154,81+(i*17),THEFONT,tempbuf,0);
             }
         }
+        nextpage();
+
         if (keystatus[0xe] > 0) {  // backspace
             if (typemessageleng > 0) {
                 temp[typemessageleng]='\0';
@@ -933,7 +950,6 @@ void savegametext(int select) {
             exit=2;
             keystatus[0x1c]=keystatus[0x9c]=0;
         }
-        nextpage();
     }
 
     if( exit == 2 ) {
