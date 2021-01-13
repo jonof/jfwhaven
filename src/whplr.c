@@ -1682,13 +1682,15 @@ void victory(void) {
 	goaltime=totalclock+360;
 	victor=1;
 
+	flushperms();
+
 	if(svga == 1) {
 		SND_Sound(S_PICKUPFLAG);
-		permanentwritesprite(0,0,SVGAVICTORYA1,0,0,0,639,239,0);
-		permanentwritesprite(0,240,SVGAVICTORYA2,0,0,240,639,479,0);
+		svgafullscreenpic(SVGAVICTORYA1, SVGAVICTORYA2);
 		nextpage();
 		exit=0;
 		while( !exit ){
+			handleevents();
 			if(keystatus[0x39] > 0 || keystatus[1] > 0)
 				exit=1;
 		}
@@ -1698,6 +1700,7 @@ void victory(void) {
 		nextpage();
 		exit=0;
 		while( !exit ){
+			handleevents();
 			if(keystatus[0x39] > 0 || keystatus[1] > 0)
 				exit=1;
 		}
@@ -1705,23 +1708,23 @@ void victory(void) {
 			keystatus[1]=0;
 
 		SND_Sound(S_DROPFLAG);
-		permanentwritesprite(0,0,SVGAVICTORYB1,0,0,0,639,239,0);
-		permanentwritesprite(0,240,SVGAVICTORYB2,0,0,240,639,479,0);
+		svgafullscreenpic(SVGAVICTORYB1, SVGAVICTORYB2);
 		nextpage();
 		exit=0;
 		while( !exit ) {
-			   if( keystatus[0x39] > 0 || keystatus[1] > 0)
+			handleevents();
+			if( keystatus[0x39] > 0 || keystatus[1] > 0)
 					exit=1;
 		}
 			keystatus[0x39]=0;
 			keystatus[1]=0;
 
 		SND_Sound(S_WISP2);
-		permanentwritesprite(0,0,SVGAVICTORYC1,0,0,0,639,239,0);
-		permanentwritesprite(0,240,SVGAVICTORYC2,0,0,240,639,479,0);
+		svgafullscreenpic(SVGAVICTORYC1, SVGAVICTORYC2);
 		nextpage();
 		exit=0;
 		while( !exit ){
+			handleevents();
 			if(keystatus[0x39] > 0 || keystatus[1] > 0)
 				exit=1;
 		}
@@ -1735,9 +1738,10 @@ void victory(void) {
 		SND_Sound(S_PICKUPFLAG);
 		exit=0;
 		while( !exit ) {
+			handleevents();
 			if(keystatus[0x39] > 0 || keystatus[1] > 0)
 				exit=1;
-			overwritesprite(0,0,VICTORYA,0,0,0);
+			rotatesprite(0,0,65536,0,VICTORYA,0,0,2+8+16,0,0,xdim-1,ydim-1);
 			nextpage();
 		}
 		keystatus[0x39]=0;
@@ -1745,9 +1749,10 @@ void victory(void) {
 		SND_Sound(S_DROPFLAG);
 		exit=0;
 		while( !exit ) {
+			handleevents();
 			if(keystatus[0x39] > 0 || keystatus[1] > 0)
 				exit=1;
-			overwritesprite(0,0,VICTORYB,0,0,0);
+			rotatesprite(0,0,65536,0,VICTORYB,0,0,2+8+16,0,0,xdim-1,ydim-1);
 			nextpage();
 		}
 		keystatus[0x39]=0;
@@ -1756,9 +1761,10 @@ void victory(void) {
 		SND_Sound(S_WISP2);
 		exit=0;
 		while( !exit ) {
+			handleevents();
 			if(keystatus[0x39] > 0 || keystatus[1] > 0)
 				exit=1;
-			overwritesprite(0,0,VICTORYC,0,0,0);
+			rotatesprite(0,0,65536,0,VICTORYC,0,0,2+8+16,0,0,xdim-1,ydim-1);
 			nextpage();
 		}
 		keystatus[0x39]=0;
