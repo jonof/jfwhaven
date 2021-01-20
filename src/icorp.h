@@ -183,7 +183,7 @@ void crashgame(char *fmt,...);
 void doanimations(int numtics);
 int getanimationgoal(int *animptr);
 int setanimation(int *animptr,int thegoal,int thevel);
-void setdelayfunc(void (*func)(),int item,int delay);
+void setdelayfunc(void (*func)(int),int item,int delay);
 void dodelayitems(int tics);
 void setup3dscreen(void);
 void setupboard(char *fname);

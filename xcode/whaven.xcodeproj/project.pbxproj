@@ -208,6 +208,7 @@
 		AB17554A25AC898300C581C8 /* JFWitchaven.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = JFWitchaven.entitlements; sourceTree = "<group>"; };
 		AB17555525AC8B7800C581C8 /* version-auto.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "version-auto.c"; sourceTree = "<group>"; };
 		AB17555F25AC8B8800C581C8 /* version.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = version.h; sourceTree = "<group>"; };
+		AB1755AE25B8510100C581C8 /* Build Editor for JFWitchaven.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Build Editor for JFWitchaven.entitlements"; sourceTree = "<group>"; };
 		AB3AE6C11A4D423600CE4329 /* b5compat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = b5compat.c; sourceTree = "<group>"; };
 		AB5BD5FD23123FA500BC4BEF /* version-auto.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "version-auto.c"; sourceTree = "<group>"; };
 		AB98B2DE1A6B87E6009E8749 /* config.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = config.c; sourceTree = "<group>"; };
@@ -234,7 +235,7 @@
 		ABD03E481A52720F0012B9D1 /* Build Editor for JFWitchaven.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Build Editor for JFWitchaven.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ABD03E6A1A5272920012B9D1 /* Build Editor-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Build Editor-Info.plist"; sourceTree = "<group>"; };
 		ABD03E751A52745C0012B9D1 /* startwin.editor.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = startwin.editor.nib; sourceTree = "<group>"; };
-		ABD03E801A5275670012B9D1 /* whbuild.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = whbuild.c; path = ../src/whbuild.c; sourceTree = "<group>"; };
+		ABD03E801A5275670012B9D1 /* whbuild.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = whbuild.c; path = ../src/whbuild.c; sourceTree = "<group>"; usesTabs = 1; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -358,6 +359,7 @@
 			children = (
 				ABD03E691A5272890012B9D1 /* src */,
 				ABD03E751A52745C0012B9D1 /* startwin.editor.nib */,
+				AB1755AE25B8510100C581C8 /* Build Editor for JFWitchaven.entitlements */,
 				ABD03E6A1A5272920012B9D1 /* Build Editor-Info.plist */,
 			);
 			name = Editor;
@@ -772,7 +774,9 @@
 		ABD03E631A5272100012B9D1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Build Editor for JFWitchaven.entitlements";
 				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(USER_LIBRARY_DIR)/Frameworks";
 				INFOPLIST_FILE = "$(SRCROOT)/Build Editor-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks @executable_path/../Frameworks";
@@ -785,7 +789,9 @@
 		ABD03E641A5272100012B9D1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Build Editor for JFWitchaven.entitlements";
 				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(USER_LIBRARY_DIR)/Frameworks";
 				INFOPLIST_FILE = "$(SRCROOT)/Build Editor-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks @executable_path/../Frameworks";

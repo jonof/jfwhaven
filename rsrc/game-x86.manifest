@@ -3,7 +3,7 @@
     <assemblyIdentity
         version="1.0.0.0"
         processorArchitecture="x86"
-        name="JonoF.JFTekWar.TekWar"
+        name="JonoF.JFWitchaven.Whaven"
         type="win32"
     />
     <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
@@ -14,7 +14,7 @@
             <supportedOS Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}"/>
         </application>
     </compatibility>
-    <description>KenBuild</description>
+    <description>JFWitchaven</description>
     <dependency>
         <dependentAssembly>
             <assemblyIdentity

@@ -1,9 +1,23 @@
-build_h=$(EINC)/build.h $(EINC)/compat.h
+icorp_h=$(INC)/icorp.h $(EINC)/build.h $(EINC)/pragmas.h $(EINC)/cache1d.h $(EINC)/baselayer.h $(INC)/names.h $(INC)/sndmod.h $(INC)/les.h $(INC)/jeff.h $(INC)/raf.h $(INC)/whdefs.h $(INC)/keydefs.h
 
-$(SRC)/b5compat.$o: $(SRC)/b5compat.c $(build_h)
-$(SRC)/config.$o: $(SRC)/config.c $(EINC)/compat.h $(EINC)/build.h $(EINC)/osd.h $(EINC)/baselayer.h $(INC)/tekwar.h
-$(SRC)/whaven.$o: $(SRC)/whaven.c
+$(SRC)/b5compat.$o: $(SRC)/b5compat.c $(EINC)/build.h
+$(SRC)/config.$o: $(SRC)/config.c $(EINC)/compat.h $(EINC)/osd.h $(EINC)/scriptfile.h $(EINC)/baselayer.h $(EINC)/winlayer.h $(icorp_h)
+$(SRC)/whani.$o: $(SRC)/whani.c $(icorp_h)
+$(SRC)/whaven.$o: $(SRC)/whaven.c $(icorp_h) $(INC)/version.h
+$(SRC)/whfx.$o: $(SRC)/whfx.c $(icorp_h)
+$(SRC)/whinp.$o: $(SRC)/whinp.c $(icorp_h) $(INC)/keydefs.h
+$(SRC)/whmenu.$o: $(SRC)/whmenu.c $(icorp_h)
+$(SRC)/whnet.$o: $(SRC)/whnet.c $(icorp_h) $(EINC)/mmulti.h
+$(SRC)/whobj.$o: $(SRC)/whobj.c $(icorp_h)
+$(SRC)/whplr.$o: $(SRC)/whplr.c $(icorp_h)
+$(SRC)/whsndmod.$o: $(SRC)/whsndmod.c $(icorp_h)
+$(SRC)/whtag.$o: $(SRC)/whtag.c $(icorp_h)
+$(SRC)/version.$o: $(SRC)/version.c
+$(SRC)/version-auto.$o: $(SRC)/version-auto.c
 
-$(SRC)/gameres.$(res): $(SRC)/gameres.rc $(INC)/gameres.h $(RSRC)/game.bmp $(RSRC)/game_icon.ico
-$(SRC)/startwin_game.$o: $(SRC)/startwin_game.c $(EINC)/build.h $(EINC)/winlayer.h $(EINC)/compat.h $(INC)/tekwar.h $(INC)/gameres.h
-$(SRC)/startgtk_game.$o: $(SRC)/startgtk_game.c $(EINC)/build.h $(EINC)/baselayer.h $(SRC)/grpscan.h $(INC)/startwin.h $(EINC)/compat.h
+$(SRC)/startwin_game.$o: $(SRC)/startwin_game.c $(EINC)/build.h $(EINC)/winlayer.h $(EINC)/compat.h $(INC)/startwin.h $(INC)/gameres.h
+$(SRC)/startgtk_game.$o: $(SRC)/startgtk_game.c $(EINC)/build.h $(EINC)/baselayer.h $(EINC)/compat.h $(INC)/startwin.h
+
+$(SRC)/gameres.$(res): $(SRC)/gameres.rc $(INC)/gameres.h $(RSRC)/game.bmp $(RSRC)/game_icon.ico $(RSRC)/game.manifest
+$(SRC)/buildres.$(res): $(SRC)/buildres.rc $(EINC)/buildres.h $(RSRC)/build.bmp $(RSRC)/build_icon.ico $(RSRC)/build.manifest
+

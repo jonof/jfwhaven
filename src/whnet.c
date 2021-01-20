@@ -1840,7 +1840,7 @@ initmulti(int numplayers)
           else {
                option5 |= 0x10;
           }
-          initmultiplayers(option4, option5);
+          initmultiplayers(0, NULL);
           netinitialized = 1;
           break;
      }

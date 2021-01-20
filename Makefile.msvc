@@ -1,0 +1,152 @@
+# Witchaven Makefile for Microsoft Make
+
+RELEASE=1
+
+# Engine options
+#  USE_POLYMOST   - enables Polymost renderer
+#  USE_OPENGL     - enables OpenGL support in Polymost
+#     Define as 0 to disable OpenGL
+#     Define as 1 or 2 for GL 2.1 profile
+#  USE_ASM        - enables the use of assembly code
+USE_POLYMOST=1
+USE_OPENGL=1
+USE_ASM=1
+
+EROOT=jfbuild
+
+# Create Makefile.msvcuser yourself to provide your own overrides
+# for configurable values
+!if EXIST(Makefile.msvcuser)
+!include Makefile.msvcuser
+!endif
+
+SRC=src
+RSRC=rsrc
+EINC=$(EROOT)\include
+ELIB=$(EROOT)\src
+INC=$(SRC)
+
+o=obj
+res=res
+
+ENGINELIB=engine.lib
+EDITORLIB=build.lib
+
+flags_cl=
+flags_rc=
+!if "$(PLATFORM)" == "X64"
+flags_rc=/d_M_AMD64
+USE_ASM=0
+!elseif "$(PLATFORM)" == "ARM"
+# Some day, perhaps.
+USE_ASM=0
+!else
+flags_cl=/arch:IA32
+!endif
+
+!if $(RELEASE)
+# release options
+flags_cl=$(flags_cl) /Ox
+flags_link=/RELEASE
+!else
+# debugging options
+flags_cl=$(flags_cl) /Ot /Z7
+flags_link=/DEBUG
+!endif
+
+ENGINEOPTS=/DRENDERTYPEWIN=1
+!if $(USE_POLYMOST)
+ENGINEOPTS=$(ENGINEOPTS) /DUSE_POLYMOST=$(USE_POLYMOST)
+!endif
+!if $(USE_OPENGL)
+ENGINEOPTS=$(ENGINEOPTS) /DUSE_OPENGL=$(USE_OPENGL)
+!endif
+!if $(USE_ASM)
+ENGINEOPTS=$(ENGINEOPTS) /DUSE_ASM=$(USE_ASM)
+!endif
+
+CC=cl
+RC=rc
+LINK=link
+OURCFLAGS=/nologo /MD /J $(flags_cl)  \
+	/I$(INC) /I$(EINC) \
+	$(ENGINEOPTS)
+LIBS=user32.lib gdi32.lib shell32.lib ws2_32.lib comctl32.lib comdlg32.lib uxtheme.lib xinput9_1_0.lib
+LINKFLAGS=/opt:ref /nologo $(flags_link)
+RFLAGS=/nologo /i$(EINC) /i$(SRC) $(flags_rc)
+EXESUFFIX=.exe
+
+GAMEOBJS= \
+	$(SRC)\b5compat.$o \
+	$(SRC)\config.$o \
+	$(SRC)\whani.$o \
+	$(SRC)\whaven.$o \
+	$(SRC)\whfx.$o \
+	$(SRC)\whinp.$o \
+	$(SRC)\whmenu.$o \
+	$(SRC)\whnet.$o \
+	$(SRC)\whobj.$o \
+	$(SRC)\whplr.$o \
+	$(SRC)\whsndmod.$o \
+	$(SRC)\whtag.$o \
+	$(SRC)\gameres.$(res) \
+	$(SRC)\startwin_game.$o
+
+EDITOROBJS=$(SRC)\whbuild.$o \
+	$(SRC)\buildres.$(res)
+
+# Source-control version stamping
+!if [git --version >nul] == 0
+GAMEOBJS=$(GAMEOBJS) $(SRC)\version-auto.$o
+EDITOROBJS=$(EDITOROBJS) $(SRC)\version-auto.$o
+!else
+GAMEOBJS=$(GAMEOBJS) $(SRC)\version.$o
+EDITOROBJS=$(EDITOROBJS) $(SRC)\version.$o
+!endif
+
+# RULES
+{$(SRC)}.c{$(SRC)}.$o:
+	$(CC) /c $(CFLAGS) $(OURCFLAGS) /Fo$@ $<
+
+{$(SRC)}.cpp{$(SRC)}.$o:
+	$(CC) /c $(CFLAGS) $(OURCFLAGS) /Fo$@ $<
+
+{$(SRC)}.rc{$(SRC)}.$(res):
+	$(RC) $(RFLAGS) /fo$@ /r $<
+
+
+# TARGETS
+all: whaven$(EXESUFFIX) build$(EXESUFFIX) ;
+
+whaven$(EXESUFFIX): $(GAMEOBJS) $(ELIB)\$(ENGINELIB)
+	$(LINK) /OUT:$@ /SUBSYSTEM:WINDOWS $(LINKFLAGS) /MAP $** $(LIBS) msvcrt.lib
+
+build$(EXESUFFIX): $(EDITOROBJS) $(ELIB)\$(ENGINELIB) $(ELIB)\$(EDITORLIB)
+	$(LINK) /OUT:$@ /SUBSYSTEM:WINDOWS $(LINKFLAGS) /MAP $** $(LIBS) msvcrt.lib
+
+!include Makefile.deps
+
+enginelib editorlib: AlwaysBuild
+	cd "$(EROOT)"
+	$(MAKE) /f Makefile.msvc /$(MAKEFLAGS) USE_POLYMOST=$(USE_POLYMOST) USE_OPENGL=$(USE_OPENGL) USE_ASM=$(USE_ASM) $@
+	cd "$(MAKEDIR)"
+
+$(SRC)\version-auto.c: AlwaysBuild
+	cmd /c tools\generateversion.cmd > $@
+
+AlwaysBuild: ;
+$(ELIB)\$(EDITORLIB): editorlib ;
+$(ELIB)\$(ENGINELIB): enginelib ;
+
+# PHONIES
+clean:
+	-del /q $(GAMEOBJS) $(EDITOROBJS)
+	cd "$(EROOT)"
+	$(MAKE) /f Makefile.msvc $@
+	cd "$(MAKEDIR)"
+
+veryclean: clean
+	-del /q whaven$(EXESUFFIX) build$(EXESUFFIX)
+	cd "$(EROOT)"
+	$(MAKE) /f Makefile.msvc $@
+	cd "$(MAKEDIR)"

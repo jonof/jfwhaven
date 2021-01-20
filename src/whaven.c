@@ -285,7 +285,7 @@ int setanimation(int *animptr,int thegoal,int thevel) {
 }
 
 
-void setdelayfunc(void (*func)(),int item,int delay) {
+void setdelayfunc(void (*func)(int),int item,int delay) {
 
       int  i,j;
 
@@ -1628,7 +1628,7 @@ void readpalettetable(void) {
              }
              makepalookup(lookup_num,tempbuf,0,0,0,1);
       }
-      fclose;
+      fclose(fp);
 }
 
 int adjusthp(int hp) {

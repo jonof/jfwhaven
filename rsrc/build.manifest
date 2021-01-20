@@ -3,7 +3,7 @@
     <assemblyIdentity
         version="1.0.0.0"
         processorArchitecture="amd64"
-        name="JonoF.JFWitchaven.Whaven"
+        name="JonoF.JFWitchaven.Build"
         type="win32"
     />
     <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
@@ -14,7 +14,7 @@
             <supportedOS Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}"/>
         </application>
     </compatibility>
-    <description>JFWitchaven</description>
+    <description>Build Editor for JFWitchaven</description>
     <dependency>
         <dependentAssembly>
             <assemblyIdentity
