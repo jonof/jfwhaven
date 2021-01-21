@@ -180,7 +180,7 @@ showadditionalinfo(void)
 int  crashflag;
 
 void
-shutdown(void)
+shutdowngame(void)
 {
 
       writesetup("whaven.ini");
@@ -210,7 +210,7 @@ void crashgame(char *fmt,...) {
       va_list argptr;
 
       crashflag=1;
-      shutdown();
+      shutdowngame();
 
       va_start(argptr,fmt);
       vprintf(fmt,argptr);

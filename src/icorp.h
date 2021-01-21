@@ -178,7 +178,7 @@ void precache();
 void animateobjs(struct player *plr);
 
 // whaven.c
-void shutdown(void );
+void shutdowngame(void );
 void crashgame(char *fmt,...);
 void doanimations(int numtics);
 int getanimationgoal(int *animptr);

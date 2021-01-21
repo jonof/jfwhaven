@@ -1575,7 +1575,7 @@ netpickmonster(void)
                }
                else if (keystatus[0x01]) {
                     keystatus[0x01] = 0;
-                    shutdown();
+                    shutdowngame();
                }
                break;
           case 1:
@@ -1974,7 +1974,7 @@ whnetmon(void)
      }
      if (escapetomenu) {
           if (keystatus[0x15]) {
-               shutdown();
+               shutdowngame();
           }
           else if (keystatus[0x31]) {
                keystatus[0x31] = 0;

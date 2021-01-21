@@ -568,7 +568,7 @@ void quit(void) {
             exit=0;
             */
         }
-        shutdown();
+        shutdowngame();
     }
 
 }

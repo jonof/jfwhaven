@@ -1771,7 +1771,7 @@ void victory(void) {
 		exit=0;
 
 	}
-	shutdown();
+	shutdowngame();
 
 }
 
