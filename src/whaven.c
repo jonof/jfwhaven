@@ -7,6 +7,7 @@
 #define GAME
 #define SVGA
 #include "icorp.h"
+#include "startwin.h"
 #include "version.h"
 
 int *animateptr[MAXANIMATES],
@@ -1181,6 +1182,42 @@ int app_main(int argc,const char * const argv[]) {
 
     loadsetup("whaven.ini");
 
+#if defined RENDERTYPEWIN || (defined RENDERTYPESDL && (defined __APPLE__ || defined HAVE_GTK))
+    {
+        struct startwin_settings settings;
+
+        memset(&settings, 0, sizeof(settings));
+        settings.fullscreen = fullscreen;
+        settings.xdim3d = xdimgame;
+        settings.ydim3d = ydimgame;
+        settings.bpp3d = bppgame;
+        settings.forcesetup = forcesetup;
+        settings.usemouse = !!option[3];
+        settings.usejoy = !!option2[2];
+//        settings.samplerate = MixRate;
+//        settings.bitspersample = NumBits;
+//        settings.channels = NumChannels;
+
+        if (forcesetup) {
+            if (startwin_run(&settings) == STARTWIN_CANCEL) {
+                uninitengine();
+                exit(0);
+            }
+        }
+
+        fullscreen = settings.fullscreen;
+        xdimgame = settings.xdim3d;
+        ydimgame = settings.ydim3d;
+        bppgame = settings.bpp3d;
+        forcesetup = settings.forcesetup;
+        option[3] = settings.usemouse;
+        option2[2] = settings.usejoy;
+//        MixRate = settings.samplerate;
+//        NumBits = settings.bitspersample;
+//        NumChannels = settings.channels;
+    }
+#endif
+
     if( option[8] == 1 || option[9] == 1)
         MusicMode=1;
     else
@@ -1285,6 +1322,7 @@ int app_main(int argc,const char * const argv[]) {
 
     playloop();
 
+    return 0;
 }
 
 

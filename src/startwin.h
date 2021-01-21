@@ -4,7 +4,4 @@ struct startwin_settings {
     int forcesetup;
     int usemouse, usejoy;
 //    int samplerate, bitspersample, channels;
-
-//    int numplayers;
-//    char *joinhost;
 };

@@ -2,6 +2,12 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.4"/>
+  <object class="GtkAdjustment" id="numplayersadjustment">
+    <property name="lower">2</property>
+    <property name="upper">16</property>
+    <property name="value">2</property>
+    <property name="step_increment">1</property>
+  </object>
   <object class="GtkListStore" id="vmode3dlist">
     <columns>
       <!-- column-name mode -->
@@ -54,7 +60,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="margin_top">4</property>
-                    <property name="label" translatable="yes">JFTekWar</property>
+                    <property name="label" translatable="yes">JFWitchaven</property>
                     <attributes>
                       <attribute name="weight" value="bold"/>
                     </attributes>
@@ -132,6 +138,7 @@
                             <property name="margin_right">12</property>
                             <property name="label" translatable="yes">_Video mode:</property>
                             <property name="use_underline">True</property>
+                            <property name="mnemonic_widget">vmode3dcombo</property>
                           </object>
                           <packing>
                             <property name="left_attach">0</property>
@@ -149,7 +156,31 @@
                       </packing>
                     </child>
                     <child>
-                      <placeholder/>
+                      <object class="GtkBox">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
                     </child>
                   </object>
                 </child>
