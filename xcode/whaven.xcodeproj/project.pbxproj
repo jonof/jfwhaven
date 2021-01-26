@@ -50,6 +50,9 @@
 		AB9E4AEA2312ABAB0008A90E /* whinp.c in Sources */ = {isa = PBXBuildFile; fileRef = AB9E4AE12312ABAB0008A90E /* whinp.c */; };
 		AB9E4AEB2312ABAB0008A90E /* whobj.c in Sources */ = {isa = PBXBuildFile; fileRef = AB9E4AE22312ABAB0008A90E /* whobj.c */; };
 		AB9E4AEC2312ABAB0008A90E /* whfx.c in Sources */ = {isa = PBXBuildFile; fileRef = AB9E4AE32312ABAB0008A90E /* whfx.c */; };
+		ABB2756A25C0285D006709E2 /* libjfaudiolib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABB2755E25C02828006709E2 /* libjfaudiolib.a */; };
+		ABB2756C25C02867006709E2 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABB2756B25C02867006709E2 /* AudioToolbox.framework */; };
+		ABB2756E25C0286E006709E2 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABB2756D25C0286E006709E2 /* AudioUnit.framework */; };
 		ABC75BD81A49C19A007D0D43 /* startwin.game.nib in Resources */ = {isa = PBXBuildFile; fileRef = ABC75BD61A49C19A007D0D43 /* startwin.game.nib */; };
 		ABC75BDB1A49C2D8007D0D43 /* libengine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BC91A49BFB1007D0D43 /* libengine.a */; };
 		ABC75BE01A49C347007D0D43 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BDF1A49C347007D0D43 /* AppKit.framework */; };
@@ -93,6 +96,27 @@
 			proxyType = 1;
 			remoteGlobalIDString = AB5BD5EF23123F0300BC4BEF;
 			remoteInfo = "Version stamp";
+		};
+		ABB2755D25C02828006709E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = ABB2755225C02828006709E2 /* jfaudiolib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = AB2E9E421011E61700DD2F1F;
+			remoteInfo = jfaudiolib;
+		};
+		ABB2755F25C02828006709E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = ABB2755225C02828006709E2 /* jfaudiolib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = AB32FA7F1077102D00A9BAFF;
+			remoteInfo = test;
+		};
+		ABB2756725C02855006709E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = ABB2755225C02828006709E2 /* jfaudiolib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = AB2E9E411011E61600DD2F1F;
+			remoteInfo = jfaudiolib;
 		};
 		ABC75BC81A49BFB1007D0D43 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -225,6 +249,9 @@
 		AB9E4AE12312ABAB0008A90E /* whinp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = whinp.c; sourceTree = "<group>"; };
 		AB9E4AE22312ABAB0008A90E /* whobj.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = whobj.c; sourceTree = "<group>"; };
 		AB9E4AE32312ABAB0008A90E /* whfx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = whfx.c; sourceTree = "<group>"; };
+		ABB2755225C02828006709E2 /* jfaudiolib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = jfaudiolib.xcodeproj; path = ../jfaudiolib/jfaudiolib.xcodeproj; sourceTree = "<group>"; };
+		ABB2756B25C02867006709E2 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		ABB2756D25C0286E006709E2 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		ABC75B9D1A49BCC3007D0D43 /* JFWitchaven.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JFWitchaven.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ABC75BA11A49BCC3007D0D43 /* JFWitchaven-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "JFWitchaven-Info.plist"; sourceTree = "<group>"; };
 		ABC75BBE1A49BFB1007D0D43 /* engine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = engine.xcodeproj; path = ../jfbuild/xcode/engine.xcodeproj; sourceTree = "<group>"; };
@@ -245,9 +272,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				ABC75BDB1A49C2D8007D0D43 /* libengine.a in Frameworks */,
+				ABB2756A25C0285D006709E2 /* libjfaudiolib.a in Frameworks */,
 				ABC75BE01A49C347007D0D43 /* AppKit.framework in Frameworks */,
 				ABC75BE11A49C36C007D0D43 /* SDL2.framework in Frameworks */,
 				AB9E4ABD23125D810008A90E /* SDL2.framework in Frameworks */,
+				ABB2756C25C02867006709E2 /* AudioToolbox.framework in Frameworks */,
+				ABB2756E25C0286E006709E2 /* AudioUnit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -266,14 +296,34 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		ABB2755325C02828006709E2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				ABB2755E25C02828006709E2 /* libjfaudiolib.a */,
+				ABB2756025C02828006709E2 /* test */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		ABB2756925C0285D006709E2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				ABB2756D25C0286E006709E2 /* AudioUnit.framework */,
+				ABB2756B25C02867006709E2 /* AudioToolbox.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		ABC75B921A49BC18007D0D43 = {
 			isa = PBXGroup;
 			children = (
 				ABC75BBE1A49BFB1007D0D43 /* engine.xcodeproj */,
+				ABB2755225C02828006709E2 /* jfaudiolib.xcodeproj */,
 				ABC75BD41A49C16E007D0D43 /* Game */,
 				ABD03E681A52726F0012B9D1 /* Editor */,
 				ABC75B9E1A49BCC3007D0D43 /* Products */,
 				ABC75BDE1A49C311007D0D43 /* Linked Frameworks */,
+				ABB2756925C0285D006709E2 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -390,6 +440,7 @@
 			);
 			dependencies = (
 				ABC75BE31A49C3AB007D0D43 /* PBXTargetDependency */,
+				ABB2756825C02855006709E2 /* PBXTargetDependency */,
 				AB5BD5FC23123F8100BC4BEF /* PBXTargetDependency */,
 			);
 			name = JFWitchaven;
@@ -460,6 +511,10 @@
 					ProductGroup = ABC75BBF1A49BFB1007D0D43 /* Products */;
 					ProjectRef = ABC75BBE1A49BFB1007D0D43 /* engine.xcodeproj */;
 				},
+				{
+					ProductGroup = ABB2755325C02828006709E2 /* Products */;
+					ProjectRef = ABB2755225C02828006709E2 /* jfaudiolib.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -477,6 +532,20 @@
 			fileType = "compiled.mach-o.executable";
 			path = bin2c;
 			remoteRef = AB5BD5DF23123DA000BC4BEF /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		ABB2755E25C02828006709E2 /* libjfaudiolib.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libjfaudiolib.a;
+			remoteRef = ABB2755D25C02828006709E2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		ABB2756025C02828006709E2 /* test */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = test;
+			remoteRef = ABB2755F25C02828006709E2 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		ABC75BC91A49BFB1007D0D43 /* libengine.a */ = {
@@ -620,6 +689,11 @@
 			target = AB5BD5EF23123F0300BC4BEF /* Version stamp */;
 			targetProxy = AB5BD5FB23123F8100BC4BEF /* PBXContainerItemProxy */;
 		};
+		ABB2756825C02855006709E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = jfaudiolib;
+			targetProxy = ABB2756725C02855006709E2 /* PBXContainerItemProxy */;
+		};
 		ABC75BE31A49C3AB007D0D43 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = engine;
@@ -693,6 +767,7 @@
 				HEADER_SEARCH_PATHS = (
 					../src,
 					../jfbuild/include,
+					../jfaudiolib/include,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
@@ -722,6 +797,7 @@
 				HEADER_SEARCH_PATHS = (
 					../src,
 					../jfbuild/include,
+					../jfaudiolib/include,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				WARNING_CFLAGS = (

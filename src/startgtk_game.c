@@ -15,7 +15,17 @@
 #define TAB_CONFIG 0
 #define TAB_MESSAGES 1
 
-extern int gtkenabled;
+static struct soundQuality_t {
+    int frequency;
+    int samplesize;
+    int channels;
+} soundQualities[] = {
+    { 44100, 16, 2 },
+    { 22050, 16, 2 },
+    { 11025, 16, 2 },
+    { 0, 0, 0 },    // May be overwritten by custom sound settings.
+    { 0, 0, 0 },
+};
 
 static GtkWindow *startwin;
 static struct {
@@ -31,12 +41,20 @@ static struct {
     GtkWidget *vmode3dcombo;
     GtkListStore *vmode3dlist;
     GtkWidget *fullscreencheck;
+
+    GtkWidget *usemousecheck;
+    GtkWidget *usejoystickcheck;
+    GtkWidget *soundqualitycombo;
+    GtkListStore *soundqualitylist;
 } controls;
 
 static gboolean startwinloop = FALSE;
 static struct startwin_settings *settings;
 static gboolean quiteventonclose = FALSE;
 static int retval = -1;
+
+
+extern int gtkenabled;
 
 // -- SUPPORT FUNCTIONS -------------------------------------------------------
 
@@ -107,6 +125,43 @@ static void populate_video_modes(gboolean firsttime)
     }
 }
 
+static void populate_sound_quality(gboolean firsttime)
+{
+    int i, curidx = -1;
+    char modestr[64];
+    GtkTreeIter iter;
+
+    if (firsttime) {
+        for (i = 0; soundQualities[i].frequency > 0; i++) {
+            if (soundQualities[i].frequency == settings->samplerate &&
+                soundQualities[i].samplesize == settings->bitspersample &&
+                soundQualities[i].channels == settings->channels) {
+                curidx = i;
+                break;
+            }
+        }
+        if (curidx < 0) {
+            soundQualities[i].frequency = settings->samplerate;
+            soundQualities[i].samplesize = settings->bitspersample;
+            soundQualities[i].channels = settings->channels;
+        }
+    }
+
+    gtk_list_store_clear(controls.soundqualitylist);
+    for (i = 0; soundQualities[i].frequency > 0; i++) {
+        sprintf(modestr, "%d kHz, %d-bit, %s",
+            soundQualities[i].frequency / 1000,
+            soundQualities[i].samplesize,
+            soundQualities[i].channels == 1 ? "Mono" : "Stereo");
+        gtk_list_store_insert_with_values(controls.soundqualitylist,
+            &iter, -1,
+            0, modestr, 1, i, -1);
+        if (i == curidx) {
+            gtk_combo_box_set_active_iter(GTK_COMBO_BOX(controls.soundqualitycombo), &iter);
+        }
+    }
+}
+
 static void set_settings(struct startwin_settings *thesettings)
 {
     settings = thesettings;
@@ -127,6 +182,14 @@ static void setup_config_mode(void)
 
     populate_video_modes(TRUE);
     gtk_widget_set_sensitive(controls.vmode3dcombo, TRUE);
+
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(controls.usemousecheck), settings->usemouse);
+    gtk_widget_set_sensitive(controls.usemousecheck, TRUE);
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(controls.usejoystickcheck), settings->usejoy);
+    gtk_widget_set_sensitive(controls.usejoystickcheck, TRUE);
+
+    populate_sound_quality(TRUE);
+    gtk_widget_set_sensitive(controls.soundqualitycombo, TRUE);
 
     gtk_widget_set_sensitive(controls.cancelbutton, TRUE);
     gtk_widget_set_sensitive(controls.startbutton, TRUE);
@@ -172,6 +235,19 @@ static void on_startbutton_clicked(GtkButton *button, gpointer user_data)
         settings->ydim3d = validmode[mode].ydim;
         settings->bpp3d = validmode[mode].bpp;
         settings->fullscreen = validmode[mode].fs;
+    }
+
+    settings->usemouse = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(controls.usemousecheck));
+    settings->usejoy = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(controls.usejoystickcheck));
+
+    mode = -1;
+    if (gtk_combo_box_get_active_iter(GTK_COMBO_BOX(controls.soundqualitycombo), &iter)) {
+        gtk_tree_model_get(GTK_TREE_MODEL(controls.soundqualitylist), &iter, 1 /*index*/, &mode, -1);
+    }
+    if (mode >= 0) {
+        settings->samplerate = soundQualities[mode].frequency;
+        settings->bitspersample = soundQualities[mode].samplesize;
+        settings->channels = soundQualities[mode].channels;
     }
 
     settings->forcesetup = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(controls.alwaysshowcheck));
@@ -233,6 +309,11 @@ static GtkWindow *create_window(void)
     controls.vmode3dlist = GTK_LIST_STORE(gtk_builder_get_object(builder, "vmode3dlist"));
     controls.fullscreencheck = GTK_WIDGET(get_and_connect_signal(builder, "fullscreencheck",
         "toggled", G_CALLBACK(on_fullscreencheck_toggled)));
+
+    controls.usemousecheck = GTK_WIDGET(gtk_builder_get_object(builder, "usemousecheck"));
+    controls.usejoystickcheck = GTK_WIDGET(gtk_builder_get_object(builder, "usejoystickcheck"));
+    controls.soundqualitycombo = GTK_WIDGET(gtk_builder_get_object(builder, "soundqualitycombo"));
+    controls.soundqualitylist = GTK_LIST_STORE(gtk_builder_get_object(builder, "soundqualitylist"));
 
     g_object_unref(G_OBJECT(builder));
 
@@ -334,7 +415,6 @@ int startwin_settitle(const char *title)
     if (startwin) {
         gtk_window_set_title(startwin, title);
     }
-    g_set_application_name(title);
 
     return 0;
 }

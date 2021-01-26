@@ -2,10 +2,31 @@
 #define  SND_CALLER
 #define  GAME
 #include "icorp.h"
+#include "fx_man.h"
 
-int   readfile(int,char *,int);
+#define TRUE 1
+#define FALSE 0
 
-int flag=0;
+typedef struct
+{
+	int      handle;
+	int      number;
+	int      x,y;
+} SampleType;
+
+struct    soundbuffertype {
+     int       users;
+     int       offset;
+     int       priority;
+     void *    cache_ptr;
+     int       cache_length;
+     unsigned char cache_lock;
+};
+
+struct soundbuffertype Samples[MAX_SAMPLES];
+SampleType  SampleRay[MAX_ACTIVE_SAMPLES];
+
+SampleType  FXLoopRay[MAX_ACTIVE_FXLOOPS];
 
 extern char tempbuf[];
 extern char displaybuf[50];
@@ -17,11 +38,6 @@ extern int musiclevel;
 extern int digilevel;
 extern int loopinstuff;
 
-// local data for hmi INI
-static   char *  szHexNumbers  =  "0123456789ABCDEF";
-static   unsigned short  wMultiplier[]   =  { 1, 16, 256, 4096, 65536, 1048576, 16777216, 268435456 };
-// local function prototypes
-
 //TEMP!!
 volatile  unsigned joetime;
 
@@ -30,63 +46,40 @@ static unsigned short arrangements=3;
 static unsigned short songsperlevel;
 static unsigned short totallevels=6;              //really thre use two to test menusong
 
+int lavasnd=-1,
+	batsnd=-1,
+	cartsnd=-1;
+
 //JSA_DEMO move these to sndmod.h if they work
 char *       BaseSongPtr;
 char *       EmbSongPtr;
 char *       SpiceSongPtr;
 
+unsigned short     SD_Started=0;
+int     Midi_Loaded,Digi_Loaded;
+
+unsigned short     hSoundFile  =  -1;       // Handle for Sound F/X file
+unsigned short     hSongFile   =  -1;
+unsigned short     hMiscHandle =  -1;
+
+
+unsigned int    *SongList;
 
 //
 //                         INTERNAL ROUTINES
 //
 
-//////////////////////////////////////////////////////////////////////////////
-//                                                                          //
-//    sosDIGISampleCallback(WORD,WORD,WORD) : Call back routine from SOS    //
-//          Digi functions. wCallSource indicates which process is complete //
-//          hSample is the particular sample handle.                        //
-//                                                                          //
-//////////////////////////////////////////////////////////////////////////////
-void
-sosDIGISampleCallback(  unsigned short wDriverHandle, unsigned short wCallSource, unsigned short hSample )
+static void
+soundcallback(unsigned int i)
 {
-//
-// recording driver will also use this callback for future!
-// will have to switch wDriverHandle as well...
-//
-/*
-	switch(wCallSource)
-	{
-		case _SAMPLE_DONE:
-			for( wIndex=0; wIndex<MAX_ACTIVE_SAMPLES; wIndex++ )
-				if( hSample==SampleRay[wIndex].SOSHandle )
-					break;
-#if 0
-//a sting has just played so restart the loopmusic
-			if(SampleRay[wIndex].number == loopmusepauseflag && MusicMode==_LOOP_MUSIC)
-				sosDIGISetSampleVolume(hSOSDriverHandles[DIGI],LoopHandles[(looptoggle^1)],0x4fff);
-#endif
-			sSOSSampleData[wIndex].wLoopCount = 0;
-			sSOSSampleData[wIndex].dwSampleSize= 0;
-			SampleRay[wIndex].SOSHandle = -1;
-			SampleRay[wIndex].playing = 0;
-			SampleRay[wIndex].priority = 0;
-			SampleRay[wIndex].number = -1;
-			break;
+     if (i == (unsigned int)-1) return;
 
-#if 0
-		case _SAMPLE_LOOPING:
-//will have to differentiate between a music and sfx loop via handle
-			if(LoopPending)
-			{
-				SND_SwapLoops();
-				LoopPending = 0;
-			}
-			//Metronome = 0;
-			break;
-#endif
-	}
-*/
+     Samples[SampleRay[i].number].users--;
+     if( Samples[SampleRay[i].number].users == 0 ) {
+          Samples[SampleRay[i].number].cache_lock=0x00;
+     }
+     SampleRay[i].handle=-1;
+     SampleRay[i].number=-1;
 }
 
 
@@ -121,12 +114,6 @@ sosMIDITriggerCallback( unsigned short hSong, unsigned char bTrack, unsigned cha
 		SND_StartMIDISong(SongPending);
 		SongPending=0;
 	}
-
-
-  if(BranchPending) {
-	  sosMIDIBranchToSongLocation(hSOSSongHandles[BASE_SONG],0);
-	  BranchPending=0;
-  }
      */
 }
 
@@ -134,27 +121,30 @@ sosMIDITriggerCallback( unsigned short hSong, unsigned char bTrack, unsigned cha
 void
 SND_SetupTables(void)
 {
-/*
+	int i;
+	unsigned int    DigiList[1024];
+
 	if(SoundMode) {
-		hSoundFile = open("JOESND",O_RDONLY | O_BINARY);
-		if( hSoundFile == -1 ) {
-			crash("COULDN'T OPEN JOESND!");
+		hSoundFile = kopen4load("joesnd", 0);
+		if( hSoundFile < 0 ) {
+			crashgame("Couldn't open JOESND");
 		}
-		DigiList = malloc(0x1000);
-		lseek(hSoundFile,-4096L,SEEK_END);
-		readfile(hSoundFile,DigiList,4096);
+		klseek(hSoundFile,-4096L,SEEK_END);
+		i = kread(hSoundFile,DigiList,sizeof(DigiList));
+		if (i != sizeof(DigiList)) {
+			crashgame("JOESND is too short");
+		}
 	}
 
-	if(MusicMode==_LOOP_MUSIC) {
-		hLoopFile = open("LOOPS",O_RDONLY | O_BINARY);
-		if( hLoopFile == -1 ) {
-			crash("COULDN'T OPEN LOOPS!");
-		}
-		LoopList = malloc(0x1000);
-		lseek(hLoopFile,-4096L,SEEK_END);
-		readfile(hLoopFile,LoopList,4096);
+	memset(&Samples, 0, sizeof(Samples));
+	for (i=0; i<MAX_SAMPLES; i++) {
+		Samples[i].offset = DigiList[i*3]*4096;
+		Samples[i].cache_length = DigiList[i*3+1];
+		Samples[i].priority = DigiList[i*3+2];
 	}
-	else if(MusicMode) {
+
+/*
+	if(MusicMode) {
 		hSongFile = open("SONGS",O_RDONLY | O_BINARY);
 		if( hSongFile == -1 ) {
 			crash("COULDN'T OPEN SONGS!");
@@ -164,60 +154,6 @@ SND_SetupTables(void)
 		readfile(hSongFile,SongList,4096);
 	}
 */
-	return;
-}
-
-
-
-//////////////////////////////////////////////////////////////////////////////
-//                                                                          //
-//    SND_LoadMidiIns(void) : Read melodic and percussive banks into mem.   //
-//          Conditional : GENERAL MIDI and WAVE synths don't need patches   //
-//                                                                          //
-//////////////////////////////////////////////////////////////////////////////
-void
-SND_LoadMidiIns(void)
-{
-static unsigned short  wLength;
-
-//JSA_DEMO check port address to verify FM device
-/*
-	if( (MusicMode==_STANDARD_MUSIC || MusicMode==_DIG_MIDI_MUSIC) &&
-			sMIDIHardware.wPort==0x388 ) {
-//              (wMIDIDeviceID != _MIDI_MPU_401 && wMIDIDeviceID != _MIDI_MT_32
-//                  && wMIDIDeviceID!=_MIDI_AWE32) ) {
-		hMiscHandle = open("melodic.bnk",O_RDONLY);
-		if( hMiscHandle == -1 )
-			crash("MELODIC BANK FILE FAILED!");
-		m_bnkptr = malloc(0x152c);
-		read( hMiscHandle,m_bnkptr,0x152c );
-		close( hMiscHandle );
-		if( ( wError = sosMIDISetInsData( hSOSDriverHandles[MIDI], m_bnkptr, 0x00 ) ) )
-			crash("BAD SetInsData MEL!" );
-
-		hMiscHandle = open("drum.bnk",O_RDONLY);
-		if( hMiscHandle == -1 )
-			crash("PERCUSSIVE BANK FILE FAILED!");
-		d_bnkptr = malloc(0x152c);
-		read( hMiscHandle,d_bnkptr,0x152c );
-		close( hMiscHandle );
-		if( ( wError = sosMIDISetInsData( hSOSDriverHandles[MIDI], d_bnkptr, 0x00 ) ) )
-			printf("BAD SetInsData DRUM!" );
-	}
-
-	if(MusicMode==_DIG_MIDI_MUSIC) {
-		hMiscHandle = open("test.dig",O_RDONLY);
-		if( hMiscHandle == -1 )
-			crash("DIGI_MIDI FILE FAILED!");
-	wLength  =  lseek( hMiscHandle, 0L, SEEK_END );
-	lseek( hMiscHandle, 0L, SEEK_SET );
-		digi_bnkptr = malloc(wLength);
-		read( hMiscHandle,digi_bnkptr,wLength );
-		close( hMiscHandle );
-		if( ( wError = sosMIDISetInsData( hSOSDriverHandles[DIG_MIDI], digi_bnkptr, 0x00 ) ) )
-			crash("BAD SetInsData digmidi!" );
-	}
- */
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -228,6 +164,7 @@ static unsigned short  wLength;
 //////////////////////////////////////////////////////////////////////////////
 char * SND_LoadMIDISong( unsigned short which )
 {
+	/*
 char * lpDataPtr;
 char *  pDataPtr;
 unsigned short  wLength;
@@ -244,36 +181,8 @@ unsigned short  wLength;
    // create far pointer  !!!!!
    lpDataPtr   =  (char *)pDataPtr;
    return( lpDataPtr );
-}
-
-
-//
-//                         PUBLIC ROUTINES
-//
-
-
-void
-SND_DoBuffers(void)
-{
-
-/*
-	for( wIndex=0; wIndex<MAX_ACTIVE_SAMPLES; wIndex++ ) {
-		sSOSSampleData[wIndex].lpSamplePtr = (char *)malloc((int)55000);
-		if(sSOSSampleData[wIndex].lpSamplePtr==_NULL)
-			crash("Could Not get a Sound Buffer!!");
-	}
-*/
-}
-
-void
-SND_UnDoBuffers(void)
-{
-/*
-	for( wIndex=0; wIndex<MAX_ACTIVE_SAMPLES; wIndex++ ) {
-		if( sSOSSampleData[wIndex].lpSamplePtr != NULL )
-			free(sSOSSampleData[wIndex].lpSamplePtr);
-	}
-*/
+   */
+	return NULL;
 }
 
 
@@ -286,6 +195,9 @@ SND_UnDoBuffers(void)
 void
 SND_Startup(void)
 {
+    int err, channels = 2, bitspersample = 16, mixrate = 22050;
+    void *initdata = NULL;
+    int wIndex;
 
 	if (SD_Started)
 		return;
@@ -293,19 +205,6 @@ SND_Startup(void)
 //GET Volume values
 		wMIDIVol = (musiclevel<<3);
 		wDIGIVol = (digilevel<<11);
-
-	if(wDIGIDeviceID == 0xffffffff)
-		SoundMode=_OFF;
-	if(wMIDIDeviceID == 0xffffffff)
-		MusicMode=_OFF;
-
-//DIGISYSTEM
-
-	if(SoundMode==_ON) { // && wDIGIDeviceID!=0xffffffff) {
-		wError = sosDIGIInitSystem( _NULL, _SOS_DEBUG_NORMAL );
-		if(wError!=_ERR_NO_ERROR)
-			crash( "Error on Digi SysInit!" );
-	}
 
 //MIDISYSTEM
 	if(MusicMode==_STANDARD_MUSIC) {
@@ -339,31 +238,29 @@ SND_Startup(void)
 		sosMIDISetMasterVolume(wMIDIVol);
    }
 
-
-//DIGIDRIVER
-	if(SoundMode==_ON) { // && wDIGIDeviceID!=0xffffffff) {
-
-		if( ( wError = sosDIGIInitDriver( wDIGIDeviceID,&sDIGIHardware,
-				 &sSOSInitDriver, &hSOSDriverHandles[DIGI] ) ) ) {
-			sosTIMERUnInitSystem( 0 );
-			sosDIGIUnInitSystem();
-			crash( "Could not initialize Digi Driver!" );
-		}
-		if( ( wError = sosTIMERRegisterEvent( _SOS_FILL_TIMER_RATE, sSOSInitDriver.lpFillHandler,
-			&hTimerDig_FillHandle ) ) ) {
-			sosDIGIUnInitDriver( hSOSDriverHandles[DIGI], _TRUE, _TRUE );
-			sosTIMERUnInitSystem( 0 );
-			sosDIGIUnInitSystem();
-			crash( "Could not register lpFillHandler!" );
-		}
-		Digi_Loaded = _TRUE;
-
-		sosDIGISetMasterVolume(hSOSDriverHandles[DIGI],wDIGIVol);
-
-		for( wIndex=0; wIndex<MAX_ACTIVE_SAMPLES; wIndex++ )
-			SampleRay[wIndex].number = -1;
-	}
 */
+	if(SoundMode) {
+		#ifdef _WIN32
+		initdata = (void *) win_gethwnd();
+		#endif
+
+		err = FX_Init(ASS_AutoDetect, MAX_ACTIVE_SAMPLES, &channels, &bitspersample, &mixrate, initdata);
+		if (err != FX_Ok) {
+			buildprintf("FX_Init error: %s\n", FX_ErrorString(err));
+			return;
+		}
+
+		Digi_Loaded = TRUE;
+
+	    FX_SetCallBack(soundcallback);
+		// sosDIGISetMasterVolume(hSOSDriverHandles[DIGI],wDIGIVol);
+
+		for( wIndex=0; wIndex<MAX_ACTIVE_SAMPLES; wIndex++ ) {
+			SampleRay[wIndex].handle = -1;
+			SampleRay[wIndex].number = -1;
+		}
+	}
+
 	// read in offset page list's
 	SND_SetupTables();
 	SD_Started = 1;
@@ -382,26 +279,23 @@ SND_Shutdown(void)
 
 	if (!SD_Started)
 		return;
-/*
+
 	if( SoundMode && Digi_Loaded )
 	{
-	  SND_DIGIFlush();
-
-		sosTIMERRemoveEvent( hTimerDig_FillHandle );
-		flag = sosDIGIUnInitDriver( hSOSDriverHandles[DIGI], _TRUE, _TRUE );
-		if( hSoundFile != -1 )
-			close(hSoundFile);
-		if( hLoopFile != -1 )
-			close( hLoopFile );
-		if( hSongFile != -1 )
-			close( hSongFile );
-		if( DigiList!=NULL )
-			free( DigiList );
-		if( LoopList!=NULL )
-			free( LoopList );
-		Digi_Loaded=_FALSE;
+		SND_DIGIFlush();
+		FX_Shutdown();
+		Digi_Loaded=FALSE;
 	}
 
+	if( hSoundFile >= 0 ) {
+		kclose(hSoundFile);
+		hSoundFile = -1;
+	}
+	if( hSongFile >= 0 ) {
+		kclose(hSongFile);
+		hSongFile = -1;
+	}
+/*
 	if( MusicMode && Midi_Loaded )
 	{
 		SND_MIDIFlush();
@@ -416,10 +310,6 @@ SND_Shutdown(void)
 			free( lpMIDISong );
 		Midi_Loaded=_FALSE;
 	}
-
-	sosMIDIUnInitSystem();
-
-	sosDIGIUnInitSystem();
 */
 	SD_Started = 0;
 
@@ -489,12 +379,7 @@ SND_StartMusic(unsigned short level)
 	if(level > 5)
 		level=rand()%6;
 
-	if(MusicMode==_LOOP_MUSIC) {
-		  SND_LoadLoop(0);
-		  LoopPending=1;
-	}
-
-	else {
+	{
 		SND_SongFlush();
 		SND_LoadSongs(level);
 		SongPending = SND_PrepareMIDISong(BASE_SONG);
@@ -639,160 +524,84 @@ SND_MIDIFlush(void)
 */
 }
 
-//////////////////////////////////////////////////////////////////////////////
-//                                                                          //
-//    SND_LoadLoop(void) : Load and start digiloop - use looppending        //
-//          in the callback to cue.                                         //
-//                                                                          //
-//////////////////////////////////////////////////////////////////////////////
-void
-SND_LoadLoop(unsigned short load_start)
-{
-/*
-	if(!SoundMode)
-		return;
-
-	SeekIndex = ( LoopList[(LoopIndex * 3)+0] * 4096 );
-	LoopSampleData[looptoggle].dwSampleSize= (unsigned short)LoopList[(LoopIndex * 3) + 1];
-
-
-	lseek(hLoopFile,SeekIndex,0x00);
-
-   if(!load_start) {
-	readfile(hLoopFile,LoopSampleData[looptoggle].lpSamplePtr,
-			LoopSampleData[looptoggle].dwSampleSize);
-   }
-
-	else {
-	LoopSampleData[0].lpSamplePtr = (char *)malloc( 40000 );
-	LoopSampleData[1].lpSamplePtr = (char *)malloc( 40000 );
-	readfile(hLoopFile,LoopSampleData[looptoggle].lpSamplePtr,
-			LoopSampleData[looptoggle].dwSampleSize);
-
-		LoopHandles[looptoggle] = sosDIGIStartSample(hSOSDriverHandles[DIGI],&LoopSampleData[looptoggle] );
-	looptoggle^=1;
-	}
-
-	LoopIndex++;
-	if(LoopIndex>MAX_SND_LOOPS-1)
-		LoopIndex = 0;
-*/
-}
-
-
-//////////////////////////////////////////////////////////////////////////////
-//                                                                          //
-//    SND_LoadLoop(VOID) : Load and start digiloop - use looppending        //
-//          in the callback to cue.                                         //
-//                                                                          //
-//////////////////////////////////////////////////////////////////////////////
-void
-SND_SwapLoops(void)
-{
-int temp;
-/*
-	if(!SoundMode)
-		return;
-
-	temp=looptoggle^1;
-
-	if( !sosDIGISampleDone(hSOSDriverHandles[DIGI], LoopHandles[temp]) )
-	{
-		sosDIGIStopSample( hSOSDriverHandles[DIGI], LoopHandles[temp]);
-//      free(LoopSampleData[temp].lpSamplePtr);
-		LoopHandles[looptoggle] = sosDIGIStartSample(hSOSDriverHandles[DIGI],&LoopSampleData[looptoggle] );
-	}
-
-	looptoggle^=1;
-*/
-}
 
 
 void
 SND_Sting(unsigned short sound)
 {
 //make sure a sting sound is never 0
-int temp;
-
-    /*
 	if(!SoundMode)
 		return;
 
-//  if(wMIDIDeviceID==_MIDI_MPU_401 || wMIDIDeviceID==_MIDI_MT_32
-//      || wMIDIDeviceID==_MIDI_AWE32)
-//      return;
-
-   if(MusicMode==_LOOP_MUSIC) {
-
-		temp=looptoggle^1;
-		//mute the loop - play the sound set variable for callback
-		sosDIGISetSampleVolume(hSOSDriverHandles[DIGI],LoopHandles[temp],0);
-		loopmusepauseflag=sound;
-	}
 	SND_PlaySound(sound,0L,0L,0,0);
- */
 }
 
 
-//unsigned short
 int
 SND_PlaySound(unsigned short sound, int x,int y, unsigned short Pan,unsigned short loopcount)
 {
-unsigned short  wVol,flag=0;
-int  sqrdist;
-int  prioritize;
+	unsigned short  wVol,flag=0;
+	int  sqrdist, dx, dy, nr, wIndex;
 
-    /*
 	if(!SoundMode)
-		return(0);
-		//return((unsigned short)0);
+		return(-1);
 
-
-	prioritize = DigiList[(sound * 3) + 2];
+	if (Samples[sound].cache_length <= 0)
+		return(-1);
 
 	if( ( (x==0)&&(y==0) ) || ( (player[pyrn].x==x)&&(player[pyrn].y == y) ) ) {
-		wVol = 0x7fff;
+		sqrdist = 0;
 		Pan=0;
 	}
 	else {
-		sqrdist = labs(player[pyrn].x-x)+labs(player[pyrn].y-y);
+		/*
+		sqrdist = klabs(player[pyrn].x-x)+klabs(player[pyrn].y-y);
 		if(sqrdist < 1500)
 			wVol = 0x7fff;
 		else if(sqrdist > 8500)
 			wVol = 0x1f00;
 		else
 			wVol = 39000-(sqrdist<<2);
+		*/
+		dx = klabs(player[pyrn].x-x);
+		dy = klabs(player[pyrn].y-y);
+		sqrdist = ksqrt(dx*dx+dy*dy) >> 6;
+
+		if(Pan) {
+			Pan = 2048 + player[pyrn].ang - getangle(player[pyrn].x-x,player[pyrn].y-y);
+			Pan = (Pan & 2047) >> 6;
+		}
 	}
 
 
 	if(sound==S_STONELOOP1) {
 		for( wIndex=0,flag=0; wIndex<MAX_ACTIVE_SAMPLES; wIndex++ )
 			if(sound==SampleRay[wIndex].number)
-				return(0);
-		}
+				return(-1);
+	}
 
 	for( wIndex=0,flag=0; wIndex<MAX_ACTIVE_SAMPLES; wIndex++ )
-		if( !SampleRay[wIndex].playing ) {
+		if( SampleRay[wIndex].handle >= 0 && !FX_SoundActive(SampleRay[wIndex].handle) ) {
 			flag=1;
 			break;
 		}
 
-	if(!flag && prioritize<9)               //none available low prio
-		return(0);
+	if(!flag && Samples[sound].priority<9)               //none available low prio
+		return(-1);
 
 	else if(!flag) {                        //none avail but high prio
 		for( wIndex=0; wIndex<MAX_ACTIVE_SAMPLES; wIndex++ )
 		{
-			if(SampleRay[wIndex].priority<9 && sSOSSampleData[wIndex].wLoopCount !=-1) {
-				if(!sosDIGISampleDone(hSOSDriverHandles[DIGI],SampleRay[wIndex].SOSHandle) &&
-				(sSOSSampleData[wIndex].dwSampleSize!=0) )
+			if(Samples[SampleRay[wIndex].number].priority<9 /*&& sSOSSampleData[wIndex].wLoopCount !=-1*/) {
+				if(FX_SoundActive(SampleRay[wIndex].handle))
 				{
-					sosDIGIStopSample(hSOSDriverHandles[DIGI],SampleRay[wIndex].SOSHandle );
-					sSOSSampleData[wIndex].wLoopCount = 0;
-					sSOSSampleData[wIndex].dwSampleSize= 0;
-					SampleRay[wIndex].SOSHandle = -1;
-					SampleRay[wIndex].playing = 0;
-					SampleRay[wIndex].priority = 0;
+					FX_StopSound(SampleRay[wIndex].handle);
+					Samples[SampleRay[wIndex].number].users--;
+					if (Samples[SampleRay[wIndex].number].users == 0) {
+						Samples[SampleRay[wIndex].number].cache_lock = 0;
+					}
+					// sSOSSampleData[wIndex].wLoopCount = 0;
+					SampleRay[wIndex].handle = -1;
 					SampleRay[wIndex].number = -1;
 					break;
 				}
@@ -800,43 +609,44 @@ int  prioritize;
 		}
 	}
 
+	Samples[sound].cache_lock = 1;
 
-	sSOSSampleData[wIndex].dwSampleSize= (unsigned short)DigiList[(sound * 3) + 1];
+	if (Samples[sound].cache_ptr == NULL) {
+		allocache(&Samples[sound].cache_ptr, Samples[sound].cache_length, &Samples[sound].cache_lock);
+		if (Samples[sound].cache_ptr == 0) {
+			Samples[sound].cache_lock = 0;
+			return -1;
+		}
+		klseek(hSoundFile,Samples[sound].offset,SEEK_SET);
+		nr = kread(hSoundFile,Samples[sound].cache_ptr,Samples[sound].cache_length);
+		if (nr != Samples[sound].cache_length) {
+			Samples[sound].cache_ptr = NULL;
+			Samples[sound].cache_lock = 0;
+			return -1;
+		}
+	}
+	// if(loopcount)
+	// 	sSOSSampleData[wIndex].wLoopCount = loopcount;
 
-	SeekIndex = ( DigiList[(sound * 3) + 0] * 4096 );
-
-	lseek(hSoundFile,SeekIndex,0x00);
-	memset(sSOSSampleData[wIndex].lpSamplePtr,'0',55000);
-	read(hSoundFile,sSOSSampleData[wIndex].lpSamplePtr,sSOSSampleData[wIndex].dwSampleSize);
-
-	if(loopcount)
-		sSOSSampleData[wIndex].wLoopCount = loopcount;
-
-	if(Pan)
-		Pan=((getangle(player[pyrn].x-x,player[pyrn].y-y)+(2047-player[pyrn].ang))%2047) >> 6;
-
-
-	sSOSSampleData[wIndex].wSamplePanLocation = PanArray[Pan];
-	sSOSSampleData[wIndex].wVolume = wVol;
-	SampleRay[wIndex].SOSHandle = sosDIGIStartSample(hSOSDriverHandles[DIGI],&sSOSSampleData[wIndex] );
-	SampleRay[wIndex].x = x;
-	SampleRay[wIndex].y = y;
-	SampleRay[wIndex].playing = 1;
-	SampleRay[wIndex].number = sound;
-	SampleRay[wIndex].priority = prioritize;
-	ActiveSampleBits |= (0x01<<wIndex);
-
-	return(SampleRay[wIndex].SOSHandle);
-*/
-    return 0;
+	SampleRay[wIndex].handle = FX_PlayRaw3D(Samples[sound].cache_ptr, Samples[sound].cache_length,
+		11025, 0, Pan, sqrdist, 1, wIndex);
+	if (SampleRay[wIndex].handle < 0) {
+		if (Samples[sound].users == 0)
+			Samples[sound].cache_ptr = NULL;
+			Samples[sound].cache_lock = 0;
+	} else {
+		Samples[sound].users++;
+		SampleRay[wIndex].x = x;
+		SampleRay[wIndex].y = y;
+		SampleRay[wIndex].number = sound;
+	}
+	return(wIndex);
 }
 
 
-unsigned short
+int
 SND_Sound(unsigned short sound )
 {
-static unsigned short handle;
-
 	if(!SoundMode)
 		return(-1);
 	return(SND_PlaySound(sound,0,0,0,0));
@@ -846,17 +656,18 @@ static unsigned short handle;
 void
 SND_CheckLoops(void)
 {
+	int wIndex;
 
 	//special case loops
-	if( cartsnd != -1) {
+	if( cartsnd >= 0) {
 		SND_StopLoop(cartsnd);
 		cartsnd=-1;
 	}
-	if( lavasnd != -1 ) {
+	if( lavasnd >= 0 ) {
 		SND_StopLoop(lavasnd);
 		lavasnd=-1;
 	}
-	if( batsnd != -1 ) {
+	if( batsnd >= 0 ) {
 		SND_StopLoop(batsnd);
 		batsnd=-1;
 	}
@@ -875,43 +686,48 @@ SND_CheckLoops(void)
 }
 
 void
-SND_StopLoop(unsigned short which)
+SND_StopLoop(int which)
 {
-/*
+	int wIndex;
+
 	if(!SoundMode)
 		return;
 
-		for( wIndex=0; wIndex<MAX_ACTIVE_SAMPLES; wIndex++ )
-			if(which==SampleRay[wIndex].SOSHandle)
-				break;
+	for( wIndex=0; wIndex<MAX_ACTIVE_SAMPLES; wIndex++ )
+		if(which==SampleRay[wIndex].handle)
+			break;
 
-		sosDIGIStopSample(hSOSDriverHandles[DIGI],SampleRay[wIndex].SOSHandle );
-		sSOSSampleData[wIndex].wLoopCount = 0;
-		SampleRay[wIndex].SOSHandle = -1;
-		SampleRay[wIndex].playing = 0;
-		SampleRay[wIndex].number = -1;
-*/
+	FX_StopSound(SampleRay[wIndex].handle);
+	Samples[SampleRay[wIndex].number].users--;
+	if (Samples[SampleRay[wIndex].number].users == 0) {
+		Samples[SampleRay[wIndex].number].cache_lock = 0;
+	}
+	// sSOSSampleData[wIndex].wLoopCount = 0;
+	SampleRay[wIndex].handle = -1;
+	SampleRay[wIndex].number = -1;
 }
 
 
 void
 SND_DIGIFlush(void)
 {
-    /*
+	int wIndex;
+
 	if(!SoundMode)
 		return;
 
 	for( wIndex=0; wIndex<MAX_ACTIVE_SAMPLES; wIndex++ )
 	{
-		if( SampleRay[wIndex].playing)
-			sosDIGIStopSample(hSOSDriverHandles[DIGI],SampleRay[wIndex].SOSHandle );
-		//if( sSOSSampleData[wIndex].lpSamplePtr != NULL )
-		//  free(sSOSSampleData[wIndex].lpSamplePtr);
-		SampleRay[wIndex].SOSHandle = -1;
-		SampleRay[wIndex].playing = 0;
+		if( SampleRay[wIndex].handle < 0)
+			continue;
+		FX_StopSound(SampleRay[wIndex].handle);
+		Samples[SampleRay[wIndex].number].users--;
+		if (Samples[SampleRay[wIndex].number].users == 0) {
+			Samples[SampleRay[wIndex].number].cache_lock = 0;
+		}
+		SampleRay[wIndex].handle = -1;
 		SampleRay[wIndex].number = -1;
-		ActiveSampleBits |= (0x01<<wIndex);
-	}*/
+	}
 }
 
 
@@ -919,18 +735,6 @@ SND_DIGIFlush(void)
 //
 //    Sound Location Stuff
 //
-
-
-void
-SND_UpdateSoundLoc(unsigned short which,unsigned short Volume,unsigned short Pan)
-{
-/*
-	gVol=Volume;
-	gPan=sosDIGISetPanLocation(hSOSDriverHandles[DIGI],SampleRay[which].SOSHandle,PanArray[Pan]);
-	sosDIGISetSampleVolume(hSOSDriverHandles[DIGI],SampleRay[which].SOSHandle,Volume);
-*/
-}
-
 
 void
 dolevelmusic(int level)
@@ -947,44 +751,50 @@ dolevelmusic(int level)
 void
 playsound_loc(int soundnum, int xplc, int yplc)
 {
-int sqrdist;
-unsigned wVol,wPan;
-
-	 SND_PlaySound(soundnum,xplc,yplc,1,0);
+	SND_PlaySound(soundnum,xplc,yplc,1,0);
 }
 
 void
 updatesound_loc(void)
 {
-int wIndex;
-unsigned wVol,wPan;
-int sqrdist;
-/*
+	int wIndex;
+	unsigned wVol,wPan;
+	int sqrdist, dx, dy;
+
 	if(!SoundMode)
 		return;
 
-	 for(wIndex=0; wIndex<MAX_ACTIVE_SAMPLES; wIndex++)
-		  if( SampleRay[wIndex].playing && SampleRay[wIndex].x && SampleRay[wIndex].y)
-		  {
-			if(sSOSSampleData[wIndex].dwSampleSize!= 0) {
-				sqrdist = labs(player[pyrn].x-SampleRay[wIndex].x) +
-						  labs(player[pyrn].y-SampleRay[wIndex].y);
+	for(wIndex=0; wIndex<MAX_ACTIVE_SAMPLES; wIndex++)
+		if( SampleRay[wIndex].handle >= 0 && FX_SoundActive(SampleRay[wIndex].handle) &&
+			SampleRay[wIndex].x && SampleRay[wIndex].y)
+		{
+			/*
+			sqrdist = labs(player[pyrn].x-SampleRay[wIndex].x) +
+					  labs(player[pyrn].y-SampleRay[wIndex].y);
 
-				if(sqrdist < 1500)
-					wVol = 0x7fff;
-				else if(sqrdist > 8500)
-					wVol = 0x1f00;
-				else
-					wVol = 39000-(sqrdist<<2);
+			if(sqrdist < 1500)
+				wVol = 0x7fff;
+			else if(sqrdist > 8500)
+				wVol = 0x1f00;
+			else
+				wVol = 39000-(sqrdist<<2);
 
-				wPan=((getangle(player[pyrn].x-SampleRay[wIndex].x,player[pyrn].y-SampleRay[wIndex].y)+(2047-player[pyrn].ang))%2047) >> 6;
-				SND_UpdateSoundLoc(wIndex,wVol,wPan);
+			wPan=((getangle(player[pyrn].x-SampleRay[wIndex].x,player[pyrn].y-SampleRay[wIndex].y)+(2047-player[pyrn].ang))%2047) >> 6;
+			*/
+
+			dx = klabs(player[pyrn].x-SampleRay[wIndex].x);
+			dy = klabs(player[pyrn].y-SampleRay[wIndex].y);
+			sqrdist = ksqrt(dx*dx+dy*dy) >> 6;
+
+			wPan = 2048 + player[pyrn].ang - getangle(player[pyrn].x-SampleRay[wIndex].x,player[pyrn].y-SampleRay[wIndex].y);
+			wPan = (wPan & 2047) >> 6;
+
+			FX_Pan3D(SampleRay[wIndex].handle, wPan, sqrdist);
+
 			 //sprintf(displaybuf,"%dVol %x Pan %x Dist %ld",SampleRay[wIndex].number,wVol,wPan,sqrdist);
 			 //displaytime=100;
-			}
 
-		  }
-*/
+		}
 }
 
 // Location Stuff End

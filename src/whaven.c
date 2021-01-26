@@ -63,7 +63,20 @@ extern int digilevel;
 
 int synctics;
 int globhiz, globloz, globhihit, globlohit;
-char option[NUMOPTIONS] = {0,0,0,0,0,0,1,0};
+char option[NUMOPTIONS] = {
+  0,  // 0 - Video type
+  0,  // 1 -
+  0,  // 2 -
+  0,  // 3 - 1 = Mouse
+  0,  // 4 -
+  0,  // 5 -
+  1,  // 6 - Video mode
+  0,  // 7 -
+  0,  // 8 -
+  0,  // 9 - Music on
+  0,  // 10 -
+  1,  // 11 - Sound on
+};
 
 struct delayitem delayitem[MAXSECTORS];
 
@@ -193,10 +206,7 @@ shutdowngame(void)
              uninitengine();
       }
 
-      if(SoundMode)
-          SND_UnDoBuffers();
-
-        uninitgroupfile();
+      uninitgroupfile();
 
       if (crashflag) {
           return;
@@ -1228,10 +1238,6 @@ int app_main(int argc,const char * const argv[]) {
     else
         SoundMode=0;
 
-    //JSA_SPOOGE
-    if(SoundMode)
-        SND_DoBuffers();
-
 
     if (option[3] != 0) {                                        // Les 07/27/95
         initmouse();
@@ -1253,7 +1259,6 @@ int app_main(int argc,const char * const argv[]) {
     pskyoff[0] = 0; pskyoff[1] = 0; pskybits = 1;
 
     inittimer(CLKIPS);
-    SND_Startup();
     buildputs(" loadpics()\n");
     buildputs(" tiles000.art\n");
     loadpics("tiles000.art",8*1048576);
@@ -1304,6 +1309,7 @@ int app_main(int argc,const char * const argv[]) {
     parallaxtype=1;
 
     setup3dscreen();
+    SND_Startup();
 
     //intro();
 

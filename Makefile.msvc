@@ -13,6 +13,7 @@ USE_OPENGL=1
 USE_ASM=1
 
 EROOT=jfbuild
+AUDIOLIBROOT=jfaudiolib
 
 # Create Makefile.msvcuser yourself to provide your own overrides
 # for configurable values
@@ -65,14 +66,16 @@ ENGINEOPTS=$(ENGINEOPTS) /DUSE_OPENGL=$(USE_OPENGL)
 ENGINEOPTS=$(ENGINEOPTS) /DUSE_ASM=$(USE_ASM)
 !endif
 
+!include $(AUDIOLIBROOT)/Makefile.msvcshared
+
 CC=cl
 RC=rc
 LINK=link
 OURCFLAGS=/nologo /MD /J $(flags_cl)  \
-	/I$(INC) /I$(EINC) \
+	/I$(INC) /I$(EINC) /I$(AUDIOLIBROOT)\include \
 	$(ENGINEOPTS)
 LIBS=user32.lib gdi32.lib shell32.lib ws2_32.lib comctl32.lib comdlg32.lib uxtheme.lib xinput9_1_0.lib
-LINKFLAGS=/opt:ref /nologo $(flags_link)
+LINKFLAGS=/opt:ref /nologo $(flags_link) /LIBPATH:$(AUDIOLIBROOT)\third-party\msvc\lib$(PLATFORM)
 RFLAGS=/nologo /i$(EINC) /i$(SRC) $(flags_rc)
 EXESUFFIX=.exe
 
@@ -118,8 +121,8 @@ EDITOROBJS=$(EDITOROBJS) $(SRC)\version.$o
 # TARGETS
 all: whaven$(EXESUFFIX) build$(EXESUFFIX) ;
 
-whaven$(EXESUFFIX): $(GAMEOBJS) $(ELIB)\$(ENGINELIB)
-	$(LINK) /OUT:$@ /SUBSYSTEM:WINDOWS $(LINKFLAGS) /MAP $** $(LIBS) msvcrt.lib
+whaven$(EXESUFFIX): $(GAMEOBJS) $(ELIB)\$(ENGINELIB) $(AUDIOLIBROOT)\$(JFAUDIOLIB)
+	$(LINK) /OUT:$@ /SUBSYSTEM:WINDOWS $(LINKFLAGS) /MAP $** $(LIBS) $(JFAUDIOLIB_LINKFLAGS) msvcrt.lib
 
 build$(EXESUFFIX): $(EDITOROBJS) $(ELIB)\$(ENGINELIB) $(ELIB)\$(EDITORLIB)
 	$(LINK) /OUT:$@ /SUBSYSTEM:WINDOWS $(LINKFLAGS) /MAP $** $(LIBS) msvcrt.lib
@@ -131,17 +134,26 @@ enginelib editorlib: AlwaysBuild
 	$(MAKE) /f Makefile.msvc /$(MAKEFLAGS) USE_POLYMOST=$(USE_POLYMOST) USE_OPENGL=$(USE_OPENGL) USE_ASM=$(USE_ASM) $@
 	cd "$(MAKEDIR)"
 
+jfaudiolib: AlwaysBuild
+	cd "$(AUDIOLIBROOT)"
+	$(MAKE) /f Makefile.msvc /$(MAKEFLAGS) RELEASE=$(RELEASE)
+	cd "$(MAKEDIR)"
+
 $(SRC)\version-auto.c: AlwaysBuild
 	cmd /c tools\generateversion.cmd > $@
 
 AlwaysBuild: ;
 $(ELIB)\$(EDITORLIB): editorlib ;
 $(ELIB)\$(ENGINELIB): enginelib ;
+$(AUDIOLIBROOT)\$(JFAUDIOLIB): jfaudiolib ;
 
 # PHONIES
 clean:
 	-del /q $(GAMEOBJS) $(EDITOROBJS)
 	cd "$(EROOT)"
+	$(MAKE) /f Makefile.msvc $@
+	cd "$(MAKEDIR)"
+	cd "$(AUDIOLIBROOT)"
 	$(MAKE) /f Makefile.msvc $@
 	cd "$(MAKEDIR)"
 

@@ -22,6 +22,17 @@
 #define TAB_CONFIG 0
 #define TAB_MESSAGES 1
 
+static struct soundQuality_t {
+    int frequency;
+    int samplesize;
+    int channels;
+} soundQualities[] = {
+    { 44100, 16, 2 },
+    { 22050, 16, 2 },
+    { 11025, 16, 2 },
+    { 0, 0, 0 },    // May be overwritten by custom sound settings.
+    { 0, 0, 0 },
+};
 
 static HWND startupdlg = NULL;
 static HWND pages[2] = { NULL, NULL};
@@ -82,6 +93,43 @@ static void populate_video_modes(BOOL firstTime)
     }
 }
 
+static void populate_sound_quality(BOOL firstTime)
+{
+    int i, j, curidx = -1;
+    TCHAR modestr[64];
+    HWND hwnd;
+
+    if (firstTime) {
+        for (i = 0; soundQualities[i].frequency > 0; i++) {
+            if (soundQualities[i].frequency == settings->samplerate &&
+                soundQualities[i].samplesize == settings->bitspersample &&
+                soundQualities[i].channels == settings->channels) {
+                curidx = i;
+                break;
+            }
+        }
+        if (curidx < 0) {
+            soundQualities[i].frequency = settings->samplerate;
+            soundQualities[i].samplesize = settings->bitspersample;
+            soundQualities[i].channels = settings->channels;
+        }
+    }
+
+    hwnd = GetDlgItem(pages[TAB_CONFIG], IDC_SOUNDQUALITY);
+    ComboBox_ResetContent(hwnd);
+    for (i = 0; soundQualities[i].frequency > 0; i++) {
+        StringCbPrintf(modestr, sizeof(modestr), TEXT("%d kHz, %d-bit, %s"),
+            soundQualities[i].frequency / 1000,
+            soundQualities[i].samplesize,
+            soundQualities[i].channels == 1 ? "Mono" : "Stereo");
+        j = ComboBox_AddString(hwnd, modestr);
+        ComboBox_SetItemData(hwnd, j, i);
+        if (i == curidx) {
+            ComboBox_SetCurSel(hwnd, j);
+        }
+    }
+}
+
 static void set_settings(struct startwin_settings *thesettings)
 {
     settings = thesettings;
@@ -113,6 +161,14 @@ static void setup_config_mode(void)
     populate_video_modes(TRUE);
     EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_VMODE3D), TRUE);
 
+    EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_USEMOUSE), TRUE);
+    CheckDlgButton(pages[TAB_CONFIG], IDC_USEMOUSE, (settings->usemouse ? BST_CHECKED : BST_UNCHECKED));
+    EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_USEJOYSTICK), TRUE);
+    CheckDlgButton(pages[TAB_CONFIG], IDC_USEJOYSTICK, (settings->usejoy ? BST_CHECKED : BST_UNCHECKED));
+
+    populate_sound_quality(TRUE);
+    EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_SOUNDQUALITY), TRUE);
+
     EnableWindow(GetDlgItem(startupdlg, IDCANCEL), TRUE);
     EnableWindow(GetDlgItem(startupdlg, IDOK), TRUE);
 }
@@ -123,6 +179,10 @@ static void setup_messages_mode(BOOL allowcancel)
 
     EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_FULLSCREEN), FALSE);
     EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_VMODE3D), FALSE);
+
+    EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_USEMOUSE), FALSE);
+    EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_USEJOYSTICK), FALSE);
+    EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_SOUNDQUALITY), FALSE);
 
     EnableWindow(GetDlgItem(startupdlg, IDC_ALWAYSSHOW), FALSE);
 
@@ -154,6 +214,18 @@ static void startbutton_clicked(void)
         settings->ydim3d = validmode[i].ydim;
         settings->bpp3d  = validmode[i].bpp;
         settings->fullscreen = validmode[i].fs;
+    }
+
+    settings->usemouse = IsDlgButtonChecked(pages[TAB_CONFIG], IDC_USEMOUSE) == BST_CHECKED;
+    settings->usejoy = IsDlgButtonChecked(pages[TAB_CONFIG], IDC_USEJOYSTICK) == BST_CHECKED;
+
+    hwnd = GetDlgItem(pages[TAB_CONFIG], IDC_SOUNDQUALITY);
+    i = ComboBox_GetCurSel(hwnd);
+    if (i != CB_ERR) i = ComboBox_GetItemData(hwnd, i);
+    if (i != CB_ERR) {
+        settings->samplerate = soundQualities[i].frequency;
+        settings->bitspersample = soundQualities[i].samplesize;
+        settings->channels = soundQualities[i].channels;
     }
 
     settings->forcesetup = IsDlgButtonChecked(startupdlg, IDC_ALWAYSSHOW) == BST_CHECKED;

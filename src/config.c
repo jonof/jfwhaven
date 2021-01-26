@@ -17,45 +17,6 @@ static int vesares[13][2] = {{320,200},{360,200},{320,240},{360,240},{320,400},
                 {360,400},{640,350},{640,400},{640,480},{800,600},
                 {1024,768},{1280,1024},{1600,1200}};
 
-
-/*
- * SETUP.DAT
- * 0      = video mode (0:chained 1:vesa 2:screen buffered 3/4/5:tseng/paradise/s3 6:red-blue)
- * 1      = sound (0:none)
- * 2      = music (0:none)
- * 3      = input (0:keyboard 1:+mouse 2:+joystick)
- * 4      = multiplayer (0:single 1-4:com 5-11:ipx)
- * 5&0xf0 = com speed
- * 5&0x0f = com irq
- * 6&0xf0 = chained y-res
- * 6&0x0f = chained x-res or vesa mode
- * 7&0xf0 = sound samplerate
- * 7&0x01 = sound quality
- * 7&0x02 = 8/16 bit
- * 7&0x04 = mono/stereo
- *
- * bytes 8 to 26 are key settings:
- * 0      = Forward (0xc8)
- * 1      = Backward (0xd0)
- * 2      = Turn left (0xcb)
- * 3      = Turn right (0xcd)
- * 4      = Run (0x2a)
- * 5      = Strafe (0x9d)
- * 6      = Fire (0x1d)
- * 7      = Use (0x39)
- * 8      = Stand high (0x1e)
- * 9      = Stand low (0x2c)
- * 10     = Look up (0xd1)
- * 11     = Look down (0xc9)
- * 12     = Strafe left (0x33)
- * 13     = Strafe right (0x34)
- * 14     = 2D/3D switch (0x9c)
- * 15     = View cycle (0x1c)
- * 16     = 2D Zoom in (0xd)
- * 17     = 2D Zoom out (0xc)
- * 18     = Chat (0xf)
- */
-
 enum {
     type_bool = 0,    //int
     type_double = 1,
@@ -66,7 +27,7 @@ enum {
 static int tmprenderer = -1;
 static int tmpbrightness = -1;
 static int tmpsamplerate = -1;
-static int tmpmusic = -1;
+// static int tmpmusic = -1;
 static int tmpmouse = -1;
 static int tmpjoystick = -1;
 
@@ -129,11 +90,13 @@ static struct {
         ";   6 - 44.1 KHz\n"
         ";   7 - 48 KHz\n"
     },
+    /*
     { "music", type_bool, &tmpmusic,
         "; Music playback\n"
         ";   0 - Off\n"
         ";   1 - On\n"
     },
+    */
     { "mouse", type_bool, &tmpmouse,
         "; Enable mouse\n"
         ";   0 - No\n"
@@ -278,9 +241,11 @@ int loadsetup(const char *fn)
     if (tmpsamplerate >= 0) {
         option[7] = (tmpsamplerate & 0x0f) << 4;
     }
+    /*
     if (tmpmusic >= 0) {
         option[2] = !!tmpmusic;
     }
+    */
     if (tmpmouse == 0) {
         option[3] &= ~1;
     } else if (tmpmouse > 0) {
@@ -312,7 +277,7 @@ int writesetup(const char *fn)
     tmprenderer = getrendermode();
 #endif
     tmpsamplerate = option[7]>>4;
-    tmpmusic = option[2];
+    // tmpmusic = option[2];
     tmpmouse = !!(option[3]&1);
     tmpjoystick = !!(option[3]&2);
 

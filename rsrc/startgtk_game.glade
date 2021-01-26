@@ -8,6 +8,14 @@
     <property name="value">2</property>
     <property name="step_increment">1</property>
   </object>
+  <object class="GtkListStore" id="soundqualitylist">
+    <columns>
+      <!-- column-name mode -->
+      <column type="gchararray"/>
+      <!-- column-name index -->
+      <column type="gint"/>
+    </columns>
+  </object>
   <object class="GtkListStore" id="vmode3dlist">
     <columns>
       <!-- column-name mode -->
@@ -143,6 +151,91 @@
                           <packing>
                             <property name="left_attach">0</property>
                             <property name="top_attach">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="margin_top">8</property>
+                            <property name="label" translatable="yes">S_ound quality:</property>
+                            <property name="use_underline">True</property>
+                            <property name="mnemonic_widget">soundqualitycombo</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
+                            <property name="top_attach">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkComboBox" id="soundqualitycombo">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="margin_top">8</property>
+                            <property name="model">soundqualitylist</property>
+                            <child>
+                              <object class="GtkCellRendererText"/>
+                              <attributes>
+                                <attribute name="text">0</attribute>
+                              </attributes>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="top_attach">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="margin_top">8</property>
+                            <property name="label" translatable="yes">Input devices:</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
+                            <property name="top_attach">3</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="margin_top">8</property>
+                            <child>
+                              <object class="GtkCheckButton" id="usemousecheck">
+                                <property name="label" translatable="yes">Mo_use</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="use_underline">True</property>
+                                <property name="draw_indicator">True</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="usejoystickcheck">
+                                <property name="label" translatable="yes">_Joystick</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="use_underline">True</property>
+                                <property name="draw_indicator">True</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="top_attach">3</property>
                           </packing>
                         </child>
                         <child>

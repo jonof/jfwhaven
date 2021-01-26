@@ -168,13 +168,7 @@
 #define	   S_FATLAUGH			  163
 
 
-#define  _OFF              0
-#define  _ON               1
-#define  _STANDARD_MUSIC   1
-#define  _DIG_MIDI_MUSIC   2
-#define  _LOOP_MUSIC       3
-
-#define  MAX_AUX_TIMERS       4
+#define  MAX_SAMPLES       200
 #define  MAX_ACTIVE_SAMPLES   10
 #define  MAX_ACTIVE_SONGS     4
 //num of array elements in ambsoundarray[]
@@ -203,16 +197,6 @@
 #define  FIRE1SNDBIT       64
 #define  FIRE2SNDBIT       128
 
-typedef struct
-{
-	int      playing;
-	unsigned SOSHandle;
-	unsigned number;
-	int     priority;
-	int     x,y;
-} SampleType;
-
-
 struct ambsounds {
 	int soundnum;       //the actual sound number S_x
 	int hsound;     //the handle returned by hmi
@@ -220,273 +204,20 @@ struct ambsounds {
 
 #ifdef SND_CALLER
 
-	int lavasnd=-1,
-		batsnd=-1,
-		cartsnd=-1;
-
-
-
-	void timerevent(void);
-
-	//Callback functions
-	void sosDIGISampleCallback(  unsigned short, unsigned short, unsigned short  );
-	void sosMIDISongCallback( unsigned short );
-   void sosMIDITriggerCallback(  unsigned short, unsigned char, unsigned char );
-
-	//
-	//defs for hmi Setup
-	//
-	// profile structure
-	typedef  struct   _tagINIInstance
-			{
-
-				unsigned short  wFlags;           // misc. flags
-				unsigned char  szName[ 128 ];    // name of .ini file
-
-				char *  pData;            // pointer to .ini file in memory
-				unsigned short  wSize;            // size, in bytes, of file
-				unsigned short  wMaxSize;         // maximum size in bytes of the .ini
-
-				char *  pCurrent;         // current location in file
-				unsigned short  wCurrent;         // current location in file
-
-				char *  pSection;         // pointer to section start
-
-				char *  pItemPtr;         // pointer to the start of line w/item
-				char *  pItem;            // pointer to last item
-				char *  pList;            // pointer to last item location, for list
-												// management.
-				char *  pListPtr;         // pointer for raw string list
-
-			} _INI_INSTANCE;
-
-	// equates
-	#define  _INI_SECTION_START   '['
-	#define  _INI_SECTION_END     ']'
-	#define  _INI_EQUATE          '='
-	#define  _INI_SPACE           ' '
-	#define  _INI_TAB             0x9
-	#define  _INI_STRING_START    '"'
-	#define  _INI_STRING_END      '"'
-	#define  _INI_EOL             0x0d
-	#define  _INI_CR              0x0d
-	#define  _INI_LF              0x0a
-	#define  _INI_HEX_INDICATOR   'x'
-	#define  _INI_LIST_SEPERATOR  ','
-
-	// amount of bytes to allocate in addition to file size so that the
-	// .ini file may be modified by the application.
-	#define  _INI_EXTRA_MEMORY    1024
-
-	// various flags for .ini structure
-	#define  _INI_MODIFIED        0x8000
-
-
-	// function prototypes
-
-	unsigned short  wMIDIDeviceID,wDIGIDeviceID;
-
-
-	//
-	//          DIGI SPECIFIC
-	//
-	#define  _SOS_DMA_BUFFERSIZE     0x2000
-	#define  _SOS_SAMPLE_RATE        11025
-	//#define  _SOS_FILL_TIMER_RATE    40
-	#define  _SOS_FILL_TIMER_RATE    100
-
-	#define  _SAMPLE0                 0x1000
-	#define  _SAMPLE1                 0x1001
-	#define  _SAMPLE2                 0x1002
-	#define  _SAMPLE3                 0x1003
-	#define  _SAMPLE4                 0x1004
-	#define  _SAMPLE5                 0x1005
-	#define  _SAMPLE6                 0x1006
-	#define  _SAMPLE7                 0x1007
-	#define  _SAMPLE8                 0x1008
-	#define  _SAMPLE9                 0x1009
-	#define  _SAMPLE10                0x100a
-	#define  _SAMPLE11                0x100b
-	#define _LSAMPLE1                   0x100c
-	#define _LSAMPLE2                   0x100d
-
-	unsigned short  PanArray[] = {
-		//REAR to HARD LEFT (angle = 0->512)
-	0x8000,0x7000,0x6000,0x5000,0x4000,0x3000,0x2000,0x1000,0x0000,
-		//HARD LEFT to CENTER (angle = 513-1024)
-	0x1000,0x20f0,0x2000,0x3000,0x4000,0x5000,0x6000,0x7000,0x8000,
-		//CENTER to HARD RIGHT (angle = 1025-1536)
-	0x70f0,0x8000,0x9000,0xa000,0xb000,0xc000,0xd000,0xe000,0xf000,
-		//HARD RIGHT to REAR (angle = 1537-2047)
-	0xffff,0xf000,0xe000,0xd000,0xc000,0xb000,0xa000,0x9000,0x8000
-	};
-
-	volatile    SampleType  SampleRay[MAX_ACTIVE_SAMPLES];
-	unsigned char        ActiveSampleBits = 0x00;
-
-	volatile    SampleType  FXLoopRay[MAX_ACTIVE_FXLOOPS];
-
-    /*
-	_SOS_START_SAMPLE sSOSSampleData[12] = {
-
-		{  _NULL, 0L, 0, _CENTER_CHANNEL, 0x7fff,
-			_SAMPLE0, sosDIGISampleCallback, 0, _VOLUME | _PANNING | _LOOPING,
-			0L, 0L, 0L, 0L, 0, 0, 0, 0x8000, 0, 0, 0, 0,
-			0L, 0, 0, 0L, 0L, 0L },
-
-		{  _NULL, 0L, 0, _CENTER_CHANNEL, 0x7fff,
-			_SAMPLE1, sosDIGISampleCallback, 0, _VOLUME | _PANNING | _LOOPING,
-			0L, 0L, 0L, 0L, 0, 0, 0, 0x8000, 0, 0, 0, 0,
-			0L, 0, 0, 0L, 0L, 0L },
-
-		{  _NULL, 0L, 0, _CENTER_CHANNEL, 0x7fff,
-			_SAMPLE2, sosDIGISampleCallback, 0, _VOLUME | _PANNING | _LOOPING,
-			0L, 0L, 0L, 0L, 0, 0, 0, 0x8000, 0, 0, 0, 0,
-			0L, 0, 0, 0L, 0L, 0L },
-
-		{  _NULL, 0L, 0, _CENTER_CHANNEL, 0x7fff,
-			_SAMPLE3, sosDIGISampleCallback, 0, _VOLUME | _PANNING | _LOOPING,
-			0L, 0L, 0L, 0L, 0, 0, 0, 0x8000, 0, 0, 0, 0,
-			0L, 0, 0, 0L, 0L, 0L },
-
-		{  _NULL, 0L, 0, _CENTER_CHANNEL, 0x7fff,
-			_SAMPLE4, sosDIGISampleCallback, 0, _VOLUME | _PANNING | _LOOPING,
-			0L, 0L, 0L, 0L, 0, 0, 0, 0x8000, 0, 0, 0, 0,
-			0L, 0, 0, 0L, 0L, 0L },
-
-		{  _NULL, 0L, 0, _CENTER_CHANNEL, 0x7fff,
-			_SAMPLE5, sosDIGISampleCallback, 0, _VOLUME | _PANNING | _LOOPING,
-			0L, 0L, 0L, 0L, 0, 0, 0, 0x8000, 0, 0, 0, 0,
-			0L, 0, 0, 0L, 0L, 0L },
-
-		{  _NULL, 0L, 0, _CENTER_CHANNEL, 0x7fff,
-			_SAMPLE6, sosDIGISampleCallback, 0, _VOLUME | _PANNING | _LOOPING,
-			0L, 0L, 0L, 0L, 0, 0, 0, 0x8000, 0, 0, 0, 0,
-			0L, 0, 0, 0L, 0L, 0L },
-
-		{  _NULL, 0L, 0, _CENTER_CHANNEL, 0x7fff,
-			_SAMPLE7, sosDIGISampleCallback, 0, _VOLUME | _PANNING | _LOOPING,
-			0L, 0L, 0L, 0L, 0, 0, 0, 0x8000, 0, 0, 0, 0,
-			0L, 0, 0, 0L, 0L, 0L },
-
-		{  _NULL, 0L, 0, _CENTER_CHANNEL, 0x7fff,
-			_SAMPLE8, sosDIGISampleCallback, 0, _VOLUME | _PANNING | _LOOPING,
-			0L, 0L, 0L, 0L, 0, 0, 0, 0x8000, 0, 0, 0, 0,
-			0L, 0, 0, 0L, 0L, 0L },
-
-		{  _NULL, 0L, 0, _CENTER_CHANNEL, 0x7fff,
-			_SAMPLE9, sosDIGISampleCallback, 0, _VOLUME | _PANNING | _LOOPING,
-			0L, 0L, 0L, 0L, 0, 0, 0, 0x8000, 0, 0, 0, 0,
-			0L, 0, 0, 0L, 0L, 0L },
-
-		{  _NULL, 0L, 0, _CENTER_CHANNEL, 0x7fff,
-			_SAMPLE10, sosDIGISampleCallback, 0, _VOLUME | _PANNING | _LOOPING,
-			0L, 0L, 0L, 0L, 0, 0, 0, 0x8000, 0, 0, 0, 0,
-			0L, 0, 0, 0L, 0L, 0L },
-
-		{  _NULL, 0L, 0, _CENTER_CHANNEL, 0x7fff,
-			_SAMPLE11, sosDIGISampleCallback, 0, _VOLUME | _PANNING | _LOOPING,
-			0L, 0L, 0L, 0L, 0, 0, 0, 0x8000, 0, 0, 0, 0,
-			0L, 0, 0, 0L, 0L, 0L },
-
-	};
-
-//array for loop and pending loop MUSIC
-	_SOS_START_SAMPLE LoopSampleData[2] =
-		{
-			{_NULL, 0L, -1, _CENTER_CHANNEL, 0x7fff,
-			_LSAMPLE1, sosDIGISampleCallback, 0, _LOOPING | _VOLUME,
-			0L, 0L, 0L, 0L, 0, 0, 0, 0x8000, 0, 0, 0, 0,
-			0L, 0, 0, 0L, 0L, 0L},
-
-			{_NULL, 0L, -1, _CENTER_CHANNEL, 0x7fff,
-			_LSAMPLE2, sosDIGISampleCallback, 0, _LOOPING | _VOLUME,
-			0L, 0L, 0L, 0L, 0, 0, 0, 0x8000, 0, 0, 0, 0,
-			0L, 0, 0, 0L, 0L, 0L},
-		};
-     */
-
-	unsigned short     LoopHandles[2];
-	unsigned short     LoopPending=0,LoopIndex=0,looptoggle=0,loopmusepauseflag=0;
-	unsigned short     Metronome;
-
-	unsigned int    *DigiList;
-	unsigned int    *LoopList;
-	unsigned int    *SongList;
-	unsigned int    SeekIndex;
-
 	//
 	//    MIDI SPECIFIC
 	//
 
 //midimusic vars
-	unsigned short        Metronome;
-	unsigned short        SongPending,BranchPending;
+	unsigned short        SongPending;
 
 	unsigned short     hSOSSongHandles[MAX_ACTIVE_SONGS];
 	unsigned char     ActiveSongBits = 0x00;
 
-	unsigned char     *m_bnkptr,*d_bnkptr,*digi_bnkptr;
 	unsigned char  *lpMIDISong;
     /*
 	_SOS_MIDI_INIT_SONG        sSOSInitSongs[MAX_ACTIVE_SONGS];
-
-	_SOS_MIDI_TRACK_DEVICE   sSOSTrackMap[MAX_ACTIVE_SONGS] = {
-		{
-		_MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK,
-		_MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK,
-		_MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK,
-		_MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK
-		},
-		{
-		_MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK,
-		_MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK,
-		_MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK,
-		_MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK
-		},
-		{
-		_MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK,
-		_MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK,
-		_MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK,
-		_MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK
-		},
-		{
-		_MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK,
-		_MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK,
-		_MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK,
-		_MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK, _MIDI_MAP_TRACK
-		}
-	};
     */
-
-	//
-	//    MISC/COMMON STUFF
-	//
-	unsigned short     hSOSDriverHandles[3];
-	unsigned short     hSOSDriverHandles1;
-
-	unsigned short     SD_Started=0;
-	int     Midi_Loaded,Digi_Loaded,DigMidi_Loaded;
-	unsigned short     wError,wIndex;
-
-	unsigned short     hSoundFile  =  -1;       // Handle for Sound F/X file
-	unsigned short     hLoopFile   =  -1;       // Handle for Loop file
-	unsigned short     hSongFile   =  -1;
-	unsigned short     hMiscHandle =  -1;
-
-
-
-	//
-	//    TIMER STUFF
-	//
-	unsigned short     hTimerT_ClockHandle;    // Handle for the game timer (TotalClock)
-	unsigned short     hTimerDig_FillHandle;   // Handle for the sSOSInitDriver.lpFillHandler
-	unsigned short     hTimerRec_FillHandle;   // Handle for the sSOSInitDriver.lpFillHandler
-
-	unsigned short     AuxTimerList[MAX_AUX_TIMERS];
-	unsigned char     ActiveTimerBits = 0x00;
-
-	unsigned short     LoopSndsPlaying=0;
 
 
 	struct ambsounds ambsoundarray[] = {
@@ -522,15 +253,12 @@ struct ambsounds {
 #else
 
 
-extern int  Metronome,SongPending,BranchPending;
+extern int  SongPending;
 extern int  hSOSSongHandles[];
 
 
 extern int  SoundMode,wDIGIVol,MusicMode,wMIDIVol,use_dig_midi,
-				LoopPending,LoopIndex,looptoggle,LoopSndsPlaying,
 				gPan,gVol;
-
-extern SampleType SampleRay[],FXLoopRay[];
 
 extern struct ambsounds ambsoundarray[];
 extern int lavasnd,batsnd,cartsnd;

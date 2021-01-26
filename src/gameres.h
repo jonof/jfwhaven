@@ -13,6 +13,9 @@
 #define IDC_HOSTFIELD               1106
 #define IDC_NUMPLAYERS              1107
 #define IDC_NUMPLAYERSUD            1108
+#define IDC_SOUNDQUALITY            1109
+#define IDC_USEMOUSE                1110
+#define IDC_USEJOYSTICK             1111
 
 #define IDD_PAGE_MESSAGES           1200
 #define IDC_MESSAGES                1201
