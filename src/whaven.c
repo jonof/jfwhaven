@@ -73,7 +73,7 @@ char option[NUMOPTIONS] = {
   1,  // 6 - Video mode
   0,  // 7 -
   0,  // 8 -
-  0,  // 9 - Music on
+  1,  // 9 - Music on
   0,  // 10 -
   1,  // 11 - Sound on
 };
@@ -1286,8 +1286,6 @@ int app_main(int argc,const char * const argv[]) {
     //flc_init();
     //flc_playseq(plr,0,FT_FULLSCREEN);
 
-    SND_MenuMusic(MENUSONG);
-
     //precache();
 
     playerdie=0;
@@ -1310,6 +1308,7 @@ int app_main(int argc,const char * const argv[]) {
 
     setup3dscreen();
     SND_Startup();
+    SND_MenuMusic(MENUSONG);
 
     //intro();
 

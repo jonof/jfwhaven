@@ -3,6 +3,7 @@
 #define  GAME
 #include "icorp.h"
 #include "fx_man.h"
+#include "music.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -54,6 +55,9 @@ int lavasnd=-1,
 char *       BaseSongPtr;
 char *       EmbSongPtr;
 char *       SpiceSongPtr;
+int BaseSongLen, EmbSongLen, SpiceSongLen;
+
+int activesong = -1;
 
 unsigned short     SD_Started=0;
 int     Midi_Loaded,Digi_Loaded;
@@ -63,7 +67,9 @@ unsigned short     hSongFile   =  -1;
 unsigned short     hMiscHandle =  -1;
 
 
-unsigned int    *SongList;
+unsigned int    SongList[1024];
+
+static int transmutehmp(char *filedata);
 
 //
 //                         INTERNAL ROUTINES
@@ -76,45 +82,10 @@ soundcallback(unsigned int i)
 
      Samples[SampleRay[i].number].users--;
      if( Samples[SampleRay[i].number].users == 0 ) {
-          Samples[SampleRay[i].number].cache_lock=0x00;
+          Samples[SampleRay[i].number].cache_lock=199;
      }
      SampleRay[i].handle=-1;
      SampleRay[i].number=-1;
-}
-
-
-//////////////////////////////////////////////////////////////////////////////
-//                                                                          //
-//    sosMIDISongCallback(WORD) : Call back routine for SOS                  //
-//          Midi function InitSong Struct. hSong indicates which                 //
-//              song is complete (handle from sosMIDIInitSong).                      //
-//          NEEDS WORK FOR JUGGLING AND MIXING SONGS!!!!!!!                 //
-//////////////////////////////////////////////////////////////////////////////
-void
-sosMIDISongCallback( unsigned short hSong )
-{
-/*
-	for(wIndex=0; wIndex<MAX_ACTIVE_SONGS; wIndex++)
-		if(hSong == hSOSSongHandles[wIndex])
-			break;
-
-	//sosMIDIStopSong(hSOSSongHandles[wIndex]);
-	sosMIDIUnInitSong(hSOSSongHandles[wIndex]);
-	hSOSSongHandles[wIndex] = 0x7fff;
- */
-}
-
-
-
-void
-sosMIDITriggerCallback( unsigned short hSong, unsigned char bTrack, unsigned char bID )
-{
-    /*
-	if(SongPending) {
-		SND_StartMIDISong(SongPending);
-		SongPending=0;
-	}
-     */
 }
 
 
@@ -129,7 +100,7 @@ SND_SetupTables(void)
 		if( hSoundFile < 0 ) {
 			crashgame("Couldn't open JOESND");
 		}
-		klseek(hSoundFile,-4096L,SEEK_END);
+		klseek(hSoundFile,-sizeof(DigiList),SEEK_END);
 		i = kread(hSoundFile,DigiList,sizeof(DigiList));
 		if (i != sizeof(DigiList)) {
 			crashgame("JOESND is too short");
@@ -143,17 +114,17 @@ SND_SetupTables(void)
 		Samples[i].priority = DigiList[i*3+2];
 	}
 
-/*
 	if(MusicMode) {
-		hSongFile = open("SONGS",O_RDONLY | O_BINARY);
-		if( hSongFile == -1 ) {
-			crash("COULDN'T OPEN SONGS!");
+		hSongFile = kopen4load("songs", 0);
+		if( hSongFile < 0 ) {
+			crashgame("Couldn't open SONGS!");
 		}
-		SongList = malloc(0x1000);
-		lseek(hSongFile,-4096L,SEEK_END);
-		readfile(hSongFile,SongList,4096);
+		klseek(hSongFile,-sizeof(SongList),SEEK_END);
+		i = kread(hSongFile,SongList,sizeof(SongList));
+		if (i != sizeof(SongList)) {
+			crashgame("SONGS is too short");
+		}
 	}
-*/
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -162,27 +133,32 @@ SND_SetupTables(void)
 //                                  (LPSTR = BYTE far *)                                         //
 //                                                                          //
 //////////////////////////////////////////////////////////////////////////////
-char * SND_LoadMIDISong( unsigned short which )
+char * SND_LoadMIDISong( unsigned short which, int *length )
 {
-	/*
-char * lpDataPtr;
-char *  pDataPtr;
-unsigned short  wLength;
+	char * pDataPtr;
+	int  wLength, SeekIndex;
 
-
-   wLength  = (unsigned short)SongList[(which * 3) + 1];
+	wLength  = SongList[(which * 3) + 1];
 	SeekIndex = ( SongList[(which * 3) + 0] * 4096 );
-   pDataPtr =  malloc( wLength );
+	pDataPtr =  malloc( wLength );
 
-	lseek(hSongFile,SeekIndex,0x00);
+	klseek(hSongFile,SeekIndex,SEEK_SET);
+	*length = kread( hSongFile, pDataPtr, wLength );
 
-   read( hSongFile, pDataPtr, wLength );
+	if (*length != wLength) {
+		free(pDataPtr);
+		buildprintf("SND_LoadMIDISong: incomplete file read\n");
+		return NULL;
+	}
 
-   // create far pointer  !!!!!
-   lpDataPtr   =  (char *)pDataPtr;
-   return( lpDataPtr );
-   */
-	return NULL;
+	*length = transmutehmp(pDataPtr);
+	if (*length <= 0) {
+		free(pDataPtr);
+		buildprintf("SND_LoadMIDISong: could not convert HMP to MIDI\n");
+		return NULL;
+	}
+
+	return pDataPtr;
 }
 
 
@@ -205,40 +181,8 @@ SND_Startup(void)
 //GET Volume values
 		wMIDIVol = (musiclevel<<3);
 		wDIGIVol = (digilevel<<11);
-
-//MIDISYSTEM
-	if(MusicMode==_STANDARD_MUSIC) {
-		if( wError = sosMIDIInitSystem( _NULL, _SOS_DEBUG_NORMAL )) {
-			sosTIMERUnInitSystem( 0 );
-			sosDIGIUnInitSystem();
-			crash( "Could not Init Midi System!" );
-		}
-	}
-
-//MIDIDRIVER
-	if(MusicMode==_STANDARD_MUSIC) {
-		sSOSMIDIInitDriver.lpDriverMemory  = _NULL;
-
-		if( ( wError = sosMIDIInitDriver( wMIDIDeviceID, &sMIDIHardware,
-				&sSOSMIDIInitDriver, &hSOSDriverHandles[MIDI] ) ) ) {
-			sosMIDIUnInitSystem();
-			sosDIGIUnInitSystem();
-			sosTIMERUnInitSystem( 0 );
-			crash( "Could not Init Midi Driver!\n" );
-		}
-
-		SND_LoadMidiIns();
-		sosMIDIEnableChannelStealing(_FALSE);
-		for(wIndex=0; wIndex<MAX_ACTIVE_SONGS; wIndex++)
-			hSOSSongHandles[wIndex] = 0x7fff;
-
-		songsperlevel=songelements*arrangements;
-
-		Midi_Loaded = _TRUE;
-		sosMIDISetMasterVolume(wMIDIVol);
-   }
-
 */
+
 	if(SoundMode) {
 		#ifdef _WIN32
 		initdata = (void *) win_gethwnd();
@@ -247,18 +191,29 @@ SND_Startup(void)
 		err = FX_Init(ASS_AutoDetect, MAX_ACTIVE_SAMPLES, &channels, &bitspersample, &mixrate, initdata);
 		if (err != FX_Ok) {
 			buildprintf("FX_Init error: %s\n", FX_ErrorString(err));
-			return;
+		} else {
+			Digi_Loaded = TRUE;
+
+			FX_SetCallBack(soundcallback);
+			// sosDIGISetMasterVolume(hSOSDriverHandles[DIGI],wDIGIVol);
 		}
-
-		Digi_Loaded = TRUE;
-
-	    FX_SetCallBack(soundcallback);
-		// sosDIGISetMasterVolume(hSOSDriverHandles[DIGI],wDIGIVol);
 
 		for( wIndex=0; wIndex<MAX_ACTIVE_SAMPLES; wIndex++ ) {
 			SampleRay[wIndex].handle = -1;
 			SampleRay[wIndex].number = -1;
 		}
+	}
+
+	if(MusicMode) {
+		songsperlevel=songelements*arrangements;
+
+		err = MUSIC_Init(ASS_AutoDetect, "");
+		if (err != MUSIC_Ok) {
+			buildprintf("MUSIC_Init error: %s\n", MUSIC_ErrorString(err));
+		} else {
+			Midi_Loaded = TRUE;
+		}
+		//sosMIDISetMasterVolume(wMIDIVol);
 	}
 
 	// read in offset page list's
@@ -295,22 +250,15 @@ SND_Shutdown(void)
 		kclose(hSongFile);
 		hSongFile = -1;
 	}
-/*
+
 	if( MusicMode && Midi_Loaded )
 	{
-		SND_MIDIFlush();
-		sosMIDIUnInitDriver( hSOSDriverHandles[MIDI], _TRUE );
-		if( m_bnkptr!=NULL )
-			free( m_bnkptr );
-		if( d_bnkptr!=NULL )
-			free( d_bnkptr );
-		if( digi_bnkptr!=NULL )
-			free( digi_bnkptr );
-		if( lpMIDISong!=NULL )
-			free( lpMIDISong );
-		Midi_Loaded=_FALSE;
+		MUSIC_StopSong();
+		SND_SongFlush();
+		MUSIC_Shutdown();
+		Midi_Loaded=FALSE;
 	}
-*/
+
 	SD_Started = 0;
 
 }
@@ -339,30 +287,91 @@ SND_Mixer( unsigned short wSource, unsigned short wVolume )
 
 
 void
-SND_MenuMusic(int choose)
+SND_LoadSongs(unsigned short which)
 {
-/*
-	if(!MusicMode || !SD_Started)
+	int index;
+
+	index=songsperlevel*which;
+
+	index+=songelements;	// Skip FM.
+	index+=songelements;	// Skip AWE32.
+
+	BaseSongPtr = SND_LoadMIDISong(index+BASE_SONG, &BaseSongLen);
+	EmbSongPtr = SND_LoadMIDISong(index+EMB_SONG, &EmbSongLen);
+	SpiceSongPtr = SND_LoadMIDISong(index+SPICE_SONG, &SpiceSongLen);
+}
+
+
+int
+SND_StartMIDISong(unsigned short wSongHandle)
+{
+    int rv;
+    char *songdata;
+    int songlen;
+
+    switch (wSongHandle) {
+	    case BASE_SONG:  songdata = BaseSongPtr; songlen = BaseSongLen; break;
+	    case EMB_SONG:   songdata = EmbSongPtr; songlen = EmbSongLen; break;
+	    case SPICE_SONG: songdata = SpiceSongPtr; songlen = SpiceSongLen; break;
+    }
+    if (!songdata || songlen <= 0) {
+    	return -1;
+    }
+
+    //sosMIDISetMasterVolume((BYTE)wMIDIVol);
+
+    rv = MUSIC_PlaySong(songdata, songlen, 1);
+    if (rv != MUSIC_Ok) {
+    	buildprintf("SND_StartMIDISong: could not play song: %s\n", MUSIC_ErrorString(MUSIC_ErrorCode));
+    	return -1;
+    }
+    activesong = wSongHandle;
+	return(0);
+}
+
+
+void
+SND_StopMIDISong(unsigned short wSongHandle)
+{
+	if (wSongHandle != activesong)
 		return;
 
-	if( (choose== DEATHSONG) && (wMIDIDeviceID==_MIDI_FM ))
+	activesong = -1;
+	MUSIC_StopSong();
+}
+
+
+void
+SND_SongFlush(void)
+{
+	activesong = -1;
+	MUSIC_StopSong();
+
+	if (BaseSongPtr)
+		free(BaseSongPtr);
+	if (EmbSongPtr)
+		free(EmbSongPtr);
+	if (SpiceSongPtr)
+		free(SpiceSongPtr);
+	BaseSongPtr = NULL;
+	EmbSongPtr = NULL;
+	SpiceSongPtr = NULL;
+}
+
+void
+SND_MenuMusic(int choose)
+{
+
+	if(!MusicMode || !SD_Started || !Midi_Loaded)
 		return;
 
 	SND_SongFlush();
 
-	if(choose==MENUSONG) {
-		if(wMIDIDeviceID==_MIDI_MPU_401 || wMIDIDeviceID==_MIDI_AWE32 || wMIDIDeviceID==_MIDI_GUS)
-			BaseSongPtr = SND_LoadMIDISong((totallevels*songsperlevel)+BASE_SONG+2);
-		else
-			BaseSongPtr = SND_LoadMIDISong((totallevels*songsperlevel)+BASE_SONG);
-	}
-	else if(wMIDIDeviceID==_MIDI_MPU_401 || wMIDIDeviceID==_MIDI_AWE32 || wMIDIDeviceID==_MIDI_GUS)
-			BaseSongPtr = SND_LoadMIDISong((totallevels*songsperlevel)+3+BASE_SONG+2);
+	if(choose==MENUSONG)
+		BaseSongPtr = SND_LoadMIDISong((totallevels*songsperlevel)+BASE_SONG+2, &BaseSongLen);
+	else BaseSongPtr = SND_LoadMIDISong((totallevels*songsperlevel)+3+BASE_SONG+2, &BaseSongLen);
 
-	SongPending = SND_PrepareMIDISong(BASE_SONG);
-	SND_StartMIDISong(SongPending);
-	SongPending=0;
-*/
+	SND_StartMIDISong(BASE_SONG);
 }
 
 //
@@ -372,129 +381,15 @@ SND_MenuMusic(int choose)
 void
 SND_StartMusic(unsigned short level)
 {
-/*
-	if((!MusicMode) || !SD_Started)
+	if((!MusicMode) || !SD_Started || !Midi_Loaded)
 		return;
 
 	if(level > 5)
 		level=rand()%6;
 
-	{
-		SND_SongFlush();
-		SND_LoadSongs(level);
-		SongPending = SND_PrepareMIDISong(BASE_SONG);
-		SND_StartMIDISong(SongPending);
-		SongPending=0;
-	}
-*/
-}
-
-
-void
-SND_LoadSongs(unsigned short which)
-{
-static int index;
-/*
-			index=songsperlevel*which;                  //vanilla
-
-
-			//if digi_midi used skip to those songs
-			if(wMIDIDeviceID==_MIDI_AWE32)
-				index+=songelements;                            //skip past vanilla
-
-			//if soundcanvas skip to those songs
-			if(wMIDIDeviceID==_MIDI_MPU_401 || wMIDIDeviceID==_MIDI_GUS)
-				index+=songelements*2;
-
-			BaseSongPtr = SND_LoadMIDISong(index+BASE_SONG);
-			EmbSongPtr = SND_LoadMIDISong(index+EMB_SONG);
-			SpiceSongPtr = SND_LoadMIDISong(index+SPICE_SONG);
- */
-}
-
-
-//
-//  SND_PrepareMIDISong() loads a particular song into memory, initializes
-//      it with SOS and puts it's handle into the hSOSSongHandles array.
-//      The song can then be started by passing the handle to SND_StartMIDISong()
-//
-int
-SND_PrepareMIDISong(int SongIndex)
-{
-    /*
-   if(!MusicMode)
-	  return(0x7fff);
-
-	if(hSOSSongHandles[SongIndex] != 0x7fff)
-		return(0x7fff);
-
-	if(SongIndex==BASE_SONG)
-		sSOSInitSongs[SongIndex].lpSongData = BaseSongPtr;
-	if(SongIndex==EMB_SONG)
-		sSOSInitSongs[SongIndex].lpSongData = EmbSongPtr;
-	if(SongIndex==SPICE_SONG)
-		sSOSInitSongs[SongIndex].lpSongData = SpiceSongPtr;
-
-
-	sSOSInitSongs[SongIndex].lpSongCallback = (void(*))sosMIDISongCallback;
-	if( ( wError = sosMIDIInitSong( &sSOSInitSongs[SongIndex], &sSOSTrackMap[SongIndex], &hSOSSongHandles[SongIndex] ) ) )
-	{
-			crash("Init Song Failed!");
-	}
-
-	return((int)hSOSSongHandles[SongIndex]);
-*/
-    return 0x7fff;
-}
-
-int
-SND_StartMIDISong(unsigned short wSongHandle)
-{
-    /*
-	sosMIDISetMasterVolume((BYTE)wMIDIVol);
-	return(sosMIDIStartSong(wSongHandle));
-     */
-    return 0x7fff;
-}
-
-
-void
-SND_StopMIDISong(unsigned short wSongHandle)
-{
-    /*
-	for(wIndex=0; wIndex<MAX_ACTIVE_SONGS; wIndex++)
-		if(hSOSSongHandles[wIndex]==wSongHandle)
-			break;
-
-	if(wIndex>=MAX_ACTIVE_SONGS)
-		return;
-
-	if( !sosMIDISongDone(hSOSSongHandles[wIndex]) )
-	{
-		sosMIDIStopSong(hSOSSongHandles[wIndex]);
-		sosMIDIUnInitSong( hSOSSongHandles[wIndex] );
-		hSOSSongHandles[wIndex] = 0x7fff;
-		free(sSOSInitSongs[wIndex].lpSongData);
-	}
-*/
-}
-
-
-void
-SND_SongFlush(void)
-{
-    /*
-	if(!MusicMode)
-		return;
-
-	if(hSOSSongHandles[BASE_SONG] != 0x7fff) {
-		SND_StopMIDISong(hSOSSongHandles[BASE_SONG]);
-	}
-	if(hSOSSongHandles[EMB_SONG] != 0x7fff)
-		SND_StopMIDISong(hSOSSongHandles[EMB_SONG]);
-	if(hSOSSongHandles[SPICE_SONG] != 0x7fff)
-		SND_StopMIDISong(hSOSSongHandles[SPICE_SONG]);
-*/
+	SND_SongFlush();
+	SND_LoadSongs(level);
+	SND_StartMIDISong(BASE_SONG);
 }
 
 
@@ -505,25 +400,6 @@ SND_FadeMusic(void)
 		return;
 //  sosMIDIFadeSong(hSOSSongHandles[BASE_SONG],_SOS_MIDI_FADE_OUT,200,(BYTE)wMIDIVol,(BYTE)0,10);
 }
-
-void
-SND_MIDIFlush(void)
-{
-/*
-	for(wIndex=0; wIndex<MAX_ACTIVE_SONGS; wIndex++) {
-		if( !sosMIDISongDone(hSOSSongHandles[wIndex]) )
-			sosMIDIStopSong(hSOSSongHandles[wIndex]);
-		if(hSOSSongHandles[wIndex] != 0x7fff)
-			sosMIDIUnInitSong( hSOSSongHandles[wIndex] );
-		hSOSSongHandles[wIndex] = 0x7fff;
-	}
-
-	free(BaseSongPtr);
-	free(EmbSongPtr);
-	free(SpiceSongPtr);
-*/
-}
-
 
 
 void
@@ -543,7 +419,7 @@ SND_PlaySound(unsigned short sound, int x,int y, unsigned short Pan,unsigned sho
 	unsigned short  wVol,flag=0;
 	int  sqrdist, dx, dy, nr, wIndex;
 
-	if(!SoundMode)
+	if(!SoundMode || !Digi_Loaded)
 		return(-1);
 
 	if (Samples[sound].cache_length <= 0)
@@ -598,7 +474,7 @@ SND_PlaySound(unsigned short sound, int x,int y, unsigned short Pan,unsigned sho
 					FX_StopSound(SampleRay[wIndex].handle);
 					Samples[SampleRay[wIndex].number].users--;
 					if (Samples[SampleRay[wIndex].number].users == 0) {
-						Samples[SampleRay[wIndex].number].cache_lock = 0;
+						Samples[SampleRay[wIndex].number].cache_lock = 199;
 					}
 					// sSOSSampleData[wIndex].wLoopCount = 0;
 					SampleRay[wIndex].handle = -1;
@@ -609,7 +485,7 @@ SND_PlaySound(unsigned short sound, int x,int y, unsigned short Pan,unsigned sho
 		}
 	}
 
-	Samples[sound].cache_lock = 1;
+	Samples[sound].cache_lock = 200;
 
 	if (Samples[sound].cache_ptr == NULL) {
 		allocache(&Samples[sound].cache_ptr, Samples[sound].cache_length, &Samples[sound].cache_lock);
@@ -632,8 +508,7 @@ SND_PlaySound(unsigned short sound, int x,int y, unsigned short Pan,unsigned sho
 		11025, 0, Pan, sqrdist, 1, wIndex);
 	if (SampleRay[wIndex].handle < 0) {
 		if (Samples[sound].users == 0)
-			Samples[sound].cache_ptr = NULL;
-			Samples[sound].cache_lock = 0;
+			Samples[sound].cache_lock = 199;
 	} else {
 		Samples[sound].users++;
 		SampleRay[wIndex].x = x;
@@ -700,7 +575,7 @@ SND_StopLoop(int which)
 	FX_StopSound(SampleRay[wIndex].handle);
 	Samples[SampleRay[wIndex].number].users--;
 	if (Samples[SampleRay[wIndex].number].users == 0) {
-		Samples[SampleRay[wIndex].number].cache_lock = 0;
+		Samples[SampleRay[wIndex].number].cache_lock = 199;
 	}
 	// sSOSSampleData[wIndex].wLoopCount = 0;
 	SampleRay[wIndex].handle = -1;
@@ -723,7 +598,7 @@ SND_DIGIFlush(void)
 		FX_StopSound(SampleRay[wIndex].handle);
 		Samples[SampleRay[wIndex].number].users--;
 		if (Samples[SampleRay[wIndex].number].users == 0) {
-			Samples[SampleRay[wIndex].number].cache_lock = 0;
+			Samples[SampleRay[wIndex].number].cache_lock = 199;
 		}
 		SampleRay[wIndex].handle = -1;
 		SampleRay[wIndex].number = -1;
@@ -798,3 +673,207 @@ updatesound_loc(void)
 }
 
 // Location Stuff End
+
+
+/*
+Brutal in-place transformation of a SOS HMP file (a.k.a. NDMF according to sosm.h)
+into Standard MIDI, mutating global looping controllers into Apogee EMIDI equivalents.
+
+By Jonathon Fowler, 2023
+Provided to the public domain given how dubiously licensed the sources of information
+going into this were. Realised through a combination of:
+  - SOS.H in the Witchaven code dump exposing the file structure
+  - http://www.r-t-c-m.com/knowledge-base/downloads-rtcm/tekwar-tools/sos40.zip
+    providing the SOS special MIDI controller descriptions
+  - A crucial hint about variable length encoding byte order at
+    https://github.com/Mindwerks/wildmidi/blob/master/docs/formats/HmpFileFormat.txt#L84-L96
+
+Overall:
+    struct ndmfheader header;
+    struct ndmftracks tracks[header.numtracks];
+    uint8_t branchtable[];
+
+    NDMF is little-endian, MIDI is big-endian.
+    NDMF variable-length encoding: 0aaaaaaa 0bbbbbbb 1ccccccc
+    MIDI variable-length encoding: 1ccccccc 1bbbbbbb 0aaaaaaa
+
+Transformation can happen in-place because NDMF has a massive header compared to MIDI,
+so every write will be happening onto ground already trodden. Strict aliasing be damned.
+*/
+
+#if defined(__GNUC__) || defined(__clang__)
+#define PACKED_STRUCT struct __attribute__ ((packed))
+#elif defined(_MSC_VER)
+#define PACKED_STRUCT struct
+#pragma pack(1)
+#else
+#define PACKED_STRUCT struct
+#endif
+
+PACKED_STRUCT ndmfheader {
+     uint8_t ident[32];       // "HMIMIDIP013195" \0...
+     uint32_t branchofs;      // File offset to the branch table at the end
+     uint32_t pad[3];
+     uint32_t numtracks;
+     uint32_t ticksperqunote;
+     uint32_t tempo;          // Game clock dependent
+     uint32_t playtime;       // Song length in seconds
+     uint32_t channelprio[16];
+     uint32_t trackmap[32][5];
+     uint8_t  ctrlrestore[128];
+     uint32_t pad2[2];
+};
+
+PACKED_STRUCT ndmftrackheader {
+     uint32_t tracknum;
+     uint32_t tracklen;       // Header length inclusive
+     uint32_t channel;
+     uint8_t data[];          // [tracklen-12]
+};
+
+PACKED_STRUCT smfheader {
+     uint8_t ident[4];        // "MThd"
+     uint32_t headsize;       // 6
+     uint16_t format;
+     uint16_t numtracks;
+     uint16_t ticksperqunote;
+};
+PACKED_STRUCT smftrackheader {
+     uint8_t ident[4];        // "MTrk"
+     uint32_t tracklen;       // Header length exclusive
+     uint8_t data[];          // [tracklen]
+};
+
+static int transmutehmp(char *filedata)
+{
+     const char ndmfident[] = "HMIMIDIP013195";
+     const int commandlengths[8] = { 2, 2, 2, 2, 1, 1, 2, -1 };
+     const int syscomlengths[16] =  { -1, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1 };
+
+     if (memcmp(ndmfident, filedata, sizeof ndmfident)) return -1;
+
+     // Extract the important values from the NDMF header.
+     struct ndmfheader *ndmfhead = (struct ndmfheader *)filedata;
+     int numtracks = B_LITTLE32(ndmfhead->numtracks);
+     int ticksperqunote = B_LITTLE32(ndmfhead->ticksperqunote);
+     int tempo = 120000000 / B_LITTLE32(ndmfhead->tempo);
+     ndmfhead = NULL;
+
+     // Construct a new MIDI header.
+     struct smfheader *smfhead = (struct smfheader *)filedata;
+     memcpy(smfhead->ident, "MThd", 4);
+     smfhead->headsize = B_BIG32(6);
+     smfhead->format = B_BIG16(1);
+     smfhead->numtracks = B_BIG16(numtracks);
+     smfhead->ticksperqunote = B_BIG16(ticksperqunote);
+
+     // Transcribe tracks.
+     int ndmffileofs = sizeof(struct ndmfheader);
+     int smffileofs = sizeof(struct smfheader);
+     for (int trk = 0; trk < numtracks; trk++) {
+          struct ndmftrackheader *ndmftrack = (struct ndmftrackheader *)&filedata[ndmffileofs];
+          struct smftrackheader *smftrack = (struct smftrackheader *)&filedata[smffileofs];
+
+          int ndmfdatalen = B_LITTLE32(ndmftrack->tracklen) - 12;
+          int smfdatalen = ndmfdatalen;
+          if (trk == 0) {
+               // We need to add a tempo event to the first MIDI track.
+               smfdatalen += 7;
+          }
+
+          memcpy(smftrack->ident, "MTrk", 4);
+          smftrack->tracklen = B_BIG32(smfdatalen);
+
+          uint8_t *ndmfdata = (uint8_t *)&ndmftrack->data[0];
+          uint8_t *smfdata = (uint8_t *)&smftrack->data[0];
+
+          if (trk == 0) {
+               // Insert a tempo event.
+               *(smfdata++) = 0;
+               *(smfdata++) = 0xff;
+               *(smfdata++) = 0x51;
+               *(smfdata++) = 3;
+               *(smfdata++) = (tempo>>16)&0xff;
+               *(smfdata++) = (tempo>>8)&0xff;
+               *(smfdata++) = tempo&0xff;
+          }
+
+          // Process events.
+          uint8_t status = 0;
+          for (int i = 0; i < ndmfdatalen; ) {
+               uint8_t b;
+               int copylen = 0;
+
+               // Re-encode the offset.
+               uint8_t vlenbytes[4], vlencnt = 0;
+               do {
+                    b = ndmfdata[i++];
+                    vlenbytes[vlencnt++] = b & 0x7f;
+               } while (!(b & 0x80));
+               do {
+                    b = vlenbytes[--vlencnt];
+                    if (vlencnt) b |= 0x80;
+                    *(smfdata++) = b;
+               } while (vlencnt > 0);
+
+               b = ndmfdata[i];
+               if (b&0x80) {
+                    // A new status byte.
+                    *(smfdata++) = b;
+                    i++;
+
+                    status = b;    // Keep for running status.
+                    copylen = commandlengths[(status & 0x7f)>>4];
+
+                    if ((b&0xf0) == 0xf0) {
+                         switch (b&0x0f) {
+                              case 0x0: // Sysex.
+                                   do *(smfdata++) = (b = ndmfdata[i++]);
+                                   while (!(b&0x80) && b != 0xf7);
+                                   break;
+                              case 0xf: // Meta.
+                                   *(smfdata++) = ndmfdata[i++];  // Type.
+                                   copylen = (*(smfdata++) = ndmfdata[i++]);     // Length.
+                                   break;
+                              default:  // Sys common.
+                                   copylen = syscomlengths[b&0x0f];
+                                   break;
+                         }
+                    } else if ((b&0xf0) == 0xb0) {     // Controller change.
+                         // SOS/EMIDI custom controller range. For whatever reason SOS
+                         // controller values have their high bit set.
+                         if (ndmfdata[i] >= 102 && ndmfdata[i] <= 119) {
+                              if (trk == 1 && ndmfdata[i] == 110) {        // Global loop start
+                                   *(smfdata++) = 118;
+                                   *(smfdata++) = (ndmfdata[i+1] & 0x7f);
+                              } else if (trk == 1 && ndmfdata[i] == 111) { // Global loop end.
+                                   *(smfdata++) = 119;
+                                   *(smfdata++) = 127;
+                              } else {
+                                   *(smfdata++) = 102; // Neuter all other controllers.
+                                   *(smfdata++) = 0;
+                              }
+                              i += 2;
+                              copylen = 0;
+                         }
+                    }
+               } else {
+                    copylen = commandlengths[(status & 0x7f)>>4];
+               }
+
+               for (; copylen>0; copylen--) {     // Copy data bytes.
+                    *(smfdata++) = ndmfdata[i++];
+               }
+          }
+
+          ndmffileofs += ndmfdatalen + 12;
+          smffileofs += smfdatalen + 8;
+     }
+
+     return smffileofs;
+}
+
+#undef PACKED_STRUCT
+#ifdef _MSC_VER
+#pragma pack()
+#endif

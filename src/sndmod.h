@@ -209,15 +209,8 @@ struct ambsounds {
 	//
 
 //midimusic vars
-	unsigned short        SongPending;
 
-	unsigned short     hSOSSongHandles[MAX_ACTIVE_SONGS];
 	unsigned char     ActiveSongBits = 0x00;
-
-	unsigned char  *lpMIDISong;
-    /*
-	_SOS_MIDI_INIT_SONG        sSOSInitSongs[MAX_ACTIVE_SONGS];
-    */
 
 
 	struct ambsounds ambsoundarray[] = {
@@ -253,8 +246,6 @@ struct ambsounds {
 #else
 
 
-extern int  SongPending;
-extern int  hSOSSongHandles[];
 
 
 extern int  SoundMode,wDIGIVol,MusicMode,wMIDIVol,use_dig_midi,

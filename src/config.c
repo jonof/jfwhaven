@@ -27,7 +27,7 @@ enum {
 static int tmprenderer = -1;
 static int tmpbrightness = -1;
 static int tmpsamplerate = -1;
-// static int tmpmusic = -1;
+static int tmpmusic = -1;
 static int tmpmouse = -1;
 static int tmpjoystick = -1;
 
@@ -90,13 +90,11 @@ static struct {
         ";   6 - 44.1 KHz\n"
         ";   7 - 48 KHz\n"
     },
-    /*
     { "music", type_bool, &tmpmusic,
         "; Music playback\n"
         ";   0 - Off\n"
         ";   1 - On\n"
     },
-    */
     { "mouse", type_bool, &tmpmouse,
         "; Enable mouse\n"
         ";   0 - No\n"
@@ -241,11 +239,9 @@ int loadsetup(const char *fn)
     if (tmpsamplerate >= 0) {
         option[7] = (tmpsamplerate & 0x0f) << 4;
     }
-    /*
     if (tmpmusic >= 0) {
         option[2] = !!tmpmusic;
     }
-    */
     if (tmpmouse == 0) {
         option[3] &= ~1;
     } else if (tmpmouse > 0) {
@@ -277,7 +273,7 @@ int writesetup(const char *fn)
     tmprenderer = getrendermode();
 #endif
     tmpsamplerate = option[7]>>4;
-    // tmpmusic = option[2];
+    tmpmusic = option[2];
     tmpmouse = !!(option[3]&1);
     tmpjoystick = !!(option[3]&2);
 
