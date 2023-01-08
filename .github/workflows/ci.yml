@@ -75,4 +75,4 @@ jobs:
           path: |
             whaven.exe
             build.exe
-        if: ${{ matrix.use_polymost == 1 && matrix.use_opengl == 1 }}
+        if: ${{ github.ref == 'refs/heads/master' && matrix.use_polymost == 1 && matrix.use_opengl == 1 }}
