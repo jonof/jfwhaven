@@ -38,6 +38,7 @@ DATADIR ?= /usr/local/share/games/jfwhaven
 
 ENGINEROOT=jfbuild
 ENGINEINC=$(ENGINEROOT)/include
+LIBSMACKERSRC=libsmacker
 AUDIOLIBROOT=jfaudiolib
 SRC=src
 RSRC=rsrc
@@ -48,7 +49,7 @@ RC?=windres
 
 OURCFLAGS=-g -W -Wall -fno-strict-aliasing -std=c99
 OURCXXFLAGS=-g -W -Wall -fno-exceptions -fno-rtti -std=c++98
-OURCPPFLAGS=-I$(SRC) -I$(ENGINEINC) -I$(AUDIOLIBROOT)/include
+OURCPPFLAGS=-I$(SRC) -I$(ENGINEINC) -I$(AUDIOLIBROOT)/include -I$(LIBSMACKERSRC)
 OURLDFLAGS=
 
 ifneq ($(RELEASE),0)
@@ -87,8 +88,14 @@ GAMEOBJS= \
 	$(SRC)/whnet.$o \
 	$(SRC)/whobj.$o \
 	$(SRC)/whplr.$o \
+	$(SRC)/whsmk.$o \
 	$(SRC)/whsndmod.$o \
 	$(SRC)/whtag.$o
+
+GAMEOBJS+= \
+	$(LIBSMACKERSRC)/smacker.$o \
+	$(LIBSMACKERSRC)/smk_bitstream.$o \
+	$(LIBSMACKERSRC)/smk_hufftree.$o
 
 EDITOROBJS=$(SRC)/whbuild.$o
 
@@ -169,6 +176,9 @@ $(SRC)/%.$o: $(SRC)/%.c
 	$(CC) $(CPPFLAGS) $(OURCPPFLAGS) $(CFLAGS) $(OURCFLAGS) -c $< -o $@
 
 $(SRC)/%.$o: $(SRC)/%.m
+	$(CC) $(CPPFLAGS) $(OURCPPFLAGS) $(CFLAGS) $(OURCFLAGS) -c $< -o $@
+
+$(LIBSMACKERSRC)/%.$o: $(LIBSMACKERSRC)/%.c
 	$(CC) $(CPPFLAGS) $(OURCPPFLAGS) $(CFLAGS) $(OURCFLAGS) -c $< -o $@
 
 $(RSRC)/%.$o: $(RSRC)/%.c

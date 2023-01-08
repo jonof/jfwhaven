@@ -172,7 +172,8 @@ void rp_delay(int goal) {
         dagoal=totalclock+goal;
 
         while ( !exit ) {
-            if( totalclock == dagoal )
+            handleevents();
+            if( totalclock >= dagoal )
                 exit=1;
         }
 
@@ -1291,6 +1292,10 @@ int app_main(int argc,const char * const argv[]) {
 
     setup3dscreen();
     SND_Startup();
+
+    smkplayseq("intro");
+    setbrightness(brightness, palette, 0);
+
     SND_MenuMusic(MENUSONG);
 
     //intro();

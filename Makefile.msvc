@@ -23,6 +23,7 @@ ENGINEROOT=jfbuild
 ENGINEINC=$(ENGINEROOT)\include
 SRC=src
 RSRC=rsrc
+LIBSMACKERSRC=libsmacker
 AUDIOLIBROOT=jfaudiolib
 
 CC=cl
@@ -31,7 +32,7 @@ LINK=link
 
 OURCFLAGS=/nologo /MD /Zl
 OURCXXFLAGS=/nologo /MD /Zl /EHsc
-OURCPPFLAGS=/I$(SRC) /I$(ENGINEINC) /I$(AUDIOLIBROOT)\include
+OURCPPFLAGS=/I$(SRC) /I$(ENGINEINC) /I$(AUDIOLIBROOT)\include /I$(LIBSMACKERSRC)
 OURLINKFLAGS=/opt:ref /nologo
 OURRFLAGS=/nologo /i$(SRC) /i$(ENGINEINC)
 OURLIBS=msvcrt.lib
@@ -74,10 +75,16 @@ GAMEOBJS= \
 	$(SRC)\whnet.$o \
 	$(SRC)\whobj.$o \
 	$(SRC)\whplr.$o \
+	$(SRC)\whsmk.$o \
 	$(SRC)\whsndmod.$o \
 	$(SRC)\whtag.$o \
 	$(SRC)\gameres.$(res) \
 	$(SRC)\startwin_game.$o
+
+GAMEOBJS=$(GAMEOBJS) \
+	$(LIBSMACKERSRC)\smacker.$o \
+	$(LIBSMACKERSRC)\smk_bitstream.$o \
+	$(LIBSMACKERSRC)\smk_hufftree.$o
 
 EDITOROBJS=$(SRC)\whbuild.$o \
 	$(SRC)\buildres.$(res)
@@ -97,6 +104,9 @@ EDITOROBJS=$(EDITOROBJS) $(SRC)\version.$o
 
 {$(SRC)}.rc{$(SRC)}.$(res):
 	$(RC) $(OURRFLAGS) /fo$@ /r $<
+
+{$(LIBSMACKERSRC)}.c{$(LIBSMACKERSRC)}.$o:
+	$(CC) /TC /c $(CPPFLAGS) $(OURCPPFLAGS) $(CFLAGS) $(OURCFLAGS) /Fo$@ $<
 
 # TARGETS
 all: whaven$(EXESUFFIX) build$(EXESUFFIX) ;

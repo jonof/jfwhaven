@@ -26,6 +26,8 @@ You will require game data from an original release of Witchaven, specifically:
  * All files with a `.map` extension.
  * `lookup.dat`
  * `joesnd`
+ * `songs`
+ * `intro.smk`
 
 Use `palette.dat` from the _data_ directory of this repository.
 

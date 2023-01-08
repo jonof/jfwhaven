@@ -330,6 +330,9 @@ int lvlspellcheck(struct player *plr);
 void displayspelltext(void);
 void painsound(int xplc,int yplc);
 
+// whsmk.c
+void smkplayseq(char *name);
+
 // whsndmod.c
 void SND_DoBuffers(void);
 void SND_UnDoBuffers(void);
