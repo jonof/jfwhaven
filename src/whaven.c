@@ -342,7 +342,8 @@ void dodelayitems(int tics) {
 
 void setup3dscreen(void) {
 
-    setgamemode(fullscreen, xdimgame, ydimgame, bppgame);
+    if (setgamemode(fullscreen, xdimgame, ydimgame, bppgame))
+        crashgame("Could not set video mode");
     svga=!(xdim == 320 && ydim == 200) && !(xdim == 640 && ydim == 400);
 
     if(svga) {
@@ -359,9 +360,6 @@ void setup3dscreen(void) {
     }
 
     videoinitflag=1;
-
-    setview(0L,0L,xdim-1,ydim-1);
-    drawbackground();
 }
 
 
@@ -1276,10 +1274,7 @@ int app_main(int argc,const char * const argv[]) {
     plr->oldsector=plr->sector;
     plr->horiz=100;
     plr->zoom=256;
-    if( svga == 1)
-        plr->screensize=328;
-    else
-        plr->screensize=320;
+    plr->screensize=320;
 
     plr->dimension=3;
     plr->height=PLAYERHEIGHT;
@@ -1367,6 +1362,27 @@ void drawbackground(void) {
     updatepics();
 }
 
+void setviewport(int screensize) {
+    int dax, day, dax2, day2;
+
+    if(screensize > 320) {
+        dax=day=0;
+        dax2=xdim;
+        day2=ydim;
+    }
+    else {
+        int width = scale(xdim, screensize, 320);
+        int statusheight = scale(STATUSHEIGHT, ydim, 200);
+        int height = scale(ydim - statusheight, screensize, 320);
+
+        dax=(xdim - width)>>1;
+        dax2=(xdim + width)>>1;
+        day=(ydim - statusheight - height)>>1;
+        day2=(ydim - statusheight + height)>>1;
+    }
+    setview(dax,day,dax2-1,day2-1);
+}
+
 void playloop(void) {
 
     struct player *plr;
@@ -1383,6 +1399,7 @@ void playloop(void) {
 
         if(gameactivated == 0 || escapetomenu == 1) {
             exit=menuscreen(plr);
+            setviewport(plr->screensize);
             drawbackground();
             plr->z=sector[plr->sector].floorz-(PLAYERHEIGHT<<8);
         }

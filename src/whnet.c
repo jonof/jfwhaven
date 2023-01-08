@@ -1704,12 +1704,7 @@ netpickmonster(void)
      plr->oldsector = plr->sector;
      plr->horiz = 100;
      plr->zoom = 256;
-     if (svga == 1) {
-          plr->screensize = 328;
-     }
-     else {
-          plr->screensize = 320;
-     }
+     plr->screensize = 320;
      plr->dimension = 3;
      plr->height = PLAYERHEIGHT;
      plr->z = sector[plr->sector].floorz - (plr->height << 8);

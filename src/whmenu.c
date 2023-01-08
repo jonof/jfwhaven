@@ -993,10 +993,7 @@ int savedgamename(int gn) {
 
     plr=&player[0];
 
-    if(svga == 1)
-        plr->screensize=320;
-    else
-        plr->screensize=320;
+    plr->screensize=320;
 
     sprintf(tempbuf,"svgn%d.dat",gn);
 

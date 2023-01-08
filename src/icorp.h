@@ -189,6 +189,7 @@ void setup3dscreen(void);
 void setupboard(char *fname);
 void drawscreen(struct player *plr);
 void drawbackground(void);
+void setviewport(int screensize);
 void playloop(void);
 void drawoverheadmap(struct player *plr);
 void readpalettetable(void);

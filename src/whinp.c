@@ -902,7 +902,7 @@ void processinput(struct player *plr) {
 	}
 
 
-	else if(plr->dimension == 3 && svga == 0) {
+	else if(plr->dimension == 3) {
 		int didchange = 0;
 
 		if (keystatus[keys[KEYZOOMO]] != 0 && plr->screensize > 64) { // Les 07/24/95
@@ -915,42 +915,10 @@ void processinput(struct player *plr) {
 		}
 
 		if (didchange) {
-			if(plr->screensize > 320) {
-				dax=day=0;
-				dax2=xdim;
-				day2=ydim;
-			}
-			else {
-				int width = scale(xdim, plr->screensize, 320);
-				int statusheight = scale(STATUSHEIGHT, ydim, 200);
-				int height = scale(ydim - statusheight, plr->screensize, 320);
-
-				dax=(xdim - width)>>1;
-				dax2=(xdim + width)>>1;
-				day=(ydim - statusheight - height)>>1;
-				day2=(ydim - statusheight + height)>>1;
-			}
-			setview(dax,day,dax2-1,day2-1);
+			setviewport(plr->screensize);
 			drawbackground();
 		}
 	}
-
-//SVGA STUFF WANGO
-	if(plr->dimension == 3 && svga == 1) {
-		if (keystatus[keys[KEYZOOMO]] != 0) {
-			int statusheight = scale(STATUSHEIGHT, ydim, 200);
-			plr->screensize=320;
-			setview(0,0,xdim-1,ydim-statusheight-1);
-			drawbackground();
-		}
-
-		if (keystatus[keys[KEYZOOMI]] != 0 ) {
-			plr->screensize=328;
-			setview(0,0,xdim-1,ydim-1);
-			drawbackground();
-		}
-	}
-// SVGA END WANGO
 
 	onground=plr->onsomething;
 	if (keystatus[keys[KEYFLYUP]]) {
