@@ -73,6 +73,6 @@ jobs:
         with:
           name: Windows EXE
           path: |
-            tekwar.exe
+            whaven.exe
             build.exe
         if: ${{ matrix.use_polymost == 1 && matrix.use_opengl == 1 }}

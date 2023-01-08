@@ -21,8 +21,7 @@ extern int dragx1[16], dragy1[16], dragx2[16], dragy2[16], dragfloorz[16];
 
 void operatesprite(int s) {
 
-	int i, j;
-	int goalz;
+	int j;
 	struct player *plr;
 
 	plr=&player[0];
@@ -61,15 +60,12 @@ void operatesprite(int s) {
 void operatesector(int s) {
 
 	 short endwall,startwall,wallfind[2];
-	 int  botz,ctrz,dax2,day2,datag,goalz,i,j,size,topz;
+	 int  botz,dax2,day2,datag,goalz,i,j,size,topz;
 	 int centx, centy;
 	 struct player *plr;
 	 int daz;
 	 int doorantic, doorkey, doortype, checkforkey;
-	 int smush;
 	 int  temp1, temp2, temp3;
-	 short daceiling=0;
-	 int circledoorstart;
 	 int k;
 	 int keysok=0;
 
@@ -900,9 +896,8 @@ getoutahere:
 
 void animatetags(struct player *plr) {
 
-	 int  effect,endwall,good,i,j,k,oldang,r,s,startwall;
+	 int  endwall,good,i,j,k,oldang,startwall;
 	 int  nexti;
-	 int dax,dax2,day,day2;
 	 int dasector;
 
 

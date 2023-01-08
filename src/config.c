@@ -13,10 +13,6 @@
 #endif
 #include "baselayer.h"
 
-static int vesares[13][2] = {{320,200},{360,200},{320,240},{360,240},{320,400},
-                {360,400},{640,350},{640,400},{640,480},{800,600},
-                {1024,768},{1280,1024},{1600,1200}};
-
 enum {
     type_bool = 0,    //int
     type_double = 1,
@@ -24,7 +20,12 @@ enum {
     type_hex = 3,
 };
 
+#if USE_POLYMOST
 static int tmprenderer = -1;
+#endif
+#ifdef RENDERTYPEWIN
+static unsigned tmpmaxrefreshfreq = -1;
+#endif
 static int tmpbrightness = -1;
 static int tmpsamplerate = -1;
 static int tmpmusic = -1;
@@ -58,9 +59,8 @@ static struct {
     },
 #if USE_POLYMOST
     { "renderer", type_int, &tmprenderer,
-        "; 3D-mode renderer type\n"
+        "; Renderer type\n"
         ";   0  - classic\n"
-        ";   2  - software Polymost\n"
         ";   3  - OpenGL Polymost\n"
     },
 #endif
@@ -75,7 +75,7 @@ static struct {
     },
 #endif
 #ifdef RENDERTYPEWIN
-    { "maxrefreshfreq", type_int, &maxrefreshfreq,
+    { "maxrefreshfreq", type_int, &tmpmaxrefreshfreq,
         "; Maximum OpenGL mode refresh rate (Windows only, in Hertz)\n"
     },
 #endif
@@ -233,9 +233,9 @@ int loadsetup(const char *fn)
         setrendermode(tmprenderer);
     }
 #endif
-    if (tmpbrightness >= 0) {
-        brightness = min(max(tmpbrightness,0),15);
-    }
+#ifdef RENDERTYPEWIN
+    win_setmaxrefreshfreq(tmpmaxrefreshfreq);
+#endif
     if (tmpsamplerate >= 0) {
         option[7] = (tmpsamplerate & 0x0f) << 4;
     }
@@ -271,6 +271,9 @@ int writesetup(const char *fn)
     tmpbrightness = brightness;
 #if USE_POLYMOST
     tmprenderer = getrendermode();
+#endif
+#ifdef RENDERTYPEWIN
+    tmpmaxrefreshfreq = win_getmaxrefreshfreq();
 #endif
     tmpsamplerate = option[7]>>4;
     tmpmusic = option[2];

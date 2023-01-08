@@ -565,7 +565,7 @@ void playerdead(struct player *plr) {
 
 	int i;
 	int spellbookpage;
-	int clockgoal, goalz;
+	int clockgoal;
 	int goaltime;
 	int exit=0;
 
@@ -1004,7 +1004,6 @@ void weaponchange(void) {
 	int i;
 	int  j;
 	struct player *plr;
-	char temp[50];
 
 	plr=&player[pyrn];
 
@@ -1337,13 +1336,7 @@ int weaponuseless=0;
 
 void plrfireweapon(struct player *plr) {
 
-	char guntype;
-	int x, y, z;
-	int dasectnum, daz;
-	short daang, dahoriz;
-	short k;
 	int i;
-	int bestweapon;
 
 
 	if(currweaponfired == 4) {
@@ -1590,7 +1583,6 @@ void plruse(struct player *plr) {
 
 	short hitsect, hitwall, hitsprite, daang2, daang;
 	int i, daz2, hitx, hity, hitz;
-	int hit, dax, day;
 
 	neartag(plr->x,plr->y,plr->z,plr->sector,plr->ang,
 		  &neartagsector,&neartagwall,&neartagsprite,&neartaghitdist,1024,3);
@@ -1651,10 +1643,7 @@ void plruse(struct player *plr) {
 
 void loadnewlevel(int mapon) {
 
-	struct player *plr;
 	char mapbuf[16];
-
-	plr=&player[pyrn];
 
 	sprintf(mapbuf,"level%d.map",mapon);
 
@@ -1675,10 +1664,8 @@ void loadnewlevel(int mapon) {
 
 void victory(void) {
 
-	int goaltime;
 	int exit;
 
-	goaltime=totalclock+360;
 	victor=1;
 
 	flushperms();
@@ -2477,6 +2464,8 @@ void chunksofmeat(struct player *plr,short hitsprite,int hitx,int hity,int hitz,
 	int chunk=REDCHUNKSTART;
 	int newchunk;
 
+	(void)plr; (void)daang;
+
 	if(goreon == 0)
 		return;
 
@@ -2671,12 +2660,9 @@ void swingdapunch(int daweapon) {
 
 void shootgun ( struct player *plr, short daang, char guntype ) {
 
-	short hitsect, hitwall, hitsprite, daang2, daang3, k;
+	short hitsect, hitwall, hitsprite, daang2, k;
 	int i, j, daz2, hitx, hity, hitz;
-	int chunk;
-	int hit, dax, day;
-	int bolts;
-	int cnt;
+	int dax, day;
 
 	switch(guntype) {
 	case 0:
@@ -3725,6 +3711,7 @@ void shootgun ( struct player *plr, short daang, char guntype ) {
 
 
 void singleshot(short bstatus) {
+	(void)bstatus;
 
    hasshot = 0;
    return;
@@ -3740,7 +3727,6 @@ void potionpic(int currentpotion) {
 	struct player *plr;
 	int i;
 	int tilenum;
-	char tempbuf[3];
 
 	plr=&player[pyrn];
 
@@ -3853,7 +3839,6 @@ void usapotion(struct player *plr) {
 void orbpic(int currentorb) {
 
 	char tempbuf[8];
-	int  tilenum;
 	int  spellbookpage;
 	struct player *plr;
 
@@ -3873,7 +3858,6 @@ void orbpic(int currentorb) {
 
 void healthpic(int hp) {
 
-	int tilenum;
 	struct player *plr;
 
 	plr=&player[pyrn];
@@ -3900,7 +3884,6 @@ void healthpic(int hp) {
 
 void armorpic(int arm) {
 
-	int tilenum;
 	struct player *plr;
 
 	plr=&player[pyrn];
@@ -3923,7 +3906,6 @@ void armorpic(int arm) {
 void levelpic(void) {
 
 	struct player *plr;
-	int x, y;
 	int tilenum;
 	char temp[20];
 	char temp2[20];
@@ -3957,16 +3939,12 @@ void levelpic(void) {
 
 void score(int score) {
 
-	int x, y;
-	int tilenum;
 	char tempbuf[8];
 	struct player *plr;
 
 	plr=&player[pyrn];
 
 	plr->score+=score;
-
-	tilenum=SCOREFONT-26;
 
 	sprintf(tempbuf,"%d",plr->score);
 
@@ -4046,6 +4024,8 @@ int checkweapondist(short i,int x,int y,int z,char guntype) {
 
    int length;
 
+   (void)guntype;
+
    if(selectedgun == 0) {
 	  length=1024;
    }
@@ -4117,12 +4097,12 @@ void captureflagpic(void) {
 							{ 286, 161, 10},
 							{ 260, 176, 11},
 							{ 286, 176, 12}};
-
+	/*
 	struct capt sflag[4] = { { 260, 387, 0},
 							{ 286, 387, 10},
 							{ 260, 417, 11},
 							{ 286, 417, 12}};
-
+	*/
 	rotatesprite(260<<16,161<<16,65536,0,POTIONBACKPIC,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
 
 	for(i=0;i<4;i++) {

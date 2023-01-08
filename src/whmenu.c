@@ -43,7 +43,8 @@ int goreon=1;
 int loadedgame=0;
 int loadgo=0;
 
-char typemessage[162], typemessageleng = 0, typemode = 0;
+char typemessage[162];
+int typemessageleng = 0, typemode = 0;
 
 char scantoasc[128] = {
     0,0,'1','2','3','4','5','6','7','8','9','0','-','=',0,0,
@@ -105,12 +106,11 @@ void fancyfont(int x, int y, short tilenum, char *string, char pal) {
      int i, j;
      int len;
      int incr=0;
-     int exit=0;
      int number;
      char temp[40];
 
      Bstrlwr(string);
-     len=strlen(string);
+     len=(int)strlen(string);
      strcpy(temp,string);
 
      for(i=0;i<len;i++) {
@@ -141,12 +141,11 @@ void fancyfontscreen(int x, int y, short tilenum, char *string, char pal) {
      int i, j;
      int len;
      int incr=0;
-     int exit=0;
      int number;
      char temp[40];
 
      Bstrlwr(string);
-     len=strlen(string);
+     len=(int)strlen(string);
      strcpy(temp,string);
 
      for(i=0;i<len;i++) {
@@ -176,12 +175,11 @@ void fancyfontperm(int x, int y, short tilenum, char *string, char pal) {
      int i, j;
      int len;
      int incr=0;
-     int exit=0;
      int number;
      char temp[40];
 
      Bstrlwr(string);
-     len=strlen(string);
+     len=(int)strlen(string);
      strcpy(temp,string);
 
      for(i=0;i<len;i++) {
@@ -223,6 +221,7 @@ static void menubackground(void) {
 
 static void menuwritesprite(int thex, int they, short tilenum, signed char shade,
         char stat, unsigned char dapalnum) {
+    (void)stat;
     rotatesprite(svgaxoff+thex*svgascale,they*svgascale,svgascale,0,tilenum,shade,dapalnum,
                  svgaoverstat,0,0,xdim-1,ydim-1);
 }
@@ -242,9 +241,7 @@ int menuscreen(struct player *plr) {
     int exit=0;
     int select=0;
     short redpicnum;
-    char tempbuf[40];
     int goaltime;
-    int i;
 
 
     if (netgame) {
@@ -398,7 +395,7 @@ void help(void) {
     };
 
     int select=0;
-    int goaltime;
+    int goaltime = totalclock;
     int exit=0;
 
     while (!exit) {
@@ -505,8 +502,6 @@ void loadsave(struct player *plr) {
 void quit(void) {
 
     int exit=0;
-    int goaltime;
-    char temp[20];
 
     while( !exit ) {
         handleevents();
@@ -593,10 +588,6 @@ void thedifficulty(void) {
         int redpicnum;
         int pickone=0;
         int goaltime;
-
-        struct player *plr;
-
-        plr=&player[0];
 
         select=difficulty-1;
         keystatus[1]=0;
@@ -714,7 +705,6 @@ void thedifficulty(void) {
 
 void startnewgame(struct player *plr) {
 
-    char temp[20];
     char tempshow2dsector[MAXSECTORS>>3];
     char tempshow2dwall[MAXWALLS>>3];
     char tempshow2dsprite[MAXSPRITES>>3];
@@ -758,8 +748,7 @@ void loadgame(struct player *plr) {
 
     int select=0;
     int exit=0;
-    int gn, i;
-    char temp[20];
+    int i;
     int goaltime;
 
     goaltime=totalclock+10L;
@@ -833,11 +822,11 @@ void loadgame(struct player *plr) {
 void savegame(struct player *plr) {
 
     int exit=0;
-    int gn, i;
+    int i;
     int select=0;
-    char temp[20];
     int goaltime;
 
+    (void)plr;
 
     for(i=0;i<MAXSAVEDGAMES;i++)
         if( !savedgamedat(i))
@@ -898,11 +887,9 @@ void savegametext(int select) {
     struct player *plr;
 
     int exit=0;
-    int i, len, j;
+    int i, j;
     char tempbuf[40];
     char temp[40];
-    char temp1[40];
-    char temp2[40];
 
     int  typemessageleng=0;
 
@@ -1002,7 +989,6 @@ int savedgamename(int gn) {
     struct player *plr;
     int  file;
     int  i;
-    char temp[3];
     int tmpanimateptr[MAXANIMATES];
 
     plr=&player[0];
@@ -1081,11 +1067,10 @@ int savedgamename(int gn) {
 
 int savedgamedat(int gn) {
 
-    int     fh=0,nr=0;
+    int     fh=0;
     char    fname[20];
     char    fsname[20];
-    char    savedgame[40];
-    char    temp[20];
+    ssize_t nr=0;
 
     sprintf(fname,"svgm%d.map",gn);
 
@@ -1117,7 +1102,6 @@ void loadplayerstuff(void) {
 
     int fh;
     int i;
-    char temp[40];
     int tmpanimateptr[MAXANIMATES];
 
     fh=open(loadgamename, O_RDONLY | O_BINARY);
@@ -1646,7 +1630,7 @@ extern char pee;
 extern char flashflag;
 
 void screenfx(struct player *plr) {
-
+    (void)plr;
       updatepaletteshifts();
 
  return;
@@ -1678,12 +1662,14 @@ char  palette1[256][3],palette2[256][3];
 void
 getpalette(char *palette)
 {
+    (void)palette;
     debugprintf("getpalette()\n");
 }
 
 void
 fillpalette(int red, int green, int blue)
 {
+    (void)red; (void)green; (void)blue;
     debugprintf("fillpalette()\n");
 }
 
@@ -1774,7 +1760,7 @@ fog1(void)
 void
 fog2(void)
 {
-      char      *lookptr;
+      unsigned char *lookptr;
 
       lookptr=palookup[0];
       palookup[0]=palookup[1];
@@ -1784,7 +1770,7 @@ fog2(void)
 void
 makefxlookups(void)
 {
-      char      palbuf[256];
+      unsigned char palbuf[256];
       short     i;
 
       for( i=0; i<256; i++ )
@@ -1808,10 +1794,10 @@ makefxlookups(void)
 #define   NUMBLUESHIFTS       4
 #define   BLUESTEPS           8
 
-char      whiteshifts[NUMREDSHIFTS][768];
-char      redshifts[NUMREDSHIFTS][768];
-char      greenshifts[NUMGREENSHIFTS][768];
-char      blueshifts[NUMBLUESHIFTS][768];
+unsigned char whiteshifts[NUMREDSHIFTS][768];
+unsigned char redshifts[NUMREDSHIFTS][768];
+unsigned char greenshifts[NUMGREENSHIFTS][768];
+unsigned char blueshifts[NUMBLUESHIFTS][768];
 
 int       redcount,whitecount,greencount,bluecount;
 char      palshifted;
@@ -1820,11 +1806,11 @@ char      palshifted;
 void
 initpaletteshifts(void)
 {
-    char      *workptr,*baseptr;
+    unsigned char *workptr,*baseptr;
     int       i,j,delta;
 
     for( i=1; i<=NUMREDSHIFTS; i++ ) {
-        workptr=( char *)&redshifts[i-1][0];
+        workptr=(unsigned char *)&redshifts[i-1][0];
         baseptr=&palette[0];
         for( j=0; j<=255; j++) {
             delta=64-*baseptr;
@@ -1837,7 +1823,7 @@ initpaletteshifts(void)
     }
 
     for( i=1; i<=NUMWHITESHIFTS; i++ ) {
-        workptr=( char *)&whiteshifts[i-1][0];
+        workptr=&whiteshifts[i-1][0];
         baseptr=&palette[0];
         for( j=0; j<=255; j++ ) {
             delta = 64-*baseptr;
@@ -1850,7 +1836,7 @@ initpaletteshifts(void)
     }
 
     for( i=1; i<=NUMGREENSHIFTS; i++) {
-        workptr=( char *)&greenshifts[i-1][0];
+        workptr=&greenshifts[i-1][0];
         baseptr=&palette[0];
         for( j=0; j<=255; j++) {
             delta=-*baseptr;
@@ -1863,7 +1849,7 @@ initpaletteshifts(void)
     }
 
     for( i=1; i<=NUMBLUESHIFTS; i++) {
-        workptr=( char *)&blueshifts[i-1][0];
+        workptr=&blueshifts[i-1][0];
         baseptr=&palette[0];
         for( j=0; j<=255; j++) {
             delta=-*baseptr;

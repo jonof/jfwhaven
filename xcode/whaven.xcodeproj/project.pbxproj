@@ -81,14 +81,14 @@
 			containerPortal = ABC75B931A49BC18007D0D43 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = ABC75B9C1A49BCC3007D0D43;
-			remoteInfo = JFTekWar;
+			remoteInfo = JFWitchaven;
 		};
 		AB5BD5E923123DE500BC4BEF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = ABC75B931A49BC18007D0D43 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = ABD03E471A52720F0012B9D1;
-			remoteInfo = "Build Editor for JFTekWar";
+			remoteInfo = "Build Editor for JFWitchaven";
 		};
 		AB5BD5FB23123F8100BC4BEF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -444,7 +444,7 @@
 				AB5BD5FC23123F8100BC4BEF /* PBXTargetDependency */,
 			);
 			name = JFWitchaven;
-			productName = JFTekWar;
+			productName = JFWitchaven;
 			productReference = ABC75B9D1A49BCC3007D0D43 /* JFWitchaven.app */;
 			productType = "com.apple.product-type.application";
 		};
@@ -496,10 +496,9 @@
 			};
 			buildConfigurationList = ABC75B961A49BC18007D0D43 /* Build configuration list for PBXProject "whaven" */;
 			compatibilityVersion = "Xcode 8.0";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				en,
 				Base,
 			);
@@ -753,9 +752,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++98";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_CHAR_IS_UNSIGNED_CHAR = NO;
+				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -774,8 +775,6 @@
 				WARNING_CFLAGS = (
 					"-W",
 					"-Wall",
-					"-Wno-unused-variable",
-					"-Wno-unused-parameter",
 				);
 			};
 			name = Debug;
@@ -784,9 +783,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++98";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_CHAR_IS_UNSIGNED_CHAR = NO;
+				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -803,8 +804,6 @@
 				WARNING_CFLAGS = (
 					"-W",
 					"-Wall",
-					"-Wno-unused-variable",
-					"-Wno-unused-parameter",
 				);
 			};
 			name = Release;

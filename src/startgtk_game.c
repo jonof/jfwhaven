@@ -1,13 +1,7 @@
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "compat.h"
 
 #include <gtk/gtk.h>
 
-#include "compat.h"
 #include "baselayer.h"
 #include "startwin.h"
 #include "build.h"
@@ -212,11 +206,13 @@ static void setup_messages_mode(gboolean allowcancel)
 
 static void on_fullscreencheck_toggled(GtkToggleButton *togglebutton, gpointer user_data)
 {
+    (void)togglebutton; (void)user_data;
     populate_video_modes(FALSE);
 }
 
 static void on_cancelbutton_clicked(GtkButton *button, gpointer user_data)
 {
+    (void)button; (void)user_data;
     startwinloop = FALSE;   // Break the loop.
     retval = STARTWIN_CANCEL;
     quitevent = quitevent || quiteventonclose;
@@ -226,6 +222,8 @@ static void on_startbutton_clicked(GtkButton *button, gpointer user_data)
 {
     int mode = -1;
     GtkTreeIter iter;
+
+    (void)button; (void)user_data;
 
     if (gtk_combo_box_get_active_iter(GTK_COMBO_BOX(controls.vmode3dcombo), &iter)) {
         gtk_tree_model_get(GTK_TREE_MODEL(controls.vmode3dlist), &iter, 1 /*index*/, &mode, -1);
@@ -258,6 +256,7 @@ static void on_startbutton_clicked(GtkButton *button, gpointer user_data)
 
 static gboolean on_startgtk_delete_event(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
+    (void)widget; (void)event; (void)user_data;
     startwinloop = FALSE;   // Break the loop.
     retval = STARTWIN_CANCEL;
     quitevent = quitevent || quiteventonclose;
@@ -421,12 +420,13 @@ int startwin_settitle(const char *title)
 
 int startwin_idle(void *s)
 {
+    (void)s;
     return 0;
 }
 
 int startwin_run(struct startwin_settings *settings)
 {
-    if (!gtkenabled || !startwin) return 0;
+    if (!gtkenabled || !startwin) return STARTWIN_RUN;
 
     set_settings(settings);
     setup_config_mode();

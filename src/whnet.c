@@ -31,10 +31,10 @@
 #define   TEAM4PAL       12
 
 
-char netmsg[80],
-     plrindex[256],
-     tagindex[MAXPLAYERS],
-     tempbuf[576];
+static char netmsg[80];
+
+unsigned char plrindex[256],
+     tagindex[MAXPLAYERS];
 
 int  netgame,
      netinitialized;
@@ -42,10 +42,10 @@ int  netgame,
 //#pragma pack(1)
 
 struct netpck {
-     char tagno;                   // players random tag number
+     unsigned char tagno;          // players random tag number
      short node;                   // NETNOW node number
      char enemytype;               // monster this player chose
-     char teamno;                  // team this player chose
+     unsigned char teamno;         // team this player chose
      char weap;                    // weapon being carried
      short score;                  // player's score (team or head to head)
      int x,
@@ -677,7 +677,7 @@ netjoingame(void)
      case 3:
           mynode = 0;
           if (myrandomtag == 255) {
-               srand(clock());
+               srand((unsigned)clock());
                do {
                     myrandomtag = rand() & 255;
                } while (myrandomtag == 255);
@@ -699,7 +699,7 @@ netjoingame(void)
 void
 netsendmove(void)
 {
-     short p;
+     //short p;
      static int sendclock = 0L;
 
 // fprintf(stdaux, "netsendmove\r\n");
@@ -1081,7 +1081,6 @@ wongamescreen(short p)
           n;
      int oth;
      char tmpbuf[32];
-     char * datapck;
      int rc;
 
 // fprintf(stdaux, "wongamescreen\r\n");
@@ -1157,7 +1156,7 @@ wongamescreen(short p)
           for (i = 0, n = 0; i < MAXTEAMS; i++) {
                if (teaminplay[i]) {
                     sprintf(tmpbuf, "%s: %d", teamcolorstrings[i], teamscore[i]);
-                    printext256(xdim - (strlen(tmpbuf) * 4),
+                    printext256(xdim - ((int)strlen(tmpbuf) * 4),
                                 ydim - (n * 8) - tilesizy[STATUSBAR] - 8, 31, -1, tmpbuf, 1);
                     n++;
                }
@@ -1541,8 +1540,8 @@ netpickmonster(void)
           case 0:
                for (i = 0; i < numenemchoices; i++) {
                     if (i == selected) {
-                         rotatesprite(((xdim>>1)-135L)<<16,
-                                      (((ydim>>1)-72L)+(i * 19))<<16,
+                         rotatesprite(((xdim>>1)-135)<<16,
+                                      (((ydim>>1)-72)+(i * 19))<<16,
                                       16384L, 0, HELMET + step,
                                       0, 0, 8 + 16,
                                       0L, 0L, xdim-1L, ydim-1L);
@@ -1581,8 +1580,8 @@ netpickmonster(void)
           case 1:
                for (i = 0; i < numgamechoices; i++) {
                     if (i == selected) {
-                         rotatesprite(((xdim>>1)-135L)<<16,
-                                      (((ydim>>1)-72L)+(i * 19))<<16,
+                         rotatesprite(((xdim>>1)-135)<<16,
+                                      (((ydim>>1)-72)+(i * 19))<<16,
                                       16384L, 0, HELMET + step,
                                       0, 0, 8 + 16,
                                       0L, 0L, xdim-1L, ydim-1L);
@@ -1611,8 +1610,8 @@ netpickmonster(void)
           case 2:
                for (i = 0; i < nummapchoices; i++) {
                     if (i == selected) {
-                         rotatesprite(((xdim>>1)-152L)<<16,
-                                      (((ydim>>1)-72L)+(i * 19))<<16,
+                         rotatesprite(((xdim>>1)-152)<<16,
+                                      (((ydim>>1)-72)+(i * 19))<<16,
                                       16384L, 0, HELMET + step,
                                       0, 0, 8 + 16,
                                       0L, 0L, xdim-1L, ydim-1L);
@@ -1782,10 +1781,7 @@ char comtable[] = {0x00, 0x01, 0x02, 0x03, 0x04};
 void
 initmulti(int numplayers)
 {
-     int  i,
-          stat;
-     char option4,
-          option5;
+     int  i;
      FILE *fp;
 
 // fprintf(stdaux, "initmulti\r\n");
@@ -1812,34 +1808,6 @@ initmulti(int numplayers)
           mdmsndpck.hdr[3] = 0x21;
           mdmsndpck.len = sizeof(struct netpck);
           mdmreadsettings();
-          option4 = option5 = 0;
-          option4 = comtable[comp];
-          switch (bps) {
-          case 2400:
-               break;
-          case 4800:
-               option5 |= 0x01;
-               break;
-          case 14400:
-               option5 |= 0x03;
-               break;
-          case 19200:
-               option5 |= 0x04;
-               break;
-          case 28800:
-               option5 |= 0x05;
-               break;
-          default:
-          case 9600:
-               option5 |= 0x02;
-               break;
-          }
-          if (comp == 1 || comp == 3) {
-               option5 |= 0x20;
-          }
-          else {
-               option5 |= 0x10;
-          }
           initmultiplayers(0, NULL);
           netinitialized = 1;
           break;
@@ -1915,7 +1883,7 @@ whnetmon(void)
           for (i = 0, n = 0; i < MAXTEAMS; i++) {
                if (teaminplay[i]) {
                     sprintf(tmpbuf, "%s: %d", teamcolorstrings[i], teamscore[i]);
-                    printext256(xdim - (strlen(tmpbuf) * 4),
+                    printext256(xdim - ((int)strlen(tmpbuf) * 4),
                                 ydim - (n * 8) - tilesizy[STATUSBAR] - 8, 31, -1, tmpbuf, 1);
                     n++;
                }

@@ -272,6 +272,7 @@ SND_Shutdown(void)
 void
 SND_Mixer( unsigned short wSource, unsigned short wVolume )
 {
+    (void)wSource; (void)wVolume;
 /*
 	if(wSource==MIDI) {
 		wMIDIVol = (wVolume<<3);
@@ -416,8 +417,11 @@ SND_Sting(unsigned short sound)
 int
 SND_PlaySound(unsigned short sound, int x,int y, unsigned short Pan,unsigned short loopcount)
 {
-	unsigned short  wVol,flag=0;
+	//unsigned short  wVol;
+	unsigned short flag=0;
 	int  sqrdist, dx, dy, nr, wIndex;
+
+	(void)loopcount;
 
 	if(!SoundMode || !Digi_Loaded)
 		return(-1);
@@ -614,6 +618,7 @@ SND_DIGIFlush(void)
 void
 dolevelmusic(int level)
 {
+	(void)level;
 }
 
 // JOE START functions called often from external modules
@@ -633,7 +638,8 @@ void
 updatesound_loc(void)
 {
 	int wIndex;
-	unsigned wVol,wPan;
+	//unsigned wVol;
+	unsigned wPan;
 	int sqrdist, dx, dy;
 
 	if(!SoundMode)

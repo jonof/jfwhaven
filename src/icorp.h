@@ -45,7 +45,7 @@ struct swingdoor swingdoor[MAXSWINGDOORS];
 
 struct player {
      int x,y,z;
-     int ang;
+     short ang;
      int horiz;
      int zoom;
      int height;

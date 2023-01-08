@@ -97,7 +97,7 @@ void initlava(void) {
 
 void movelava(unsigned char *dapic) {
 
-   char dat, *ptr;
+   unsigned char dat, *ptr;
    int x, y, z, zx, dalavadropsiz, dadropsizlookup;
    intptr_t offs, offs2;
    int dalavax, dalavay;
@@ -175,12 +175,12 @@ void movelava(unsigned char *dapic) {
    for(x=LAVASIZ-1;x>=0;x--)
    {
 	  offs = (x+1)*(LAVASIZ+2)+1;
-	  ptr = (char *)((x<<LAVALOGSIZ) + (intptr_t)dapic);
+	  ptr = (unsigned char *)((x<<LAVALOGSIZ) + (intptr_t)dapic);
 
 	  zx = ((x+lavanumframes)&(LAVASIZ-1));
 
 	  offs2 = LAVASIZ-1;
-	  for(y=offs;y<offs+LAVASIZ;y++)
+	  for(intptr_t y=offs;y<offs+LAVASIZ;y++)
 	  {
 		 dat = lavainc[(offs2--)&zx];
 		 dat += lavabakpic[y-(LAVASIZ+2)-1];
@@ -222,7 +222,7 @@ void initwater(void) {
 
 void movewater(unsigned char *dapic) {
 
-   char dat, *ptr;
+   unsigned char dat, *ptr;
    int x, y, z, zx, dawaterdropsiz, dadropsizlookup;
    intptr_t offs, offs2;
    int dawaterx, dawatery;
@@ -297,12 +297,12 @@ void movewater(unsigned char *dapic) {
    for(x=WATERSIZ-1;x>=0;x--)
    {
 	  offs = (x+1)*(WATERSIZ+2)+1;
-	  ptr = (char *)((x<<WATERLOGSIZ) + (intptr_t)dapic);
+	  ptr = (unsigned char *)((x<<WATERLOGSIZ) + (intptr_t)dapic);
 
 	  zx = ((x+waternumframes)&(WATERSIZ-1));
 
 	  offs2 = WATERSIZ-1;
-	  for(y=offs;y<offs+WATERSIZ;y++)
+	  for(intptr_t y=offs;y<offs+WATERSIZ;y++)
 	  {
 		 dat = waterinc[(offs2--)&zx];
 		 dat += waterbakpic[y-(WATERSIZ+2)-1];
@@ -337,10 +337,6 @@ void panningfx(void) {
    short dasector;
    short startwall, endwall;
    short whichdir;
-   struct player *plr;
-   int lavax, lavay;
-
-   plr=&player[pyrn];
 
 
    //
@@ -404,8 +400,6 @@ void crushingfx(void) {
 
    int i, j, s;
    int daz, goalz;
-   int speed;
-   short datag;
 
 	for(i=0;i<crushsectorcnt;i++) {
 
@@ -473,10 +467,9 @@ void crushingfx(void) {
 
 void revolvefx(void) {
 
-   short startwall, endwall, wallfind[2];
-   int i, j, k, s, nexti, good, cnt, datag;
-   int dax, day, daz, dax2, day2, daz2, centx, centy;
-   int xvect, yvect;
+   short startwall, endwall;
+   int i, k;
+   int dax, day;
    struct player *plr;
 
 
@@ -512,10 +505,7 @@ extern int bobbingsectorcnt, bobbingsectorlist[];
 void bobbingsector(void) {
 
    short dasector;
-   struct player *plr;
    int i;
-
-   plr=&player[pyrn];
 
    for(i=0;i<bobbingsectorcnt;i++)
    {
@@ -656,10 +646,8 @@ void warpsprite(short spritenum) {
 void ironbars(void) {
 
 	int i;
-	short temp;
 	int spritenum;
-	int ironbarmove;
-	int x1, x2, y1, y2;
+	//int ironbarmove;
 
 	for(i=0;i<ironbarscnt;i++) {
 		if( ironbarsdone[i] == 1 ) {
@@ -669,7 +657,7 @@ void ironbars(void) {
 				sprite[ironbarsanim[i]].ang+=synctics<<1;
 				if(sprite[ironbarsanim[i]].ang > 2047)
 					sprite[ironbarsanim[i]].ang-=2047;
-					ironbarmove=ironbarsgoal[i]+=synctics<<1;
+					//ironbarmove=ironbarsgoal[i]+=synctics<<1;
 					setsprite(spritenum,sprite[spritenum].x,sprite[spritenum].y,sprite[spritenum].z);
 					if( ironbarsgoal[i] > 512 ) {
 						ironbarsgoal[i]=0;
@@ -999,8 +987,6 @@ void thesplash(void) {
 void makeasplash(int picnum, struct player *plr) {
 
 	short j;
-	short movestat;
-	int dax, day;
 
 	plr=&player[pyrn];
 
@@ -1030,15 +1016,13 @@ void makeasplash(int picnum, struct player *plr) {
 	}
 //JSA ends
 
-	movestat=movesprite((short)j,(((int)sintable[(sprite[j].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[j].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
+	movesprite((short)j,(((int)sintable[(sprite[j].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[j].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
 }
 
 
 void makemonstersplash(int picnum, int i) {
 
 	short j;
-	short movestat;
-	int dax, day;
 
 	if(sprite[i].picnum == FISH)
 		return;
@@ -1093,7 +1077,7 @@ void makemonstersplash(int picnum, int i) {
 
 void bats(short k) {
 
-	short i,j;
+	short j;
 
 	j=insertsprite(sprite[k].sectnum,FLOCK);
 	sprite[j].x=sprite[k].x;
@@ -1188,9 +1172,9 @@ void cracks(void) {
 void lavadryland(void) {
 
 	struct player *plr;
-	short j,k;
-	short s;
-	int daz;
+	short s,k;
+	//short j;
+	//int daz;
 
 	plr=&player[pyrn];
 
@@ -1220,7 +1204,7 @@ void lavadryland(void) {
 			break;
 			}
 
-			daz=sector[s].floorz-(1024*(sector[s].lotag-900));
+			//daz=sector[s].floorz-(1024*(sector[s].lotag-900));
 
 //JSA PLUTO
 //          if((j = setanimation(&sector[s].floorz,daz,32L)) >= 0)

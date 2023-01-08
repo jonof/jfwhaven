@@ -20,33 +20,6 @@ int keys[NUMBUILDKEYS] =
 	0x9c,0x1c,0xd,0xc,0xf,0x45
 };
 
-extern
-int posx,
-	  posy,
-	  posz,
-	  horiz,
-	  qsetmode;
-
-extern
-short ang,
-	  cursectnum;
-
-extern
-short ceilingheinum,
-	  floorheinum;
-
-extern
-short searchsector,
-	  searchwall,
-	  searchstat;              //search output
-
-short temppicnum,
-	  tempcstat;
-
-unsigned char tempshade,
-	  tempxrepeat,
-	  tempyrepeat;
-
 
 void faketimerhandler(void) {
 	return;
@@ -124,7 +97,6 @@ char *ExtGetSectorCaption(short sectnum)
 	  short which;
 	  int temp=0;
 	  char string[5];
-	  char destination[25];
 
 	  which = sector[sectnum].lotag;
 
@@ -306,7 +278,6 @@ char *ExtGetWallCaption(short wallnum)
 const
 char *ExtGetSpriteCaption(short spritenum)
 {
-	  char destination[20];
 	  int which;
 
 	  tempbuf[0]=0;
@@ -379,7 +350,9 @@ char *ExtGetSpriteCaption(short spritenum)
 void
 ExtShowSectorData(short sectnum)   //F5
 {
-	  int  i,c=0;
+	  int  i;
+
+	  (void)sectnum;
 
 	  for (i=0 ; i < 2000 ; i++) {
 			 numsprite[i]=0;
@@ -397,7 +370,9 @@ ExtShowSectorData(short sectnum)   //F5
 void
 ExtShowWallData(short wallnum)       //F6
 {
-	  int  i,nexti,bls,ouls,ss,rss,smss,tss,es,drs,music=0;
+	  int  i,bls,ouls,ss,rss,smss,tss,es,drs;
+
+	  (void)wallnum;
 
 	  bls=ouls=ss=rss=smss=tss=es=drs=0;
 	  for(i=0 ; i < MAXSPRITES ; i++) {
@@ -455,8 +430,10 @@ void
 ExtShowSpriteData(short spritenum)   //F6
 {
 	  FILE *fp;
-	  int  i,t;
+	  int  t;
 	  int x=0,y=4,xmax=0,xx=0,col=0;
+
+	  (void)spritenum;
 
 	  clearmidstatbar16();
 	  if ((fp=fopen("sehelp.hlp","rb")) == NULL) {
@@ -491,8 +468,10 @@ void
 ExtEditSectorData(short sectnum)    //F7
 {
 	  FILE *fp;
-	  int  i,t;
+	  int  t;
 	  int x=0,y=4,xmax=0,xx=0,col=0;
+
+	  (void)sectnum;
 
 	  clearmidstatbar16();
 	  if ((fp=fopen("sthelp.hlp","rb")) == NULL) {
@@ -633,22 +612,23 @@ SpriteName(short spritenum, char *lo2)
 void
 ReadPaletteTable(void)
 {
-	  FILE *fp;
+	  int fp;
 	  int  i,j;
 	  char num_tables,lookup_num;
+	  unsigned char tempbuf[256];
 
-	  if ((fp=fopen("lookup.dat","rb")) == NULL) {
+	  if ((fp=kopen4load("lookup.dat",0)) < 0) {
 			 return;
 	  }
-	  num_tables=getc(fp);
+	  num_tables=kgetc(fp);
 	  for (j=0 ; j < num_tables ; j++) {
-			 lookup_num=getc(fp);
+			 lookup_num=kgetc(fp);
 			 for (i=0 ; i < 256 ; i++) {
-					tempbuf[i]=getc(fp);
+					tempbuf[i]=kgetc(fp);
 			 }
 			 makepalookup(lookup_num,tempbuf,0,0,0,1);
 	  }
-	  fclose(fp);
+	  kclose(fp);
 }
 
 void
@@ -735,6 +715,7 @@ Keys2d(void)
 int ExtInit(void)
 {
 	int i, rv = 0;
+	unsigned char remapbuf[256];
 
 #if defined(DATADIR)
 	{
@@ -810,14 +791,12 @@ int ExtInit(void)
 				"There was a problem initialising the Build engine: %s", engineerrstr);
 		return -1;
 	}
-	initinput();
-	initmouse();
 
 		//You can load your own palette lookup tables here if you just
 		//copy the right code!
 	for(i=0;i<256;i++)
-		tempbuf[i] = ((i+32)&255);  //remap colors for screwy palette sectors
-	makepalookup(16,tempbuf,0,0,0,1);
+		remapbuf[i] = ((i+32)&255);  //remap colors for screwy palette sectors
+	makepalookup(16,remapbuf,0,0,0,1);
 
 	kensplayerheight = 54;
 	zmode = 0;

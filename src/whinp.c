@@ -29,7 +29,7 @@ short cybyaw,cybpit,cybrol;
 int charsperline=0;
 char   nettemp[80];
 extern char typemessage[];
-extern char typemessageleng, typemode;
+extern int  typemessageleng, typemode;
 extern char scantoasc[];
 extern char scantoascwithshift[];
 int nettypemode=0;
@@ -302,17 +302,16 @@ dophysics(struct player *plr,int goalz,short flyupdn,int v)
 
 void processinput(struct player *plr) {
 
-    int bstatus;
+    int bstatus=0;
     int mousx,mousy;
 	int goalz,hihit,hiz,i,lohit,loz,tics,xvect,yvect;
-	int dax,dax2,day,day2,odax,odax2,oday,oday2;
+	int dax,dax2,day,day2;
 	int  a,s,v;
-	 static int  mv;
+	 //static int  mv;
 	int oldposx, oldposy;
 	int dist;
 	int feetoffground;
-	char *ptr;
-	short hitobject, onsprite=-1;
+	short onsprite=-1;
 	static short tempsectornum;
 	short onground;
 
@@ -1430,6 +1429,7 @@ void typecheat(char ch) {
   int j;
   char tempbuf[40];
 
+  (void)ch;
   charsperline=40;
 
   for(i=0;i<=typemessageleng;i+=charsperline) {

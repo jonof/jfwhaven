@@ -298,7 +298,7 @@ int setanimation(int *animptr,int thegoal,int thevel) {
 
 void setdelayfunc(void (*func)(int),int item,int delay) {
 
-      int  i,j;
+      int  i;
 
       for (i=0 ; i < delaycnt ; i++) {
              if (delayitem[i].func == func && delayitem[i].item == item) {
@@ -341,10 +341,6 @@ void dodelayitems(int tics) {
 
 void setup3dscreen(void) {
 
-    struct player *plr;
-    int i, dax, day, dax2, day2;
-
-    plr=&player[0];
     setgamemode(fullscreen, xdimgame, ydimgame, bppgame);
     svga=!(xdim == 320 && ydim == 200) && !(xdim == 640 && ydim == 400);
 
@@ -370,7 +366,7 @@ void setup3dscreen(void) {
 
 void setupboard(char *fname) {
 
-    int  effect,endwall,i,j,k,s,startwall;
+    int  endwall,i,j,k,startwall;
     struct player *plr;
     int dax, day;
     short treesize;
@@ -1052,13 +1048,6 @@ int outsideview=0;
 
 void drawscreen(struct player *plr) {
 
-    int dax, day, dax2, day2;
-    int olddist;
-    int dist;
-    int i,k;
-    short daang;
-
-
     if (plr->dimension == 3 || plr->dimension == 2) {
 
         drawrooms(plr->x,plr->y,plr->z,plr->ang,plr->horiz,plr->sector);
@@ -1094,14 +1083,7 @@ short mousekeys[];
 
 int app_main(int argc,const char * const argv[]) {
 
-    int fil;
-    int i, j, k, l;
-    char *ptr;
-    char temp1[10]={"DEMO"};
     struct player *plr;
-    int buttons;
-    int done;
-    unsigned vixen;
 
     plr=&player[0];
 
@@ -1258,13 +1240,14 @@ int app_main(int argc,const char * const argv[]) {
 
     pskyoff[0] = 0; pskyoff[1] = 0; pskybits = 1;
 
-    inittimer(CLKIPS);
+    inittimer(CLKIPS, NULL);
     buildputs(" loadpics()\n");
     buildputs(" tiles000.art\n");
     loadpics("tiles000.art",8*1048576);
 
 
 #if 0
+     unsigned vixen;
      if (vixen=ismscdex()) {
           sprintf(tempbuf,"%c:\\whaven\\intro.smk",vixen);
           if (access(tempbuf,F_OK) != 0) {
@@ -1656,22 +1639,23 @@ void drawoverheadmap(struct player *plr) {
 
 
 void readpalettetable(void) {
-      FILE *fp;
+      int fp;
       int  i,j;
-      char num_tables,lookup_num;
+      int num_tables,lookup_num;
+      unsigned char tempbuf[256];
 
-      if ((fp=fopen("lookup.dat","rb")) == NULL) {
+      if ((fp=kopen4load("lookup.dat",0)) < 0) {
              return;
       }
-      num_tables=getc(fp);
+      num_tables=kgetc(fp);
       for (j=0 ; j < num_tables ; j++) {
-             lookup_num=getc(fp);
+             lookup_num=kgetc(fp);
              for (i=0 ; i < 256 ; i++) {
-                    tempbuf[i]=getc(fp);
+                    tempbuf[i]=(unsigned char)kgetc(fp);
              }
              makepalookup(lookup_num,tempbuf,0,0,0,1);
       }
-      fclose(fp);
+      kclose(fp);
 }
 
 int adjusthp(int hp) {

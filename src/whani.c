@@ -54,30 +54,19 @@ extern  int strongtime,
 void animateobjs(struct player *plr) {
 
 
-	int      hiz, hihit, loz, lohit;
-	short     osectnum, hitobject, hitdamage;
+	short     osectnum=0, hitobject, hitdamage;
 	int      i,nexti,dax,day,daz,j,k;
 	short     daang,movestat;
 	int       speed;
-	int      heat, ironbarmove;
+	int      ironbarmove;
 
-	struct spritetype *spr;
-	int      x1,x2,y1,y2;
 	short startwall, endwall;
 
-	int dax2;
 	int dist, olddist;
-	int xdist, ydist;
 	int  found;
 
 	int dx,dy,dz,dh;
 	int nextj;
-    int belongs;
-
-	  // explosion variables:
-	int   x, y, z;
-	short  beints;
-	  /////////////////
 
 	//struct    spritetype    *spriteptr=&sprite[0];
 
@@ -237,7 +226,7 @@ void animateobjs(struct player *plr) {
 				if( sprite[k].picnum == GOBLIN
 					&& sprite[i].pal != sprite[k].pal
 					&& sprite[i].hitag == sprite[k].hitag ) {
-					dist=labs(sprite[i].x-sprite[k].x)+labs(sprite[i].y-sprite[k].y);
+					dist=abs(sprite[i].x-sprite[k].x)+abs(sprite[i].y-sprite[k].y);
 					if( dist < olddist ) {
 						found=1;
 						olddist=dist;
@@ -424,9 +413,9 @@ void animateobjs(struct player *plr) {
 		j=headspritesect[sprite[i].sectnum];
 		while (j != -1) {
 			 nextj=nextspritesect[j];
-			 dx=labs(sprite[i].x-sprite[j].x);            // x distance to sprite
-			 dy=labs(sprite[i].y-sprite[j].y);            // y distance to sprite
-			 dz=labs((sprite[i].z>>8)-(sprite[j].z>>8));  // z distance to sprite
+			 dx=abs(sprite[i].x-sprite[j].x);            // x distance to sprite
+			 dy=abs(sprite[i].y-sprite[j].y);            // y distance to sprite
+			 dz=abs((sprite[i].z>>8)-(sprite[j].z>>8));  // z distance to sprite
 			 dh=tilesizy[sprite[j].picnum]>>1;       // height of sprite
 			 if (dx+dy < PICKDISTANCE && dz-dh <= PICKHEIGHT) {
 					switch(sprite[i].picnum) {
@@ -504,9 +493,9 @@ void animateobjs(struct player *plr) {
 		j=headspritesect[sprite[i].sectnum];
 		while (j != -1) {
 			 nextj=nextspritesect[j];
-			 dx=labs(sprite[i].x-sprite[j].x);            // x distance to sprite
-			 dy=labs(sprite[i].y-sprite[j].y);            // y distance to sprite
-			 dz=labs((sprite[i].z>>8)-(sprite[j].z>>8));  // z distance to sprite
+			 dx=abs(sprite[i].x-sprite[j].x);            // x distance to sprite
+			 dy=abs(sprite[i].y-sprite[j].y);            // y distance to sprite
+			 dz=abs((sprite[i].z>>8)-(sprite[j].z>>8));  // z distance to sprite
 			 dh=tilesizy[sprite[j].picnum]>>1;       // height of sprite
 			 if (dx+dy < PICKDISTANCE && dz-dh <= PICKHEIGHT) {
 					switch(sprite[i].picnum) {
@@ -697,9 +686,9 @@ void animateobjs(struct player *plr) {
 		j=headspritesect[sprite[i].sectnum];
 		while (j != -1) {
 			 nextj=nextspritesect[j];
-			 dx=labs(sprite[i].x-sprite[j].x);            // x distance to sprite
-			 dy=labs(sprite[i].y-sprite[j].y);            // y distance to sprite
-			 dz=labs((sprite[i].z>>8)-(sprite[j].z>>8));  // z distance to sprite
+			 dx=abs(sprite[i].x-sprite[j].x);            // x distance to sprite
+			 dy=abs(sprite[i].y-sprite[j].y);            // y distance to sprite
+			 dz=abs((sprite[i].z>>8)-(sprite[j].z>>8));  // z distance to sprite
 			 dh=tilesizy[sprite[j].picnum]>>1;       // height of sprite
 			 if (dx+dy < PICKDISTANCE && dz-dh <= PICKHEIGHT) {
 					switch(sprite[i].picnum) {
@@ -842,9 +831,9 @@ void animateobjs(struct player *plr) {
 		j=headspritesect[sprite[i].sectnum];
 		while (j != -1) {
 			 nextj=nextspritesect[j];
-			 dx=labs(sprite[i].x-sprite[j].x);            // x distance to sprite
-			 dy=labs(sprite[i].y-sprite[j].y);            // y distance to sprite
-			 dz=labs((sprite[i].z>>8)-(sprite[j].z>>8));  // z distance to sprite
+			 dx=abs(sprite[i].x-sprite[j].x);            // x distance to sprite
+			 dy=abs(sprite[i].y-sprite[j].y);            // y distance to sprite
+			 dz=abs((sprite[i].z>>8)-(sprite[j].z>>8));  // z distance to sprite
 			 dh=tilesizy[sprite[j].picnum]>>1;       // height of sprite
 			 if (dx+dy < PICKDISTANCE && dz-dh <= PICKHEIGHT) {
 					switch(sprite[i].picnum) {
@@ -1159,9 +1148,9 @@ void animateobjs(struct player *plr) {
 		j=headspritesect[sprite[i].sectnum];
 		while (j != -1) {
 			 nextj=nextspritesect[j];
-			 dx=labs(sprite[i].x-sprite[j].x);            // x distance to sprite
-			 dy=labs(sprite[i].y-sprite[j].y);            // y distance to sprite
-			 dz=labs((sprite[i].z>>8)-(sprite[j].z>>8));  // z distance to sprite
+			 dx=abs(sprite[i].x-sprite[j].x);            // x distance to sprite
+			 dy=abs(sprite[i].y-sprite[j].y);            // y distance to sprite
+			 dz=abs((sprite[i].z>>8)-(sprite[j].z>>8));  // z distance to sprite
 			 dh=tilesizy[sprite[j].picnum]>>1;       // height of sprite
 			 if (dx+dy < PICKDISTANCE && dz-dh <= PICKHEIGHT) {
 					switch(sprite[i].picnum) {
@@ -1769,9 +1758,9 @@ void animateobjs(struct player *plr) {
 		j=headspritesect[sprite[i].sectnum];
 		while (j != -1) {
 			 nextj=nextspritesect[j];
-			 dx=labs(sprite[i].x-sprite[j].x);            // x distance to sprite
-			 dy=labs(sprite[i].y-sprite[j].y);            // y distance to sprite
-			 dz=labs((sprite[i].z>>8)-(sprite[j].z>>8));  // z distance to sprite
+			 dx=abs(sprite[i].x-sprite[j].x);            // x distance to sprite
+			 dy=abs(sprite[i].y-sprite[j].y);            // y distance to sprite
+			 dz=abs((sprite[i].z>>8)-(sprite[j].z>>8));  // z distance to sprite
 			 dh=tilesizy[sprite[j].picnum]>>1;       // height of sprite
 			 if (dx+dy < PICKDISTANCE && dz-dh <= PICKHEIGHT) {
 					switch(sprite[i].picnum) {
@@ -2065,9 +2054,9 @@ void animateobjs(struct player *plr) {
 		j=headspritesect[sprite[i].sectnum];
 		while (j != -1) {
 			 nextj=nextspritesect[j];
-			 dx=labs(sprite[i].x-sprite[j].x);            // x distance to sprite
-			 dy=labs(sprite[i].y-sprite[j].y);            // y distance to sprite
-			 dz=labs((sprite[i].z>>8)-(sprite[j].z>>8));  // z distance to sprite
+			 dx=abs(sprite[i].x-sprite[j].x);            // x distance to sprite
+			 dy=abs(sprite[i].y-sprite[j].y);            // y distance to sprite
+			 dz=abs((sprite[i].z>>8)-(sprite[j].z>>8));  // z distance to sprite
 			 dh=tilesizy[sprite[j].picnum]>>1;       // height of sprite
 			 if (dx+dy < PICKDISTANCE && dz-dh <= PICKHEIGHT) {
 					switch(sprite[i].picnum) {
@@ -2486,6 +2475,7 @@ void animateobjs(struct player *plr) {
 	}
 
 #if 0
+	struct spritetype *spr;
 	// heatseeker
 	i=headspritestat[HEATSEEKER];
 	while( i != -1 ) {
@@ -2680,12 +2670,6 @@ void animateobjs(struct player *plr) {
 		}
 
 		if (hitobject != 0 || sprite[i].lotag < 0) {
-
-			x = sprite[i].x;
-			y = sprite[i].y;
-			z = sprite[i].z;
-			belongs = sprite[i].owner;
-
 			switch(sprite[i].picnum) {
 				case THROWPIKE:
 				case PLASMA:

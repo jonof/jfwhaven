@@ -58,14 +58,8 @@ extern  int strongtime,
 
 void monitor(void) {
 
-	int i, j;
-	int val;
+	int i;
 	struct player *plr;
-	char buffer[20];
-	int dist, mindist;
-	short lockx, locky;
-	short scrx, scry;
-	char temph[30];
 	char svgah[30];
 
 	plr=&player[0];
@@ -191,9 +185,9 @@ void processobjs(struct player *plr) {
 	  i=headspritesect[plr->sector];
 	  while (i != -1) {
 			 nexti=nextspritesect[i];
-			 dx=labs(plr->x-sprite[i].x);            // x distance to sprite
-			 dy=labs(plr->y-sprite[i].y);            // y distance to sprite
-			 dz=labs((plr->z>>8)-(sprite[i].z>>8));  // z distance to sprite
+			 dx=abs(plr->x-sprite[i].x);            // x distance to sprite
+			 dy=abs(plr->y-sprite[i].y);            // y distance to sprite
+			 dz=abs((plr->z>>8)-(sprite[i].z>>8));  // z distance to sprite
 			 dh=tilesizy[sprite[i].picnum]>>1;       // height of sprite
 			 if (dx+dy < PICKDISTANCE && dz-dh <= PICKHEIGHT) {
 					switch (sprite[i].picnum) {
@@ -1165,8 +1159,8 @@ void updatepotion(int vial) {
 
 void transformactors(struct player *plr) {
 
-	int i, j, k;
-	point3d *ospr;
+	int i, k;
+	//point3d *ospr;
 	spritetype *tspr;
 
 	for(i=0,tspr=&tsprite[0];i<spritesortcnt;i++,tspr++) {
@@ -1297,7 +1291,6 @@ void transformactors(struct player *plr) {
 void newstatus(short sn, int  seq) {
 
 	  //struct    spritetype    *spriteptr=&sprite[0];
-	  struct    player *plr;
 	  int j;
 
 	  switch( seq ) {
@@ -2099,7 +2092,6 @@ void firebreath(int i, int a, int b, int c) {
 	int j;
 	int  k;
 	int discrim;
-	int discrim2;
 
 	struct player *plr;
 
@@ -2146,7 +2138,6 @@ void throwspank(int i) {
 
 	int j;
 	int discrim;
-	int discrim2;
 
 	struct player *plr;
 
@@ -2187,7 +2178,6 @@ void castspell(int i) {
 
 	int j;
 	int discrim;
-	int discrim2;
 
 	struct player *plr;
 
@@ -2235,7 +2225,6 @@ void skullycastspell(int i) {
 
 	int j;
 	int discrim;
-	int discrim2;
 
 	struct player *plr;
 
@@ -2288,7 +2277,6 @@ int checkheat(int i) {
 	int daz2, hitx, hity, hitz;
 	int x, y, z, dasectnum;
 	struct player *plr;
-	int trys;
 
 	plr=&player[pyrn];
 	hitsprite=0;
@@ -2497,6 +2485,8 @@ void checkmove(int i,int dax,int day,short *movestat) {
 
 	struct player *plr;
 
+	(void)dax; (void)day;
+
 	plr=&player[pyrn];
 
 	//*movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
@@ -2696,6 +2686,8 @@ void makeafire( int i, int firetype) {
 
 	 int j;
 
+	 (void)firetype;
+
 	 j=insertsprite(sprite[i].sectnum,FIRE);
 
 	 sprite[j].x=sprite[i].x+(rand()&1024)-512;
@@ -2719,6 +2711,8 @@ void makeafire( int i, int firetype) {
 void explosion( int i, int x, int y, int z, short owner) {
 
 	int  j;
+
+	(void)owner;
 
 	j = insertsprite(sprite[i].sectnum,EXPLO);
 
@@ -2746,6 +2740,8 @@ void explosion( int i, int x, int y, int z, short owner) {
 void explosion2( int i, int x, int y, int z, short owner) {
 
 	int  j;
+
+	(void)owner;
 
 	j=insertsprite(sprite[i].sectnum,EXPLO);
 
@@ -2798,6 +2794,8 @@ void icecubes( int i, int x, int y, int z, short owner) {
 
 	int  j;
 
+	(void)z; (void)owner;
+
 	j = insertsprite(sprite[i].sectnum,FX);
 
 
@@ -2828,11 +2826,8 @@ void icecubes( int i, int x, int y, int z, short owner) {
 
 int damageactor(int hitobject,int i) {
 
-	  short     osectnum, hitdamage;
-	  int      nexti,dax,day,daz,j,k;
-	  short     daang,movestat;
+	  int      j,k;
 	  struct    player *plr;
-	  int       incr;
 
 	  plr=&player[pyrn];
 
@@ -3152,7 +3147,7 @@ void medusa(short j) {
 	//movesprite function compatible with the older movesprite functions.
 int movesprite(short spritenum, int dx, int dy, int dz, int ceildist, int flordist, char cliptype)
 {
-	int daz, zoffs, tempint;
+	int daz, zoffs;
 	short retval, dasectnum, tempshort;
 	spritetype *spr;
 	int clipmask;
@@ -3199,7 +3194,7 @@ int movesprite(short spritenum, int dx, int dy, int dz, int ceildist, int flordi
 
 void guardianfire(short i, int k, struct player *plr) {
 
-	short daang, j;
+	short daang=0, j;   //jonof: daang was uninitialised, but what should it be?
 	int discrim;
 
 	daang=(daang+(k<<2))&2047;
@@ -3409,6 +3404,8 @@ void monsterweapon(short i) {
 void madenoise (int val, int x, int y, int z) {
 
 	int      i,nexti;
+
+	(void)z;
 
 	i=headspritestat[FACE];
 	while(i>=0) {
