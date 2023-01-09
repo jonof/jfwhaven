@@ -7,6 +7,7 @@
 #define GAME
 #define SVGA
 #include "icorp.h"
+#include "osd.h"
 #include "startwin.h"
 #include "version.h"
 
@@ -1396,6 +1397,7 @@ void playloop(void) {
 
     while (!exit) {
         handleevents();
+        OSD_DispatchQueued();
 
         if(gameactivated == 0 || escapetomenu == 1) {
             exit=menuscreen(plr);

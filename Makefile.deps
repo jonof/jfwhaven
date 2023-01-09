@@ -3,7 +3,7 @@ icorp_h=$(SRC)/icorp.h $(ENGINEINC)/build.h $(ENGINEINC)/pragmas.h $(ENGINEINC)/
 $(SRC)/b5compat.$o: $(SRC)/b5compat.c $(ENGINEINC)/build.h
 $(SRC)/config.$o: $(SRC)/config.c $(ENGINEINC)/compat.h $(ENGINEINC)/osd.h $(ENGINEINC)/scriptfile.h $(ENGINEINC)/baselayer.h $(ENGINEINC)/winlayer.h $(icorp_h)
 $(SRC)/whani.$o: $(SRC)/whani.c $(icorp_h)
-$(SRC)/whaven.$o: $(SRC)/whaven.c $(icorp_h) $(SRC)/startwin.h $(SRC)/version.h
+$(SRC)/whaven.$o: $(SRC)/whaven.c $(icorp_h) $(ENGINEINC)/osd.h $(SRC)/startwin.h $(SRC)/version.h
 $(SRC)/whfx.$o: $(SRC)/whfx.c $(icorp_h)
 $(SRC)/whinp.$o: $(SRC)/whinp.c $(icorp_h) $(SRC)/keydefs.h
 $(SRC)/whmenu.$o: $(SRC)/whmenu.c $(icorp_h)
