@@ -410,6 +410,10 @@ void processinput(struct player *plr) {
 	}
 
 
+	if (keystatus[88]) {	//F12 - screenshot
+		keystatus[88] = 0;
+		screencapture("captxxxx.tga", 0);
+	}
 	if (keystatus[0x44] > 0) {  //F10 - brightness
 		keystatus[0x44]=0;
 		brightness++;
