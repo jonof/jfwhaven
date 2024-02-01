@@ -114,7 +114,7 @@ static struct soundQuality_t {
         bpp  = settings->bpp3d;
         fullscreen = settings->fullscreen;
     } else {
-        fullscreen = ([fullscreenButton state] == NSOnState);
+        fullscreen = ([fullscreenButton state] == NSControlStateValueOn);
         mode3d = (int)[[videoMode3DPUButton selectedItem] tag];
         if (mode3d >= 0) {
             xdim = validmode[mode3d].xdim;
@@ -214,8 +214,8 @@ static struct soundQuality_t {
         settings->fullscreen = validmode[mode].fs;
     }
 
-    settings->usemouse = [useMouseButton state] == NSOnState;
-    settings->usejoy = [useJoystickButton state] == NSOnState;
+    settings->usemouse = [useMouseButton state] == NSControlStateValueOn;
+    settings->usejoy = [useJoystickButton state] == NSControlStateValueOn;
 
     mode = (int)[[soundQualityPUButton selectedItem] tag];
     if (mode >= 0) {
@@ -224,7 +224,7 @@ static struct soundQuality_t {
         settings->channels = soundQualities[mode].channels;
     }
 
-    settings->forcesetup = [alwaysShowButton state] == NSOnState;
+    settings->forcesetup = [alwaysShowButton state] == NSControlStateValueOn;
 
     if (inmodal) {
         [NSApp stopModalWithCode:STARTWIN_RUN];
@@ -233,20 +233,20 @@ static struct soundQuality_t {
 
 - (void)setupConfigMode
 {
-    [alwaysShowButton setState: (settings->forcesetup ? NSOnState : NSOffState)];
+    [alwaysShowButton setState: (settings->forcesetup ? NSControlStateValueOn : NSControlStateValueOff)];
     [alwaysShowButton setEnabled:YES];
 
     [videoMode3DPUButton setEnabled:YES];
     [self populateVideoModes:YES];
     [fullscreenButton setEnabled:YES];
-    [fullscreenButton setState: (settings->fullscreen ? NSOnState : NSOffState)];
+    [fullscreenButton setState: (settings->fullscreen ? NSControlStateValueOn : NSControlStateValueOff)];
 
     [soundQualityPUButton setEnabled:YES];
     [self populateSoundQuality:YES];
     [useMouseButton setEnabled:YES];
-    [useMouseButton setState: (settings->usemouse ? NSOnState : NSOffState)];
+    [useMouseButton setState: (settings->usemouse ? NSControlStateValueOn : NSControlStateValueOff)];
     [useJoystickButton setEnabled:YES];
-    [useJoystickButton setState: (settings->usejoy ? NSOnState : NSOffState)];
+    [useJoystickButton setState: (settings->usejoy ? NSControlStateValueOn : NSControlStateValueOff)];
 
     [cancelButton setEnabled:YES];
     [startButton setEnabled:YES];
