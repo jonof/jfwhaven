@@ -37,6 +37,8 @@
 		AB17555C25AC8B7800C581C8 /* version-auto.c in Sources */ = {isa = PBXBuildFile; fileRef = AB17555525AC8B7800C581C8 /* version-auto.c */; };
 		AB1755BA25B9BD0800C581C8 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB9E4AC42312976F0008A90E /* Images.xcassets */; };
 		AB3AE6C21A4D423600CE4329 /* b5compat.c in Sources */ = {isa = PBXBuildFile; fileRef = AB3AE6C11A4D423600CE4329 /* b5compat.c */; };
+		AB7F67A72B6BDA0F00CF1300 /* datascan.c in Sources */ = {isa = PBXBuildFile; fileRef = AB7F67A62B6BDA0F00CF1300 /* datascan.c */; };
+		AB7F67B12B6BE86700CF1300 /* palette.c in Sources */ = {isa = PBXBuildFile; fileRef = AB7F67B02B6BE86700CF1300 /* palette.c */; };
 		AB807458296AAD9B00CA6B33 /* whsmk.c in Sources */ = {isa = PBXBuildFile; fileRef = AB807450296AAAC900CA6B33 /* whsmk.c */; };
 		AB807465296AAE0500CA6B33 /* smacker.c in Sources */ = {isa = PBXBuildFile; fileRef = AB80745F296AAE0500CA6B33 /* smacker.c */; };
 		AB807466296AAE0500CA6B33 /* smk_hufftree.c in Sources */ = {isa = PBXBuildFile; fileRef = AB807463296AAE0500CA6B33 /* smk_hufftree.c */; };
@@ -240,6 +242,9 @@
 		AB1755AE25B8510100C581C8 /* Build Editor for JFWitchaven.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Build Editor for JFWitchaven.entitlements"; sourceTree = "<group>"; };
 		AB3AE6C11A4D423600CE4329 /* b5compat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = b5compat.c; sourceTree = "<group>"; };
 		AB5BD5FD23123FA500BC4BEF /* version-auto.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "version-auto.c"; sourceTree = "<group>"; };
+		AB7F67A62B6BDA0F00CF1300 /* datascan.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = datascan.c; sourceTree = "<group>"; };
+		AB7F67AF2B6BDA7E00CF1300 /* datascan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = datascan.h; sourceTree = "<group>"; };
+		AB7F67B02B6BE86700CF1300 /* palette.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = palette.c; sourceTree = "<group>"; };
 		AB807450296AAAC900CA6B33 /* whsmk.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = whsmk.c; sourceTree = "<group>"; };
 		AB80745E296AAE0500CA6B33 /* smk_malloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smk_malloc.h; sourceTree = "<group>"; };
 		AB80745F296AAE0500CA6B33 /* smacker.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smacker.c; sourceTree = "<group>"; };
@@ -323,6 +328,15 @@
 			path = ../libsmacker;
 			sourceTree = "<group>";
 		};
+		AB8927622B6E37510055B555 /* rsrc */ = {
+			isa = PBXGroup;
+			children = (
+				AB7F67B02B6BE86700CF1300 /* palette.c */,
+			);
+			name = rsrc;
+			path = ../rsrc;
+			sourceTree = "<group>";
+		};
 		ABB2755325C02828006709E2 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -383,6 +397,7 @@
 			children = (
 				AB80745D296AADDD00CA6B33 /* libsmacker */,
 				ABC75BE41A49C3DB007D0D43 /* src */,
+				AB8927622B6E37510055B555 /* rsrc */,
 				ABC75BD61A49C19A007D0D43 /* startwin.game.nib */,
 				AB17554A25AC898300C581C8 /* JFWitchaven.entitlements */,
 				ABC75BA11A49BCC3007D0D43 /* JFWitchaven-Info.plist */,
@@ -405,6 +420,7 @@
 			children = (
 				AB3AE6C11A4D423600CE4329 /* b5compat.c */,
 				AB98B2DE1A6B87E6009E8749 /* config.c */,
+				AB7F67A62B6BDA0F00CF1300 /* datascan.c */,
 				AB5BD5FD23123FA500BC4BEF /* version-auto.c */,
 				AB9E4ADE2312ABAB0008A90E /* whani.c */,
 				AB9E4AC82312995E0008A90E /* whaven.c */,
@@ -418,6 +434,7 @@
 				AB9E4ADC2312ABAB0008A90E /* whsndmod.c */,
 				AB9E4ADF2312ABAB0008A90E /* whtag.c */,
 				AB17555525AC8B7800C581C8 /* version-auto.c */,
+				AB7F67AF2B6BDA7E00CF1300 /* datascan.h */,
 				AB9E4ACF231299700008A90E /* icorp.h */,
 				AB17551325A802C300C581C8 /* jeff.h */,
 				AB17551725A8036900C581C8 /* keydefs.h */,
@@ -674,10 +691,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB7F67A72B6BDA0F00CF1300 /* datascan.c in Sources */,
 				AB807465296AAE0500CA6B33 /* smacker.c in Sources */,
 				AB807458296AAD9B00CA6B33 /* whsmk.c in Sources */,
 				AB9E4AE92312ABAB0008A90E /* whplr.c in Sources */,
 				AB9E4AE62312ABAB0008A90E /* whnet.c in Sources */,
+				AB7F67B12B6BE86700CF1300 /* palette.c in Sources */,
 				AB9E4AEA2312ABAB0008A90E /* whinp.c in Sources */,
 				AB807467296AAE0500CA6B33 /* smk_bitstream.c in Sources */,
 				AB3AE6C21A4D423600CE4329 /* b5compat.c in Sources */,

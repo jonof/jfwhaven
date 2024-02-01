@@ -20,9 +20,14 @@ static struct soundQuality_t {
 
 #include <stdlib.h>
 
+// Callbacks to glue the C in datascan.c with the Objective-C here.
+static void importmeta_progress(void *data, const char *path);
+static int importmeta_cancelled(void *data);
+
 @interface StartupWinController : NSWindowController <NSWindowDelegate>
 {
     BOOL quiteventonclose;
+    NSThread *importthread;
     BOOL inmodal;
     struct startwin_settings *settings;
 
@@ -38,8 +43,15 @@ static struct soundQuality_t {
     IBOutlet NSButton *useMouseButton;
     IBOutlet NSButton *useJoystickButton;
 
+    IBOutlet NSButton *chooseImportButton;
+    IBOutlet NSButton *importInfoButton;
+
     IBOutlet NSButton *cancelButton;
     IBOutlet NSButton *startButton;
+
+    IBOutlet NSWindow *importStatusWindow;
+    IBOutlet NSTextField *importStatusText;
+    IBOutlet NSButton *importStatusCancel;
 }
 
 - (int)modalRun;
@@ -48,6 +60,14 @@ static struct soundQuality_t {
 - (void)populateSoundQuality:(BOOL)firstTime;
 
 - (IBAction)fullscreenClicked:(id)sender;
+
+- (IBAction)chooseImportClicked:(id)sender;
+- (IBAction)importInfoClicked:(id)sender;
+- (IBAction)importStatusCancelClicked:(id)sender;
+- (void)updateImportStatusText:(NSString *)text;
+- (void)doImport:(NSString *)path;
+- (void)doneImport:(NSNumber *)result;
+- (BOOL)isImportCancelled;
 
 - (IBAction)cancel:(id)sender;
 - (IBAction)start:(id)sender;
@@ -194,6 +214,99 @@ static struct soundQuality_t {
     [self populateVideoModes:NO];
 }
 
+- (IBAction)chooseImportClicked:(id)sender
+{
+    @autoreleasepool {
+        NSOpenPanel *panel = [NSOpenPanel openPanel];
+
+        [panel setTitle:@"Import game data"];
+        [panel setPrompt:@"Import"];
+        [panel setMessage:@"Select a folder to search."];
+        [panel setCanChooseFiles:FALSE];
+        [panel setCanChooseDirectories:TRUE];
+        [panel setShowsHiddenFiles:TRUE];
+        [panel beginSheetModalForWindow:[self window]
+                      completionHandler:^void (NSModalResponse resp) {
+            if (resp == NSModalResponseOK) {
+                NSURL *file = [panel URL];
+                if ([file isFileURL]) {
+                    [self doImport:[file path]];
+                }
+            }
+        }];
+    }
+}
+
+- (IBAction)importStatusCancelClicked:(id)sender
+{
+    [importthread cancel];
+}
+
+- (void)updateImportStatusText:(NSString *)text
+{
+    [importStatusText setStringValue:text];
+}
+
+- (void)doImport:(NSString *)path
+{
+    if ([importthread isExecuting]) {
+        NSLog(@"import thread is already executing");
+        return;
+    }
+
+    // Put up the status sheet which becomes modal.
+    [[self window] beginSheet:importStatusWindow
+            completionHandler:nil];
+
+    // Spawn a thread to do the scan.
+    importthread = [[NSThread alloc] initWithBlock:^void(void) {
+        struct importdatameta meta = {
+            (void *)self,
+            importmeta_progress,
+            importmeta_cancelled
+        };
+        int result = ImportDataFromPath([path UTF8String], &meta);
+        [self performSelectorOnMainThread:@selector(doneImport:)
+                               withObject:[NSNumber numberWithInt:result]
+                            waitUntilDone:FALSE];
+    }];
+    [importthread start];
+}
+
+// Finish up after the import thread returns.
+- (void)doneImport:(NSNumber *)result
+{
+    [importStatusWindow orderOut:nil];
+    [[self window] endSheet:importStatusWindow
+                 returnCode:1];
+}
+
+// Report on whether the import thread has been been cancelled early.
+- (BOOL)isImportCancelled
+{
+    return [importthread isCancelled];
+}
+
+- (IBAction)importInfoClicked:(id)sender
+{
+    @autoreleasepool {
+        NSAlert *alert = [[NSAlert alloc] init];
+
+        [alert setAlertStyle:NSAlertStyleInformational];
+        [alert setMessageText:@"JFWitchaven can scan locations of your choosing for Witchaven game data"];
+        [alert setInformativeText:@"Click the 'Choose a location...' button, then locate "
+            @"a folder to scan.\n\n"
+            @"Common locations to check include:\n"
+            @" • CD/DVD drives\n"
+            @" • Unzipped data from copies of the full DOS game"];
+        [alert addButtonWithTitle:@"OK"];
+        switch ([alert runModal]) {
+            case NSAlertFirstButtonReturn:
+                break;
+        }
+    }
+}
+
 - (IBAction)cancel:(id)sender
 {
     if (inmodal) {
@@ -250,6 +363,9 @@ static struct soundQuality_t {
 
     [cancelButton setEnabled:YES];
     [startButton setEnabled:YES];
+
+    [importInfoButton setEnabled:YES];
+    [chooseImportButton setEnabled:YES];
 
     [tabView selectTabViewItem:tabConfig];
     [NSCursor unhide];  // Why should I need to do this?
@@ -349,7 +465,14 @@ int startwin_puts(const char *s)
     if (startwin == nil) return 1;
 
     @autoreleasepool {
-        [startwin putsMessage:[NSString stringWithUTF8String:s]];
+        NSString *str = [NSString stringWithUTF8String:s];
+        if ([NSThread isMainThread]) {
+            [startwin putsMessage:str];
+        } else {
+            [startwin performSelectorOnMainThread:@selector(putsMessage:)
+                                       withObject:str
+                                    waitUntilDone:TRUE];
+        }
 
         return 0;
     }
@@ -388,4 +511,23 @@ int startwin_run(struct startwin_settings *settings)
 
         return retval;
     }
+}
+
+// Callback for the C-universe ImportGroupsFrom*() to notify the UI in Obj-C land.
+static void importmeta_progress(void *data, const char *path)
+{
+    StartupWinController *control = (StartupWinController *)data;
+
+    @autoreleasepool {
+        [control performSelectorOnMainThread:@selector(updateImportStatusText:)
+                                  withObject:[NSString stringWithUTF8String:path]
+                               waitUntilDone:FALSE];
+    }
+}
+
+// Callback for the C-universe ImportGroupsFrom*() to discover they've been cancelled by the UI.
+static int importmeta_cancelled(void *data)
+{
+    StartupWinController *control = (StartupWinController *)data;
+    return [control isImportCancelled];
 }
