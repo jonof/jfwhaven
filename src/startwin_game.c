@@ -3,13 +3,14 @@
 #endif
 
 #define WIN32_LEAN_AND_MEAN
-#define _WIN32_WINNT 0x0501
+#define _WIN32_WINNT 0x0600
 #define _WIN32_IE 0x0600
 
 #include "build.h"
 #include "winlayer.h"
 
 #include <windows.h>
+#include <shlobj.h>
 #include <windowsx.h>
 #include <strsafe.h>
 #include <commctrl.h>
@@ -18,6 +19,7 @@
 
 #include "startwin.h"
 #include "gameres.h"
+#include "version.h"
 
 #define TAB_CONFIG 0
 #define TAB_MESSAGES 1
@@ -32,6 +34,11 @@ static struct soundQuality_t {
     { 11025, 16, 2 },
     { 0, 0, 0 },    // May be overwritten by custom sound settings.
     { 0, 0, 0 },
+};
+
+struct importstatus_t {
+    HWND hwndDlg;
+    BOOL cancelled;
 };
 
 static HWND startupdlg = NULL;
@@ -169,6 +176,9 @@ static void setup_config_mode(void)
     populate_sound_quality(TRUE);
     EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_SOUNDQUALITY), TRUE);
 
+    EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_CHOOSEIMPORT), TRUE);
+    EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_IMPORTINFO), TRUE);
+
     EnableWindow(GetDlgItem(startupdlg, IDCANCEL), TRUE);
     EnableWindow(GetDlgItem(startupdlg, IDOK), TRUE);
 }
@@ -183,6 +193,9 @@ static void setup_messages_mode(BOOL allowcancel)
     EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_USEMOUSE), FALSE);
     EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_USEJOYSTICK), FALSE);
     EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_SOUNDQUALITY), FALSE);
+
+    EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_CHOOSEIMPORT), FALSE);
+    EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_IMPORTINFO), FALSE);
 
     EnableWindow(GetDlgItem(startupdlg, IDC_ALWAYSSHOW), FALSE);
 
@@ -233,6 +246,151 @@ static void startbutton_clicked(void)
     retval = STARTWIN_RUN;
 }
 
+static INT_PTR CALLBACK importstatus_dlgproc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    switch (uMsg) {
+        case WM_INITDIALOG:
+            SetWindowLongPtr(hwndDlg, DWLP_USER, lParam);
+            return TRUE;
+        case WM_COMMAND:
+            switch (LOWORD(wParam)) {
+                case IDCANCEL: {
+                    struct importstatus_t *status = (struct importstatus_t *)GetWindowLongPtr(hwndDlg, DWLP_USER);
+                    status->cancelled = TRUE;
+                    return TRUE;
+                }
+            }
+            break;
+
+        default: break;
+    }
+
+    return FALSE;
+}
+
+static void importmeta_progress(void *data, const char *path)
+{
+    struct importstatus_t *status = (struct importstatus_t *)data;
+    SetDlgItemText(status->hwndDlg, IDC_IMPORTSTATUS_TEXT, path);
+}
+
+static int importmeta_cancelled(void *data)
+{
+    struct importstatus_t *status = (struct importstatus_t *)data;
+    MSG msg;
+
+    // One iteration of the a modal dialogue box event loop.
+    msg.message = WM_NULL;
+    if (!status->cancelled) {
+        while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+            if (msg.message == WM_QUIT) {
+                PostQuitMessage((int)msg.wParam);
+                status->cancelled = TRUE;
+            } else if (!IsDialogMessage(status->hwndDlg, &msg)) {
+                TranslateMessage(&msg);
+                DispatchMessage(&msg);
+            }
+        }
+    }
+
+    return status->cancelled;
+}
+
+static void chooseimport_clicked(void)
+{
+    BROWSEINFO info;
+    LPITEMIDLIST item;
+    char filename[BMAX_PATH+1] = "";
+
+    ZeroMemory(&info, sizeof(info));
+    info.hwndOwner = startupdlg;
+    info.pszDisplayName = "Import game data";
+    info.lpszTitle = "Select a folder to search.";
+    info.ulFlags = BIF_RETURNONLYFSDIRS | BIF_USENEWUI | BIF_NONEWFOLDERBUTTON;
+    item = SHBrowseForFolder(&info);
+    if (item != NULL) {
+        if (SHGetPathFromIDList(item, filename)) {
+            struct importstatus_t status;
+            struct importdatameta meta = {
+                (void *)&status,
+                importmeta_progress,
+                importmeta_cancelled
+            };
+
+            status.cancelled = FALSE;
+            status.hwndDlg = CreateDialogParam((HINSTANCE)win_gethinstance(), MAKEINTRESOURCE(IDD_IMPORTSTATUS),
+                startupdlg, importstatus_dlgproc, (LPARAM)&status);
+
+            EnableWindow(startupdlg, FALSE);
+
+            ImportDataFromPath(filename, &meta);
+
+            EnableWindow(startupdlg, TRUE);
+            DestroyWindow(status.hwndDlg);
+        }
+        CoTaskMemFree(item);
+    }
+}
+
+static INT_PTR CALLBACK importinfo_dlgproc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    (void)lParam;
+
+    switch (uMsg) {
+        case WM_INITDIALOG: {
+            HWND hwnd;
+
+            SetDlgItemText(hwndDlg, IDC_IMPORTINFO_HEADER,
+                "JFWitchaven can scan locations of your choosing for Witchaven game data");
+            SetDlgItemText(hwndDlg, IDC_IMPORTINFO_TEXT,
+                "Click the 'Choose a location...' button, then locate a folder to scan.\n\n"
+                "Common locations to check include:\n"
+                " \x95 CD/DVD drives\n"
+                " \x95 Unzipped data from copies of the full DOS game");
+
+            {
+                // Set the font of the header text.
+                HFONT hfont = CreateFont(-12, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, ANSI_CHARSET,
+                    OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
+                    TEXT("MS Shell Dlg"));
+                if (hfont) {
+                    hwnd = GetDlgItem(hwndDlg, IDC_IMPORTINFO_HEADER);
+                    SendMessage(hwnd, WM_SETFONT, (WPARAM)hfont, FALSE);
+                }
+            }
+            return TRUE;
+        }
+
+        case WM_DESTROY:
+            // Dispose of the font used for the header text.
+            {
+                HWND hwnd = GetDlgItem(hwndDlg, IDC_IMPORTINFO_HEADER);
+                HFONT hfont = (HFONT)SendMessage(hwnd, WM_GETFONT, 0, 0);
+                if (hfont) {
+                    DeleteObject(hfont);
+                }
+            }
+            return TRUE;
+
+        case WM_COMMAND:
+            switch (LOWORD(wParam)) {
+                case IDOK:
+                    EndDialog(hwndDlg, 0);
+                    return TRUE;
+            }
+            break;
+
+        default: break;
+    }
+
+    return FALSE;
+}
+
+static void importinfo_clicked(void)
+{
+    DialogBox((HINSTANCE)win_gethinstance(), MAKEINTRESOURCE(IDD_IMPORTINFO), startupdlg, importinfo_dlgproc);
+}
+
 static INT_PTR CALLBACK ConfigPageProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg) {
@@ -245,6 +403,12 @@ static INT_PTR CALLBACK ConfigPageProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, L
             switch (LOWORD(wParam)) {
                 case IDC_FULLSCREEN:
                     fullscreen_clicked();
+                    return TRUE;
+                case IDC_CHOOSEIMPORT:
+                    chooseimport_clicked();
+                    return TRUE;
+                case IDC_IMPORTINFO:
+                    importinfo_clicked();
                     return TRUE;
 
                 default: break;
@@ -275,6 +439,12 @@ static INT_PTR CALLBACK startup_dlgproc(HWND hwndDlg, UINT uMsg, WPARAM wParam, 
 
             {
                 TCITEM tab;
+                TCHAR verstr[64];
+
+                hwnd = GetDlgItem(hwndDlg, IDC_STARTWIN_APPVERSION);
+                StringCbPrintf(verstr, sizeof(verstr), TEXT("Version %s\n%s"),
+                    game_version, game_date);
+                SetWindowText(hwnd, verstr);
 
                 hwnd = GetDlgItem(hwndDlg, IDC_STARTWIN_TABCTL);
 
@@ -302,24 +472,44 @@ static INT_PTR CALLBACK startup_dlgproc(HWND hwndDlg, UINT uMsg, WPARAM wParam, 
 
                 SendMessage(hwndDlg, WM_NEXTDLGCTL, (WPARAM)GetDlgItem(hwndDlg, IDOK), TRUE);
             }
+            {
+                // Set the font of the application title.
+                HFONT hfont = CreateFont(-12, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, ANSI_CHARSET,
+                    OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
+                    TEXT("MS Shell Dlg"));
+                if (hfont) {
+                    hwnd = GetDlgItem(hwndDlg, IDC_STARTWIN_APPTITLE);
+                    SendMessage(hwnd, WM_SETFONT, (WPARAM)hfont, FALSE);
+                }
+            }
             return TRUE;
         }
 
         case WM_NOTIFY: {
             LPNMHDR nmhdr = (LPNMHDR)lParam;
-            int cur;
-            if (nmhdr->idFrom != IDC_STARTWIN_TABCTL) break;
-            cur = (int)SendMessage(nmhdr->hwndFrom, TCM_GETCURSEL,0,0);
-            switch (nmhdr->code) {
-                case TCN_SELCHANGING: {
-                    if (cur < 0 || !pages[cur]) break;
-                    ShowWindow(pages[cur],SW_HIDE);
-                    return TRUE;
+            if (nmhdr->idFrom == IDC_STARTWIN_TABCTL) {
+                int cur = (int)SendMessage(nmhdr->hwndFrom, TCM_GETCURSEL,0,0);
+                switch (nmhdr->code) {
+                    case TCN_SELCHANGING: {
+                        if (cur < 0 || !pages[cur]) break;
+                        ShowWindow(pages[cur],SW_HIDE);
+                        return TRUE;
+                    }
+                    case TCN_SELCHANGE: {
+                        if (cur < 0 || !pages[cur]) break;
+                        ShowWindow(pages[cur],SW_SHOW);
+                        return TRUE;
+                    }
                 }
-                case TCN_SELCHANGE: {
-                    if (cur < 0 || !pages[cur]) break;
-                    ShowWindow(pages[cur],SW_SHOW);
-                    return TRUE;
+            }
+            if (nmhdr->idFrom == IDC_STARTWIN_APPLINK) {
+                PNMLINK pNMLink = (PNMLINK)lParam;
+
+                if (nmhdr->code != NM_CLICK && nmhdr->code != NM_RETURN) {
+                    break;
+                }
+                if (pNMLink->item.iLink == 0) {
+                    ShellExecuteW(hwndDlg, L"open", pNMLink->item.szUrl, NULL, NULL, SW_SHOW);
                 }
             }
             break;
@@ -338,6 +528,15 @@ static INT_PTR CALLBACK startup_dlgproc(HWND hwndDlg, UINT uMsg, WPARAM wParam, 
             if (pages[TAB_MESSAGES]) {
                 DestroyWindow(pages[TAB_MESSAGES]);
                 pages[TAB_MESSAGES] = NULL;
+            }
+
+            // Dispose of the font used for the application title.
+            {
+                HWND hwnd = GetDlgItem(hwndDlg, IDC_STARTWIN_APPTITLE);
+                HFONT hfont = (HFONT)SendMessage(hwnd, WM_GETFONT, 0, 0);
+                if (hfont) {
+                    DeleteObject(hfont);
+                }
             }
 
             startupdlg = NULL;
@@ -369,7 +568,7 @@ int startwin_open(void)
     if (startupdlg) return 1;
 
     icc.dwSize = sizeof(icc);
-    icc.dwICC = ICC_TAB_CLASSES | ICC_UPDOWN_CLASS;
+    icc.dwICC = ICC_TAB_CLASSES | ICC_UPDOWN_CLASS | ICC_LINK_CLASS;
     InitCommonControlsEx(&icc);
     startupdlg = CreateDialog((HINSTANCE)win_gethinstance(), MAKEINTRESOURCE(IDD_STARTWIN), NULL, startup_dlgproc);
     if (!startupdlg) {

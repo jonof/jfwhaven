@@ -3,6 +3,9 @@
 #define IDC_STARTWIN_TABCTL         1001
 #define IDC_STARTWIN_BITMAP         1002
 #define IDC_ALWAYSSHOW              1003
+#define IDC_STARTWIN_APPTITLE       1004
+#define IDC_STARTWIN_APPLINK        1005
+#define IDC_STARTWIN_APPVERSION     1006
 
 #define IDD_PAGE_CONFIG             1100
 #define IDC_FULLSCREEN              1101
@@ -16,9 +19,18 @@
 #define IDC_SOUNDQUALITY            1109
 #define IDC_USEMOUSE                1110
 #define IDC_USEJOYSTICK             1111
+#define IDC_CHOOSEIMPORT            1112
+#define IDC_IMPORTINFO              1113
 
 #define IDD_PAGE_MESSAGES           1200
 #define IDC_MESSAGES                1201
+
+#define IDD_IMPORTINFO              1400
+#define IDC_IMPORTINFO_HEADER       1401
+#define IDC_IMPORTINFO_TEXT         1402
+
+#define IDD_IMPORTSTATUS            1500
+#define IDC_IMPORTSTATUS_TEXT       1501
 
 #define IDI_ICON       100
 #define IDB_BMP        200

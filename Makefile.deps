@@ -19,7 +19,7 @@ $(SRC)/version-auto.$o: $(SRC)/version-auto.c
 
 $(SRC)/whbuild.$o: $(SRC)/whbuild.c $(build_h) $(ENGINEINC)/editor.h $(ENGINEINC)/pragmas.h $(ENGINEINC)/baselayer.h $(ENGINEINC)/cache1d.h $(SRC)/names.h
 
-$(SRC)/startwin_game.$o: $(SRC)/startwin_game.c $(ENGINEINC)/build.h $(ENGINEINC)/winlayer.h $(ENGINEINC)/compat.h $(SRC)/startwin.h $(SRC)/gameres.h
+$(SRC)/startwin_game.$o: $(SRC)/startwin_game.c $(ENGINEINC)/build.h $(ENGINEINC)/winlayer.h $(ENGINEINC)/compat.h $(SRC)/startwin.h $(SRC)/gameres.h $(SRC)/version.h
 $(SRC)/startgtk_game.$o: $(SRC)/startgtk_game.c $(ENGINEINC)/build.h $(ENGINEINC)/baselayer.h $(ENGINEINC)/compat.h $(SRC)/startwin.h
 
 # Derived source files from art assets
