@@ -40,6 +40,13 @@ static struct {
     GtkWidget *usejoystickcheck;
     GtkWidget *soundqualitycombo;
     GtkListStore *soundqualitylist;
+
+    GtkWidget *chooseimportbutton;
+    GtkWidget *importinfobutton;
+
+    GtkWindow *importstatuswindow;
+    GtkWidget *importstatustext;
+    GtkWidget *importstatuscancelbutton;
 } controls;
 
 static gboolean startwinloop = FALSE;
@@ -63,6 +70,11 @@ static GObject * get_and_connect_signal(GtkBuilder *builder, const char *name, c
     }
     g_signal_connect(object, signal_name, handler, NULL);
     return object;
+}
+
+static void foreach_gtk_widget_set_sensitive(GtkWidget *widget, gpointer data)
+{
+    gtk_widget_set_sensitive(widget, (gboolean)(intptr_t)data);
 }
 
 static void populate_video_modes(gboolean firsttime)
@@ -167,7 +179,7 @@ static void setup_config_mode(void)
 
     // Enable all the controls on the Configuration page.
     gtk_container_foreach(GTK_CONTAINER(controls.configbox),
-            (GtkCallback)gtk_widget_set_sensitive, (gpointer)TRUE);
+            foreach_gtk_widget_set_sensitive, (gpointer)TRUE);
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(controls.alwaysshowcheck), settings->forcesetup);
     gtk_widget_set_sensitive(controls.alwaysshowcheck, TRUE);
 
@@ -185,6 +197,9 @@ static void setup_config_mode(void)
     populate_sound_quality(TRUE);
     gtk_widget_set_sensitive(controls.soundqualitycombo, TRUE);
 
+    gtk_widget_set_sensitive(controls.chooseimportbutton, TRUE);
+    gtk_widget_set_sensitive(controls.importinfobutton, TRUE);
+
     gtk_widget_set_sensitive(controls.cancelbutton, TRUE);
     gtk_widget_set_sensitive(controls.startbutton, TRUE);
 }
@@ -195,8 +210,11 @@ static void setup_messages_mode(gboolean allowcancel)
 
     // Disable all the controls on the Configuration page.
     gtk_container_foreach(GTK_CONTAINER(controls.configbox),
-            (GtkCallback)gtk_widget_set_sensitive, (gpointer)FALSE);
+            foreach_gtk_widget_set_sensitive, (gpointer)FALSE);
     gtk_widget_set_sensitive(controls.alwaysshowcheck, FALSE);
+
+    gtk_widget_set_sensitive(controls.chooseimportbutton, FALSE);
+    gtk_widget_set_sensitive(controls.importinfobutton, FALSE);
 
     gtk_widget_set_sensitive(controls.cancelbutton, allowcancel);
     gtk_widget_set_sensitive(controls.startbutton, FALSE);
@@ -263,6 +281,127 @@ static gboolean on_startgtk_delete_event(GtkWidget *widget, GdkEvent *event, gpo
     return TRUE;    // FALSE would let the event go through. We want the game to decide when to close.
 }
 
+static void on_importstatus_cancelbutton_clicked(GtkButton *button, gpointer user_data)
+{
+    (void)button;
+    g_cancellable_cancel((GCancellable *)user_data);
+}
+
+static int set_importstatus_text(void *text)
+{
+    // Called in the main thread via g_main_context_invoke in the import thread.
+    gtk_label_set_text(GTK_LABEL(controls.importstatustext), text);
+    free(text);
+    return 0;
+}
+
+static void importmeta_progress(void *data, const char *path)
+{
+    // Called in the import thread.
+    (void)data;
+    g_main_context_invoke(NULL, set_importstatus_text, (gpointer)strdup(path));
+}
+
+static int importmeta_cancelled(void *data)
+{
+    // Called in the import thread.
+    return g_cancellable_is_cancelled((GCancellable *)data);
+}
+
+static void import_thread_func(GTask *task, gpointer source_object, gpointer task_data, GCancellable *cancellable)
+{
+    char *filename = (char *)task_data;
+    struct importdatameta meta = {
+        (void *)cancellable,
+        importmeta_progress,
+        importmeta_cancelled
+    };
+    (void)source_object;
+    g_task_return_int(task, ImportDataFromPath(filename, &meta));
+}
+
+static void on_chooseimportbutton_clicked(GtkButton *button, gpointer user_data)
+{
+    GtkWidget *dialog;
+    char *filename = NULL;
+
+    (void)button; (void)user_data;
+
+    dialog = gtk_file_chooser_dialog_new("Import game data", startwin,
+        GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
+        "_Cancel", GTK_RESPONSE_CANCEL,
+        "_Import", GTK_RESPONSE_ACCEPT,
+        NULL);
+    gtk_file_chooser_set_local_only(GTK_FILE_CHOOSER(dialog), TRUE);
+
+    GtkWidget *content = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
+    GtkWidget *label = gtk_label_new("Select a folder to search.");
+    gtk_widget_show(label);
+    gtk_widget_set_margin_top(label, 7);
+    gtk_widget_set_margin_bottom(label, 7);
+    gtk_container_add(GTK_CONTAINER(content), label);
+    gtk_box_reorder_child(GTK_BOX(content), label, 0);
+
+    if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
+        GtkFileChooser *chooser = GTK_FILE_CHOOSER(dialog);
+        filename = gtk_file_chooser_get_filename(chooser);
+    }
+    gtk_widget_destroy(dialog);
+
+    if (filename) {
+        GTask *task = NULL;
+        GError *err = NULL;
+        GCancellable *cancellable = NULL;
+        gulong clickhandlerid;
+
+        cancellable = g_cancellable_new();
+        task = g_task_new(NULL, cancellable, NULL, NULL);
+        g_task_set_check_cancellable(task, FALSE);
+
+        // Pass the filename as task data.
+        g_task_set_task_data(task, (gpointer)filename, NULL);
+
+        // Connect the import status cancel button passing the GCancellable* as user data.
+        clickhandlerid = g_signal_connect(controls.importstatuscancelbutton, "clicked",
+            G_CALLBACK(on_importstatus_cancelbutton_clicked), (gpointer)cancellable);
+
+        // Show the status window, run the import thread, and while it's running, pump the Gtk queue.
+        gtk_widget_show(GTK_WIDGET(controls.importstatuswindow));
+        g_task_run_in_thread(task, import_thread_func);
+        while (!g_task_get_completed(task)) gtk_main_iteration();
+
+        // Get the return value from the import thread, then hide the status window.
+        (void) g_task_propagate_int(task, &err);
+        gtk_widget_hide(GTK_WIDGET(controls.importstatuswindow));
+
+        // Disconnect the cancel button and clean up.
+        g_signal_handler_disconnect(controls.importstatuscancelbutton, clickhandlerid);
+        if (err) g_error_free(err);
+        g_object_unref(cancellable);
+        g_object_unref(task);
+
+        g_free(filename);
+    }
+}
+
+static void on_importinfobutton_clicked(GtkButton *button, gpointer user_data)
+{
+    GtkWidget *dialog;
+
+    (void)button; (void)user_data;
+
+    dialog = gtk_message_dialog_new(startwin, GTK_DIALOG_DESTROY_WITH_PARENT,
+        GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE,
+        "JFWitchaven can scan locations of your choosing for Witchaven game data");
+    gtk_message_dialog_format_secondary_markup(GTK_MESSAGE_DIALOG(dialog),
+        "Click the 'Choose a location...' button, then locate a folder to scan.\n\n"
+        "Common locations to check include:\n"
+        " • CD/DVD drives\n"
+        " • Unzipped data from copies of the full DOS game");
+    gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+}
+
 static GtkWindow *create_window(void)
 {
     GtkBuilder *builder = NULL;
@@ -313,6 +452,15 @@ static GtkWindow *create_window(void)
     controls.usejoystickcheck = GTK_WIDGET(gtk_builder_get_object(builder, "usejoystickcheck"));
     controls.soundqualitycombo = GTK_WIDGET(gtk_builder_get_object(builder, "soundqualitycombo"));
     controls.soundqualitylist = GTK_LIST_STORE(gtk_builder_get_object(builder, "soundqualitylist"));
+
+    controls.chooseimportbutton = GTK_WIDGET(get_and_connect_signal(builder, "chooseimportbutton",
+        "clicked", G_CALLBACK(on_chooseimportbutton_clicked)));
+    controls.importinfobutton = GTK_WIDGET(get_and_connect_signal(builder, "importinfobutton",
+        "clicked", G_CALLBACK(on_importinfobutton_clicked)));
+
+    controls.importstatuswindow = GTK_WINDOW(gtk_builder_get_object(builder, "importstatuswindow"));
+    controls.importstatustext = GTK_WIDGET(gtk_builder_get_object(builder, "importstatustext"));
+    controls.importstatuscancelbutton = GTK_WIDGET(gtk_builder_get_object(builder, "importstatuscancelbutton"));
 
     g_object_unref(G_OBJECT(builder));
 
@@ -365,20 +513,17 @@ int startwin_close(void)
     return 0;
 }
 
-int startwin_puts(const char *str)
+static gboolean startwin_puts_inner(gpointer str)
 {
     GtkTextBuffer *textbuffer;
     GtkTextIter enditer;
     GtkTextMark *mark;
     const char *aptr, *bptr;
 
-    if (!gtkenabled || !str) return 0;
-    if (!startwin) return 1;
-
     textbuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(controls.messagestext));
 
     gtk_text_buffer_get_end_iter(textbuffer, &enditer);
-    for (aptr = bptr = str; *aptr != 0; ) {
+    for (aptr = bptr = (const char *)str; *aptr != 0; ) {
         switch (*bptr) {
             case '\b':
                 if (bptr > aptr) {
@@ -403,6 +548,18 @@ int startwin_puts(const char *str)
     mark = gtk_text_buffer_create_mark(textbuffer, NULL, &enditer, 1);
     gtk_text_view_scroll_to_mark(GTK_TEXT_VIEW(controls.messagestext), mark, 0.0, FALSE, 0.0, 1.0);
     gtk_text_buffer_delete_mark(textbuffer, mark);
+
+    free(str);
+    return FALSE;
+}
+
+int startwin_puts(const char *str)
+{
+    // Called in either the main thread or the import thread via buildprintf.
+    if (!gtkenabled || !str) return 0;
+    if (!startwin) return 1;
+
+    g_main_context_invoke(NULL, startwin_puts_inner, (gpointer)strdup(str));
 
     return 0;
 }
