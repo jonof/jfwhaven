@@ -238,6 +238,8 @@ int loadsetup(const char *fn)
 #endif
     if (tmpsamplerate >= 0) {
         option[7] = (tmpsamplerate & 0x0f) << 4;
+        option[7] |= 1<<1;  // 16-bit
+        option[7] |= 1<<2;  // stereo
     }
     if (tmpmusic >= 0) {
         option[2] = !!tmpmusic;

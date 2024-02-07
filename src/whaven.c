@@ -72,12 +72,13 @@ char option[NUMOPTIONS] = {
   0,  // 4 -
   0,  // 5 -
   1,  // 6 - Video mode
-  0,  // 7 -
+  64+4+2, // 7 - Sound, 22khz 16bit stereo
   0,  // 8 -
   1,  // 9 - Music on
   0,  // 10 -
   1,  // 11 - Sound on
 };
+int digihz[8] = {6000,8000,11025,16000,22050,32000,44100,48000};
 
 struct delayitem delayitem[MAXSECTORS];
 
@@ -1176,6 +1177,7 @@ int app_main(int argc,const char * const argv[]) {
 
 #if defined RENDERTYPEWIN || (defined RENDERTYPESDL && (defined __APPLE__ || defined HAVE_GTK))
     {
+        int i;
         struct startwin_settings settings;
 
         memset(&settings, 0, sizeof(settings));
@@ -1186,9 +1188,9 @@ int app_main(int argc,const char * const argv[]) {
         settings.forcesetup = forcesetup;
         settings.usemouse = !!option[3];
         settings.usejoy = !!option2[2];
-//        settings.samplerate = MixRate;
-//        settings.bitspersample = NumBits;
-//        settings.channels = NumChannels;
+        settings.samplerate = digihz[option[7]>>4];
+        settings.bitspersample = 1<<(((option[7]&2)>0)+3);
+        settings.channels = ((option[7]&4)>0)+1;
 
         if (forcesetup) {
             if (startwin_run(&settings) == STARTWIN_CANCEL) {
@@ -1204,9 +1206,10 @@ int app_main(int argc,const char * const argv[]) {
         forcesetup = settings.forcesetup;
         option[3] = settings.usemouse;
         option2[2] = settings.usejoy;
-//        MixRate = settings.samplerate;
-//        NumBits = settings.bitspersample;
-//        NumChannels = settings.channels;
+        option[7] = 0;
+        for (i=0;i<8;i++) if (digihz[i] <= settings.samplerate) option[7] = i<<4;
+        option[7] |= (settings.bitspersample == 16)<<1;
+        option[7] |= (settings.channels == 2)<<2;
     }
 #endif
 
