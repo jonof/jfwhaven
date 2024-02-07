@@ -69,15 +69,16 @@ static int CopyFile(int fh, int size, const char *fname, struct importdatameta *
 
 static int ImportDataFromFile(const char *path, int size, struct importdatameta *cbs)
 {
-    const char *fn;
-    int i, fh, rv;
+    char *fn;
+    int fh, rv;
 
     fn = strrchr(path, '/');
 #ifdef _WIN32
     fn = max(fn, strrchr(path, '\\'));
 #endif
-    if (!fn) fn = path;
-    else fn++;
+    if (!fn) fn = strdup(path);
+    else fn = strdup(fn+1);
+    strlwr(fn);
 
     fh = open(path, O_RDONLY|O_BINARY, S_IREAD);
     if (fh < 0) return IMPORTDATA_OK;  // Maybe no permission. Whatever.
@@ -97,6 +98,7 @@ static int ImportDataFromFile(const char *path, int size, struct importdatameta 
             break;
     }
     close(fh);
+    free(fn);
     return rv;
 }
 
