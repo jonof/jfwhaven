@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="Author" content="Jonathon Fowler" />
+	<title>Release Notes for JFWitchaven</title>
+	<style type="text/css">
+		body {
+			font-family: sans-serif;
+			font-weight: 400;
+			background: #444;
+			margin: 0;
+			padding: 0;
+		}
+		#page {
+			max-width: 50em;
+			background: #eee;
+			margin: 0 auto;
+			padding: 1em;
+			min-height: 100vh;
+		}
+
+		h1 { font-size: 1.5em; }
+		h2 { font-size: 1.2em; }
+		h3 { font-size: 1.0em; }
+
+		header {
+			text-align: center;
+		}
+		header h1 {
+			font-weight: 800;
+			font-size: 3em;
+			color: #222;
+			margin: 0.5em 0;
+			text-shadow: 0.02em 0.02em rgba(255,255,255,0.5), 0.04em 0.04em rgba(0,0,0,0.2);
+		}
+		section#content {
+			position: relative;
+		}
+		footer {
+			text-align: center;
+			margin-top: 3em;
+			color: #aaa;
+			font-size: 90%;
+		}
+		figure {
+			text-align: center;
+		}
+		figure img {
+			max-width: 100%;
+		}
+		figcaption {
+			font-size: 90%;
+			font-style: italic;
+		}
+
+		@media (max-width: 600px) {
+			header h1 {
+				font-size: 2em;
+			}
+		}
+
+		dt {
+			font-weight: bold;
+		}
+		dd + dt {
+			margin-top: 0.5em;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="page">
+		<header>
+			<h1>JFWitchaven</h1>
+			<h2>Release notes, version $VERSION</h2>
+		</header>
+
+		<section id="content">
+			<p><strong>JFWitchaven is based on code published by <a href="https://lesbird.github.io/capstone/index.html">Les Bird</a>, programmer at Capstone in 1996. That code was made available under no particular license, so JFWitchaven is made available under similar terms.</strong> Visit <a href="https://www.jonof.id.au/capstone">the JFWitchaven website</a> for the latest information. The source code for JFWitchaven can be found in <a href="https://github.com/jonof/jfwhaven">this Git repository</a>.</p>
+
+			<nav>
+				<h1>Index</h1>
+				<ul>
+					<li><a href="#requirements">System Requirements</a></li>
+					<li><a href="#install">Installation and Setup</a></li>
+					<li><a href="#console">Console Commands</a></li>
+					<li><a href="#license">License</a></li>
+				</ul>
+			</nav>
+
+			<h1 id="requirements">System Requirements</h1>
+
+			<p>At minimum, you need:</p>
+			<ul>
+				<li>64-bit Intel, AMD, or compatible CPU</li>
+				<li>OpenGL 2.1 capable GPU</li>
+				<li>(Windows) Vista or newer (7, 8, 10)</li>
+				<li>(Mac) macOS 10.15 (Catalina) or newer</li>
+			</ul>
+
+			<p>Additionally, these platforms and architectures are supported when building from source code:</p>
+			<ul>
+				<li>32-bit Intel/AMD, and 32 or 64-bit ARM CPUs</li>
+				<li>OpenGL ES 2.0 capable GPUs, e.g. Broadcom VideoCore IV (tested with Raspberry Pi 3 B+)</li>
+			</ul>
+
+			<h1 id="install">Installation and Setup</h1>
+
+			<p>After unzipping the JFWitchaven package somewhere on your computer, run the main executable: <code>JFWitchaven.app</code> on macOS, <code>whaven.exe</code> on Windows. You ought to see the startup window open at the Configuration tab.</p>
+			<figure>
+				<img src="data:image/png;base64,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
+G8YZktwAAAAASUVORK5CYII="
+alt="The initial startup window as it appears on macOS" width="629" height="422">
+				<figcaption>Windows, Linux and BSD (if built with GTK support) have similar startup windows with the same options.</figcaption>
+			</figure>
+			<p>You will now need to import the game data from a commercial release of Witchaven as the game will not work without it.<p>
+			<ol>
+				<li>Click the "Choose a location..." button, then navigate to a location where Witchaven data can be found.</li>
+				<li>Choose a folder and JFWitchaven will then scan the location you've selected, copying any compatible game data it finds.</li>
+			</ol>
+
+			<p>Where game data files are stored by JFWitchaven depends on the operating system you are using:</p>
+			<ul>
+				<li>(Linux, shared with all users) <code>/usr/local/share/games/jfwhaven</code></li>
+				<li>(Linux, single user) <code>~/.jfwhaven</code></li>
+				<li>(macOS, single user) <code>~/Library/Application Support/JFWitchaven</code></li>
+				<li>(Windows) <em>wherever you've put whaven.exe</em></li>
+			</ul>
+
+			<h2 id="portable-install">"Portable" Installation</h2>
+			<p>Typically the game will store its configuration information and saved games in a private location for your user account:</p>
+			<ul>
+				<li>(Linux) <code>~/.jfwhaven</code></li>
+				<li>(macOS) <code>~/Library/Application Support/JFWitchaven</code></li>
+				<li>(Windows) <code>C:\Users\<em>your-name</em>\AppData\JFWitchaven</code></li>
+			</ul>
+			<p>To have the game instead store these files in the working directory where the game was started, create an empty file named <code>user_profiles_disabled</code> (no extension) beside the executable. You can put the game data files in the same location, thus making everything self-contained and 'portable'.</p>
+
+			<h1 id="console">Console Commands</h1>
+
+			<p>This is a list of more useful console commands and settings and their purpose:</p>
+
+			<dl>
+				<dt>clear</dt>
+				<dd>Clear the console.</dd>
+
+				<dt>glinfo</dt>
+				<dd>Displays some information about the OpenGL driver. Use "glinfo exts" to display supported OpenGL extensions.</dd>
+
+				<dt>glmultisample &lt;0, 1, 2, &hellip;&gt;</dt>
+				<dd>Enable OpenGL multisample antialiasing. 0 disables it. You need
+				to use "restartvid" to apply any changes to this value.</dd>
+
+				<dt>gltextureanisotropy &lt;level&gt;</dt>
+				<dd>Sets the OpenGL anisotropic filtering level. The default is the highest level supported by the hardware.</dd>
+
+				<dt>gltexturemode &lt;mode-number&gt;</dt>
+				<dd>Sets the OpenGL texturing mode. Valid values are:
+				<table class="center" cellpadding="2" rules="cols" border="1">
+					<tr><td>0</td><td>GL_NEAREST</td></tr>
+					<tr><td>1</td><td>GL_LINEAR</td></tr>
+					<tr><td>2</td><td>GL_NEAREST_MIPMAP_NEAREST</td></tr>
+					<tr><td>3</td><td>GL_LINEAR_MIPMAP_NEAREST (bilinear)</td></tr>
+					<tr><td>4</td><td>GL_NEAREST_MIPMAP_LINEAR (gives an unfiltered appearance like the original software renderer)</td></tr>
+					<tr><td>5</td><td>GL_LINEAR_MIPMAP_LINEAR (trilinear, the default)</td></tr>
+				</table></dd>
+
+				<dt>glusetexcompr &lt;0 or 1&gt;</dt>
+				<dd>Enables or disables the use of OpenGL texture compression for replacement textures. You need
+				to use "restartvid" to apply any changes to this value.</dd>
+
+				<dt>help &lt;name&gt;</dt>
+				<dd>Displays a help message for a particular console variable or command.</dd>
+
+				<dt>listsymbols</dt>
+				<dd>Displays the names of all commands and variables available in the console.</dd>
+
+				<dt>novoxmips &lt;0 or 1&gt;</dt>
+				<dd>Disables or enables the use of voxel mipmaps to improve voxel visual quality.</dd>
+
+				<dt>osdrows &lt;num&gt;</dt>
+				<dd>Sets the number of visible lines of the console when it is open.</dd>
+
+				<dt>restartvid</dt>
+				<dd>Reinitialise video to apply settings changes.</dd>
+
+				<dt>screencaptureformat &lt;0 or 1 or 2&gt;</dt>
+				<dd>0 = Targa, 1 = PCX, 2 = PNG (default)</dd>
+
+				<dt>usegammabrightness &lt;0 or 1 or 2&gt;</dt>
+				<dd>Set brightness in one of several ways. 0 = palette-based, 1 = shader-based (default), 2 = system gamma. System gamma will brighten the whole display when in windowed mode.</dd>
+
+				<dt>usegoodalpha &lt;0 or 1&gt;</dt>
+				<dd>If 1, a lower alpha cutoff value is used when rendering textures with transparency, which
+				gives better looking transparent textures at the expense of some sprites behind the transparent
+				item potentially being invisible in certain circumstances. 0 is a more compatible value (and is
+				the default) for this option but slight visual degradation will result.</dd>
+
+				<dt>vidmode &lt;bpp&gt;<br>
+				    vidmode &lt;xdim&gt; &lt;ydim&gt; [bpp [fs]]</dt>
+				<dd>Change the video mode. <em>xdim ydim</em> are the resolution. <em>bpp</em> is the colour depth (8, 16, 24, 32). <em>fs</em> is 0 for windowed, 1 for fullscreen.</dd>
+			</dl>
+
+			<h1 id="license">License</h1>
+			<p>JFWitchaven is not licensed under any discernable terms. Let's all just hope no spectre of Capstone or Intracorp one day rises to stomp on it.</p>
+			<p>The JFBuild engine used in JFWitchaven is used under the terms of the <a href="buildlic.txt">BUILD Source Code License</a>.</p>
+		</section>
+
+		<footer>Jonathon Fowler (<a href="mailto:jf@jonof.id.au">jf@jonof.id.au</a>)</footer>
+	</div>
+</body>
+</html>
+

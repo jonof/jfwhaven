@@ -230,6 +230,7 @@
 
 /* Begin PBXFileReference section */
 		AB1320572B89DCF400530E73 /* version.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = version.c; sourceTree = BUILT_PRODUCTS_DIR; };
+		AB13206C2B89E59800530E73 /* Common.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Common.xcconfig; sourceTree = "<group>"; };
 		AB17551125A8029A00C581C8 /* sndmod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sndmod.h; sourceTree = "<group>"; usesTabs = 1; };
 		AB17551225A802C300C581C8 /* les.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = les.h; sourceTree = "<group>"; };
 		AB17551325A802C300C581C8 /* jeff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jeff.h; sourceTree = "<group>"; };
@@ -362,6 +363,7 @@
 				ABC75BD41A49C16E007D0D43 /* Game */,
 				ABD03E681A52726F0012B9D1 /* Editor */,
 				AB1320572B89DCF400530E73 /* version.c */,
+				AB13206C2B89E59800530E73 /* Common.xcconfig */,
 				ABC75B9E1A49BCC3007D0D43 /* Products */,
 				ABC75BDE1A49C311007D0D43 /* Linked Frameworks */,
 				ABB2756925C0285D006709E2 /* Frameworks */,
@@ -805,6 +807,7 @@
 		};
 		ABC75B971A49BC18007D0D43 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = AB13206C2B89E59800530E73 /* Common.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++98";
@@ -837,6 +840,7 @@
 		};
 		ABC75B981A49BC18007D0D43 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = AB13206C2B89E59800530E73 /* Common.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++98";
