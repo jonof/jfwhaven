@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
       - name: Install dependencies
@@ -55,7 +55,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
       - name: Setup MSVC
@@ -68,11 +68,18 @@ jobs:
           echo USE_POLYMOST=${{ matrix.use_polymost }} > Makefile.msvcuser
           echo USE_OPENGL=${{ matrix.use_opengl }} >> Makefile.msvcuser
           nmake /f Makefile.msvc all
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
+
+  build-macos:
+    name: macOS
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
-          name: Windows EXE
-          path: |
-            whaven.exe
-            build.exe
-        if: ${{ github.ref == 'refs/heads/master' && matrix.use_polymost == 1 && matrix.use_opengl == 1 }}
+          submodules: true
+      - name: Build
+        run: |
+          set -xe
+          cd $GITHUB_WORKSPACE/xcode
+          xcodebuild -project whaven.xcodeproj -target all
