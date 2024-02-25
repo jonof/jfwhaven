@@ -11,13 +11,17 @@
 
 #include <windows.h>
 #include <shlobj.h>
+#include <objbase.h>
 #include <windowsx.h>
 #include <strsafe.h>
 #include <commctrl.h>
 #include <uxtheme.h>
-#include <stdio.h>
+#include <shellapi.h>
 
 #include "startwin.h"
+
+#include <stdio.h>
+
 #include "gameres.h"
 #include "version.h"
 

@@ -114,7 +114,7 @@ ifeq ($(PLATFORM),WINDOWS)
 	GAMEOBJS+= $(SRC)/gameres.$(res) \
 		$(SRC)/startwin_game.$o
 	EDITOROBJS+= $(SRC)/buildres.$(res)
-	OURLDFLAGS+= -ldsound \
+	OURLDFLAGS+= -lole32 -ldsound \
 	       $(AUDIOLIBROOT)/third-party/mingw32/lib/libvorbisfile.a \
 	       $(AUDIOLIBROOT)/third-party/mingw32/lib/libvorbis.a \
 	       $(AUDIOLIBROOT)/third-party/mingw32/lib/libogg.a

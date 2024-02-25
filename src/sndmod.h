@@ -230,26 +230,16 @@ struct ambsounds {
 	//
 	//          GLOBAL VARIABLES
 	//
-	unsigned short     SoundMode,wDIGIVol;
-	unsigned short     MusicMode,wMIDIVol;
-	unsigned short     use_rec_driver,voicecom_enabled;
+	int     SoundMode,wDIGIVol;
+	int     MusicMode,wMIDIVol;
 
-
-	//
-	//          EXTERN STUFF
-	//
-	extern int posx[],posy[];
-
-	//JSA temp int to show vol and pan
-	int gVol,gPan;
 
 #else
 
 
 
 
-extern int  SoundMode,wDIGIVol,MusicMode,wMIDIVol,use_dig_midi,
-				gPan,gVol;
+extern int  SoundMode,wDIGIVol,MusicMode,wMIDIVol;
 
 extern struct ambsounds ambsoundarray[];
 extern int lavasnd,batsnd,cartsnd;
