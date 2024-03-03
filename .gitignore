@@ -16,6 +16,8 @@
 /xcode/*.xcodeproj/*
 !/xcode/*.xcodeproj/project.pbxproj
 /xcode/build
+/xcode/Signing.xcconfig
+/xcode/Version.xcconfig
 /Makefile.*user
 
 /build

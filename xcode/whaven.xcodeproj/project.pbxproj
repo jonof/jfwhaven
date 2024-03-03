@@ -45,7 +45,7 @@
 		AB807466296AAE0500CA6B33 /* smk_hufftree.c in Sources */ = {isa = PBXBuildFile; fileRef = AB807463296AAE0500CA6B33 /* smk_hufftree.c */; };
 		AB807467296AAE0500CA6B33 /* smk_bitstream.c in Sources */ = {isa = PBXBuildFile; fileRef = AB807464296AAE0500CA6B33 /* smk_bitstream.c */; };
 		AB98B2DF1A6B87E6009E8749 /* config.c in Sources */ = {isa = PBXBuildFile; fileRef = AB98B2DE1A6B87E6009E8749 /* config.c */; };
-		AB9E4ABE23125D810008A90E /* SDL2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BDC1A49C30C007D0D43 /* SDL2.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		AB9E4ABE23125D810008A90E /* SDL2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BDC1A49C30C007D0D43 /* SDL2.framework */; settings = {ATTRIBUTES = ( ); }; };
 		AB9E4AC52312976F0008A90E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB9E4AC42312976F0008A90E /* Images.xcassets */; };
 		AB9E4AE42312ABAB0008A90E /* whmenu.c in Sources */ = {isa = PBXBuildFile; fileRef = AB9E4ADB2312ABAB0008A90E /* whmenu.c */; };
 		AB9E4AE52312ABAB0008A90E /* whsndmod.c in Sources */ = {isa = PBXBuildFile; fileRef = AB9E4ADC2312ABAB0008A90E /* whsndmod.c */; };
@@ -66,7 +66,7 @@
 		ABD03E161A5181020012B9D1 /* StartupWinController.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD03E151A5181020012B9D1 /* StartupWinController.m */; };
 		ABD03E771A52745C0012B9D1 /* startwin.editor.nib in Resources */ = {isa = PBXBuildFile; fileRef = ABD03E751A52745C0012B9D1 /* startwin.editor.nib */; };
 		ABD03E781A52747F0012B9D1 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BDC1A49C30C007D0D43 /* SDL2.framework */; };
-		ABD03E791A52747F0012B9D1 /* SDL2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BDC1A49C30C007D0D43 /* SDL2.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		ABD03E791A52747F0012B9D1 /* SDL2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BDC1A49C30C007D0D43 /* SDL2.framework */; settings = {ATTRIBUTES = ( ); }; };
 		ABD03E7B1A5274870012B9D1 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BDF1A49C347007D0D43 /* AppKit.framework */; };
 		ABD03E7C1A5274910012B9D1 /* libeditor.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BCB1A49BFB1007D0D43 /* libeditor.a */; };
 		ABD03E7D1A5274910012B9D1 /* libeditorsupp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BCD1A49BFB1007D0D43 /* libeditorsupp.a */; };
