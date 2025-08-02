@@ -68,6 +68,14 @@ jobs:
           echo USE_POLYMOST=${{ matrix.use_polymost }} > Makefile.msvcuser
           echo USE_OPENGL=${{ matrix.use_opengl }} >> Makefile.msvcuser
           nmake /f Makefile.msvc all
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jfwhaven-${{github.sha}}-win
+          path: |
+            whaven.exe
+            build.exe
+        if: ${{github.ref_type == 'branch' && github.ref_name != 'master' && matrix.use_polymost == 1 && matrix.use_opengl == 1}}
 
   build-macos:
     name: macOS
