@@ -42,10 +42,8 @@
 		AB7F67B12B6BE86700CF1300 /* palette.c in Sources */ = {isa = PBXBuildFile; fileRef = AB7F67B02B6BE86700CF1300 /* palette.c */; };
 		AB807458296AAD9B00CA6B33 /* whsmk.c in Sources */ = {isa = PBXBuildFile; fileRef = AB807450296AAAC900CA6B33 /* whsmk.c */; };
 		AB807465296AAE0500CA6B33 /* smacker.c in Sources */ = {isa = PBXBuildFile; fileRef = AB80745F296AAE0500CA6B33 /* smacker.c */; };
-		AB807466296AAE0500CA6B33 /* smk_hufftree.c in Sources */ = {isa = PBXBuildFile; fileRef = AB807463296AAE0500CA6B33 /* smk_hufftree.c */; };
-		AB807467296AAE0500CA6B33 /* smk_bitstream.c in Sources */ = {isa = PBXBuildFile; fileRef = AB807464296AAE0500CA6B33 /* smk_bitstream.c */; };
 		AB98B2DF1A6B87E6009E8749 /* config.c in Sources */ = {isa = PBXBuildFile; fileRef = AB98B2DE1A6B87E6009E8749 /* config.c */; };
-		AB9E4ABE23125D810008A90E /* SDL2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BDC1A49C30C007D0D43 /* SDL2.framework */; settings = {ATTRIBUTES = ( ); }; };
+		AB9E4ABE23125D810008A90E /* SDL2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BDC1A49C30C007D0D43 /* SDL2.framework */; settings = {ATTRIBUTES = (); }; };
 		AB9E4AC52312976F0008A90E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB9E4AC42312976F0008A90E /* Images.xcassets */; };
 		AB9E4AE42312ABAB0008A90E /* whmenu.c in Sources */ = {isa = PBXBuildFile; fileRef = AB9E4ADB2312ABAB0008A90E /* whmenu.c */; };
 		AB9E4AE52312ABAB0008A90E /* whsndmod.c in Sources */ = {isa = PBXBuildFile; fileRef = AB9E4ADC2312ABAB0008A90E /* whsndmod.c */; };
@@ -250,10 +248,6 @@
 		AB80745E296AAE0500CA6B33 /* smk_malloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smk_malloc.h; sourceTree = "<group>"; };
 		AB80745F296AAE0500CA6B33 /* smacker.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smacker.c; sourceTree = "<group>"; };
 		AB807460296AAE0500CA6B33 /* smacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smacker.h; sourceTree = "<group>"; };
-		AB807461296AAE0500CA6B33 /* smk_hufftree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smk_hufftree.h; sourceTree = "<group>"; };
-		AB807462296AAE0500CA6B33 /* smk_bitstream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smk_bitstream.h; sourceTree = "<group>"; };
-		AB807463296AAE0500CA6B33 /* smk_hufftree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smk_hufftree.c; sourceTree = "<group>"; };
-		AB807464296AAE0500CA6B33 /* smk_bitstream.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smk_bitstream.c; sourceTree = "<group>"; };
 		AB98B2DE1A6B87E6009E8749 /* config.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = config.c; sourceTree = "<group>"; };
 		AB9E4AC42312976F0008A90E /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		AB9E4AC82312995E0008A90E /* whaven.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = whaven.c; sourceTree = "<group>"; };
@@ -318,10 +312,6 @@
 			children = (
 				AB80745F296AAE0500CA6B33 /* smacker.c */,
 				AB807460296AAE0500CA6B33 /* smacker.h */,
-				AB807464296AAE0500CA6B33 /* smk_bitstream.c */,
-				AB807462296AAE0500CA6B33 /* smk_bitstream.h */,
-				AB807463296AAE0500CA6B33 /* smk_hufftree.c */,
-				AB807461296AAE0500CA6B33 /* smk_hufftree.h */,
 				AB80745E296AAE0500CA6B33 /* smk_malloc.h */,
 			);
 			name = libsmacker;
@@ -703,7 +693,6 @@
 				AB9E4AE62312ABAB0008A90E /* whnet.c in Sources */,
 				AB7F67B12B6BE86700CF1300 /* palette.c in Sources */,
 				AB9E4AEA2312ABAB0008A90E /* whinp.c in Sources */,
-				AB807467296AAE0500CA6B33 /* smk_bitstream.c in Sources */,
 				AB3AE6C21A4D423600CE4329 /* b5compat.c in Sources */,
 				AB9E4AEC2312ABAB0008A90E /* whfx.c in Sources */,
 				AB9E4AE42312ABAB0008A90E /* whmenu.c in Sources */,
@@ -714,7 +703,6 @@
 				AB9E4AE72312ABAB0008A90E /* whani.c in Sources */,
 				ABD03E161A5181020012B9D1 /* StartupWinController.m in Sources */,
 				AB9E4AEB2312ABAB0008A90E /* whobj.c in Sources */,
-				AB807466296AAE0500CA6B33 /* smk_hufftree.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
