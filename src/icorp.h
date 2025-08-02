@@ -332,7 +332,7 @@ void displayspelltext(void);
 void painsound(int xplc,int yplc);
 
 // whsmk.c
-void smkplayseq(char *name);
+int smkplayseq(char *name);
 
 // whsndmod.c
 void SND_DoBuffers(void);
