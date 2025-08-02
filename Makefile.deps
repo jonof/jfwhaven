@@ -16,7 +16,7 @@ $(SRC)/whtag.$o: $(SRC)/whtag.c $(icorp_h)
 $(SRC)/datascan.$o: $(SRC)/datascan.c $(ENGINEINC)/compat.h $(ENGINEINC)/baselayer.h $(ENGINEINC)/cache1d.h $(ENGINEINC)/build.h $(SRC)/datascan.h
 $(SRC)/version.$o: $(SRC)/version.c
 $(SRC)/version-auto.$o: $(SRC)/version-auto.c
-$(LIBSMACKERSRC)/smacker.$o $(LIBSMACKERSRC)/smacker.c
+$(LIBSMACKERSRC)/smacker.$o: $(LIBSMACKERSRC)/smacker.c
 
 $(SRC)/whbuild.$o: $(SRC)/whbuild.c $(build_h) $(ENGINEINC)/editor.h $(ENGINEINC)/pragmas.h $(ENGINEINC)/baselayer.h $(ENGINEINC)/cache1d.h $(SRC)/names.h
 

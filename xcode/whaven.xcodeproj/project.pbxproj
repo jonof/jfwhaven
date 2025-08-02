@@ -64,7 +64,7 @@
 		ABD03E161A5181020012B9D1 /* StartupWinController.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD03E151A5181020012B9D1 /* StartupWinController.m */; };
 		ABD03E771A52745C0012B9D1 /* startwin.editor.nib in Resources */ = {isa = PBXBuildFile; fileRef = ABD03E751A52745C0012B9D1 /* startwin.editor.nib */; };
 		ABD03E781A52747F0012B9D1 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BDC1A49C30C007D0D43 /* SDL2.framework */; };
-		ABD03E791A52747F0012B9D1 /* SDL2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BDC1A49C30C007D0D43 /* SDL2.framework */; settings = {ATTRIBUTES = ( ); }; };
+		ABD03E791A52747F0012B9D1 /* SDL2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BDC1A49C30C007D0D43 /* SDL2.framework */; settings = {ATTRIBUTES = (); }; };
 		ABD03E7B1A5274870012B9D1 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BDF1A49C347007D0D43 /* AppKit.framework */; };
 		ABD03E7C1A5274910012B9D1 /* libeditor.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BCB1A49BFB1007D0D43 /* libeditor.a */; };
 		ABD03E7D1A5274910012B9D1 /* libeditorsupp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BCD1A49BFB1007D0D43 /* libeditorsupp.a */; };
@@ -73,6 +73,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		AB09C13F2E3DFB0100521475 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = ABC75BBE1A49BFB1007D0D43 /* engine.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = AB392FF52B9427BA002B0F5D;
+			remoteInfo = klist;
+		};
 		AB5BD5DF23123DA000BC4BEF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = ABC75BBE1A49BFB1007D0D43 /* engine.xcodeproj */;
@@ -379,6 +386,7 @@
 				AB5BD5E023123DA000BC4BEF /* bin2c */,
 				ABC75BD11A49BFB1007D0D43 /* kextract */,
 				ABC75BD31A49BFB1007D0D43 /* kgroup */,
+				AB09C1402E3DFB0100521475 /* klist */,
 				ABD03E2E1A522B970012B9D1 /* transpal */,
 			);
 			name = Products;
@@ -563,6 +571,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		AB09C1402E3DFB0100521475 /* klist */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = klist;
+			remoteRef = AB09C13F2E3DFB0100521475 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		AB5BD5E023123DA000BC4BEF /* bin2c */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
