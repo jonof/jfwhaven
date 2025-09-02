@@ -27,7 +27,6 @@ extern int currentpotion;
 extern int helmettime;
 extern int shadowtime;
 extern int nightglowtime;
-extern short brightness;
 extern int strongtime;
 extern int invisibletime;
 extern int manatime;
@@ -1974,25 +1973,44 @@ updatepaletteshifts(void)
       }
 
     if( red ) {
-        //asmsetpalette(redshifts[red-1]);
+#if USE_POLYMOST && USE_OPENGL
+        if (getrendermode() >= 3) setpalettefade(64,0,0,64 * red / REDSTEPS);
+        else
+#endif
+        setbrightness(gbrightness,&redshifts[red-1][0],0);
         palshifted = 1;
     }
     else if( white ) {
-        //asmsetpalette(whiteshifts[white-1]);
+#if USE_POLYMOST && USE_OPENGL
+        if (getrendermode() >= 3) setpalettefade(64,62,0,64 * white / WHITESTEPS);
+        else
+#endif
+        setbrightness(gbrightness,&whiteshifts[white-1][0],0);
         palshifted = 1;
     }
     else if( green ) {
-        //asmsetpalette(greenshifts[green-1]);
+#if USE_POLYMOST && USE_OPENGL
+        if (getrendermode() >= 3) setpalettefade(0,64,0,64 * green / GREENSTEPS);
+        else
+#endif
+        setbrightness(gbrightness,&greenshifts[green-1][0],0);
         palshifted=1;
     }
     else if( blue ) {
-        //asmsetpalette(blueshifts[blue-1]);
+#if USE_POLYMOST && USE_OPENGL
+        if (getrendermode() >= 3) setpalettefade(0,0,64,64 * blue / BLUESTEPS);
+        else
+#endif
+        setbrightness(gbrightness,&blueshifts[blue-1][0],0);
         palshifted=1;
     }
 
     else if( palshifted ) {
-        //asmsetpalette(&palette[0]);     // back to normal
-        setbrightness(brightness,palette,0);
+#if USE_POLYMOST && USE_OPENGL
+        if (getrendermode() >= 3) setpalettefade(0,0,0,0);
+        else
+#endif
+        setbrightness(gbrightness,palette,0);  // back to normal
         palshifted = 0;
     }
 

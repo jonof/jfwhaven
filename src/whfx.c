@@ -65,8 +65,6 @@ int revolvesyncx, revolvesyncy;
 
 extern int mapon;
 
-extern short brightness;
-
 extern int  displaytime;
 extern char displaybuf[50];
 
@@ -751,11 +749,11 @@ int scarysize=0;
 
 void scary(void) {
 
-	/*if( rand() > 32600 && rand() > 32600 && scarytime < 0) {
+	if( (rand()&32767) > 32600 && (rand()&32767) > 32600 && scarytime < 0) {
 		scarytime=180;
 		scarysize=30;
 		SND_PlaySound(S_SCARYDUDE,0,0,0,0);
-	}*/
+	}
 	if(scarytime >= 0) {
 		scarytime-=synctics<<1;
 		scarysize+=synctics<<1;
@@ -812,7 +810,7 @@ void thunder(void) {
 			gotpic[SKY>>3] &= ~(1<<(SKY&7));
 			if(waloff[SKY] != -1) {
 				visibility=1024;
-				if(rand() > 32700) {
+				if((rand()&32767) > 32700) {
 					thunderflash=1;
 					thundertime=120;
 				}
@@ -823,7 +821,7 @@ void thunder(void) {
 			if(waloff[SKY2] != -1) {
 				//visibility=1024;
 				visibility=768;
-				if(rand() > 32700) {
+				if((rand()&32767) > 32700) {
 					thunderflash=1;
 					thundertime=120;
 				}
@@ -834,7 +832,7 @@ void thunder(void) {
 			if(waloff[SKY3] != -1) {
 				//visibility=1024;
 				visibility=512;
-				if(rand() > 32700) {
+				if((rand()&32767) > 32700) {
 					thunderflash=1;
 					thundertime=120;
 				}
@@ -845,7 +843,7 @@ void thunder(void) {
 			if(waloff[SKY4] != -1) {
 				//visibility=1024;
 				visibility=512;
-				if(rand() > 32700) {
+				if((rand()&32767) > 32700) {
 					thunderflash=1;
 					thundertime=120;
 				}
@@ -856,7 +854,7 @@ void thunder(void) {
 			if(waloff[SKY5] != -1) {
 				//visibility=1024;
 				visibility=1024;
-				if(rand() > 32700) {
+				if((rand()&32767) > 32700) {
 					thunderflash=1;
 					thundertime=120;
 				}
@@ -867,7 +865,7 @@ void thunder(void) {
 			if(waloff[SKY6] != -1) {
 				//visibility=1024;
 				visibility=512;
-				if(rand() > 32700) {
+				if((rand()&32767) > 32700) {
 					thunderflash=1;
 					thundertime=120;
 				}
@@ -878,7 +876,7 @@ void thunder(void) {
 			if(waloff[SKY7] != -1) {
 				//visibility=1024;
 				visibility=512;
-				if(rand() > 32700) {
+				if((rand()&32767) > 32700) {
 					thunderflash=1;
 					thundertime=120;
 				}
@@ -889,7 +887,7 @@ void thunder(void) {
 			if(waloff[SKY8] != -1) {
 				//visibility=1024;
 				visibility=1024;
-				if(rand() > 32700) {
+				if((rand()&32767) > 32700) {
 					thunderflash=1;
 					thundertime=120;
 				}
@@ -900,7 +898,7 @@ void thunder(void) {
 			if(waloff[SKY9] != -1) {
 				//visibility=1024;
 				visibility=2048;
-				if(rand() > 32700) {
+				if((rand()&32767) > 32700) {
 					thunderflash=1;
 					thundertime=120;
 				}
@@ -911,7 +909,7 @@ void thunder(void) {
 			if(waloff[SKY10] != -1) {
 				//visibility=1024;
 				visibility=1024;
-				if(rand() > 32700) {
+				if((rand()&32767) > 32700) {
 					thunderflash=1;
 					thundertime=120;
 				}
@@ -926,8 +924,12 @@ void thunder(void) {
 		if(thundertime < 0) {
 			thunderflash=0;
 			//brightness=0;
-			//   brightness=gbrightness;
-			//   setbrightness(brightness,palette,0);
+			brightness=gbrightness;
+#if USE_POLYMOST && USE_OPENGL
+			if (getrendermode() >= 3) setpalettefade(0,0,0,0);
+			else
+#endif
+			setbrightness(brightness,palette,0);
 			//JSA_DEMO3
 			SND_Sound(S_THUNDER1+(rand()%4));
 			//visibility=2048;
@@ -938,7 +940,6 @@ void thunder(void) {
 	if(thunderflash == 1) {
 		if(waloff[SKY]!=-1) {
 			val=rand()%4;
-			//   brightness+=val;
 			switch(val) {
 			case 0:
 				visibility=2048;
@@ -956,9 +957,16 @@ void thunder(void) {
 				visibility=4096;
 			break;
 			}
-			//   if(brightness > 8)
-			//   	brightness=0;
-			//   setbrightness(brightness,palette,0);
+#if USE_POLYMOST && USE_OPENGL
+			if (getrendermode() >= 3) setpalettefade(64,64,64,8*val);
+			else
+#endif
+			{
+				brightness+=val;
+				if(brightness > 8)
+					brightness=0;
+				setbrightness(brightness,palette,0);
+			}
 		}
 	}
 }

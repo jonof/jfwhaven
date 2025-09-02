@@ -2373,7 +2373,7 @@ void drawweapons(struct player *plr) {
 
 	if( spellbookflip == 1) {
 		if( plr->screensize <= 320 )
-			rotatesprite(122<<16,154<<16,65536,0,SPELLBOOKBACK,0,0,2+8+16,0,0,xdim-1,ydim-1);
+			rotatesprite(121<<16,154<<16,65536,0,SPELLBOOKBACK,0,0,2+8+16,0,0,xdim-1,ydim-1);
 
 		spellbooktics-=synctics;
 		if( spellbooktics < 0 ) {
@@ -3734,7 +3734,7 @@ void potionpic(int currentpotion) {
 		return;
 
 	rotatesprite(260<<16,161<<16,65536,0,POTIONBACKPIC,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
-	rotatesprite((260-2)<<16,(161-4)<<16,65536,0,POTIONARROW+currentpotion,0,0,2+8+16+128,0,0,xdim-1,ydim-1);
+	rotatesprite((260-2)<<16,(161-4)<<16,65536,0,POTIONARROW+currentpotion,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
 
 	for(i=0;i<MAXPOTIONS;i++) {
 		if(plr->potion[i] < 0)
@@ -3851,6 +3851,7 @@ void orbpic(int currentorb) {
 
 	spellbookpage=spellbookanim[currentorb][8].daweaponframe;
 
+	rotatesprite(121<<16,154<<16,65536,0,SPELLBOOKBACK,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
 	rotatesprite(121<<16,161<<16,65536,0,spellbookpage,0,0,2+8+16+128,0,0,xdim-1,ydim-1);
 	fancyfontperm(126,181,SCOREFONT-26,tempbuf,0);
 

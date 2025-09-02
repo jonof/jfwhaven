@@ -100,7 +100,7 @@ extern int showstatusbar;
 extern int showheart;
 extern int showbook;
 
-short  oldmousestatus, brightness;
+short  oldmousestatus, brightness, gbrightness;
 extern short  compass;
 extern int playerdie;
 

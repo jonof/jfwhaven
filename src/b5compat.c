@@ -3,7 +3,7 @@
 void permanentwritesprite(int thex, int they, short tilenum, signed char shade,
         int cx1, int cy1, int cx2, int cy2, unsigned char dapalnum) {
     rotatesprite(thex<<16,they<<16,65536L,0,tilenum,shade,
-                 dapalnum,8+16,cx1,cy1,cx2,cy2);
+                 dapalnum,2+8+16+64+128,cx1,cy1,cx2,cy2);
 }
 
 void overwritesprite(int thex, int they, short tilenum, signed char shade,

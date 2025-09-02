@@ -244,6 +244,9 @@ int loadsetup(const char *fn)
 #ifdef RENDERTYPEWIN
     win_setmaxrefreshfreq(tmpmaxrefreshfreq);
 #endif
+    if (tmpbrightness >= 0) {
+        gbrightness = brightness = min(max(tmpbrightness,0),15);
+    }
     if (tmpsamplerate >= 0) {
         option[7] = (tmpsamplerate & 0x0f) << 4;
         option[7] |= 1<<1;  // 16-bit
@@ -278,7 +281,7 @@ int writesetup(const char *fn)
     fp = Bfopen(fn,"wt");
     if (!fp) return -1;
 
-    tmpbrightness = brightness;
+    tmpbrightness = gbrightness;
 #if USE_POLYMOST
     tmprenderer = getrendermode();
 #endif

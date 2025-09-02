@@ -127,7 +127,7 @@ int lockclock;
 extern int xdimgame, ydimgame, bppgame;
 extern int forcesetup;
 extern int goreon, difficulty;
-extern short brightness;
+extern short brightness, gbrightness;
 
 
 //#define NUMOPTIONS 8
