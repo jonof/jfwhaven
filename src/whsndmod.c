@@ -502,7 +502,7 @@ SND_PlaySound(unsigned short sound, int x,int y, unsigned short Pan,unsigned sho
 	SampleRay[wIndex].loopcount = loopcount;
 	if(loopcount) {
 		SampleRay[wIndex].handle = FX_PlayLoopedRaw(Samples[sound].cache_ptr, Samples[sound].cache_length,
-			Samples[sound].cache_ptr, Samples[sound].cache_ptr+Samples[sound].cache_length,
+			Samples[sound].cache_ptr, (char*)Samples[sound].cache_ptr+Samples[sound].cache_length,
        		11025, 0, 255, 255, 255, 1, wIndex);
 	} else {
 		SampleRay[wIndex].handle = FX_PlayRaw3D(Samples[sound].cache_ptr, Samples[sound].cache_length,
