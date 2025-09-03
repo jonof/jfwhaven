@@ -13,6 +13,7 @@ typedef struct
 	int      handle;
 	int      number;
 	int      x,y;
+	int      loopcount;
 } SampleType;
 
 struct    soundbuffertype {
@@ -81,6 +82,8 @@ soundcallback(unsigned int i)
      if (i == (unsigned int)-1) return;
 
      Samples[SampleRay[i].number].users--;
+     if( Samples[SampleRay[i].number].users < 0 )
+          Samples[SampleRay[i].number].users=0;
      if( Samples[SampleRay[i].number].users == 0 ) {
           Samples[SampleRay[i].number].cache_lock=199;
      }
@@ -95,6 +98,7 @@ SND_SetupTables(void)
 	int i;
 	unsigned int    DigiList[1024];
 
+	memset(&Samples, 0, sizeof(Samples));
 	if(SoundMode) {
 		hSoundFile = kopen4load("joesnd", 0);
 		if( hSoundFile < 0 ) {
@@ -105,13 +109,12 @@ SND_SetupTables(void)
 		if (i != sizeof(DigiList)) {
 			crashgame("JOESND is too short");
 		}
-	}
 
-	memset(&Samples, 0, sizeof(Samples));
-	for (i=0; i<MAX_SAMPLES; i++) {
-		Samples[i].offset = DigiList[i*3]*4096;
-		Samples[i].cache_length = DigiList[i*3+1];
-		Samples[i].priority = DigiList[i*3+2];
+		for (i=0; i<MAX_SAMPLES; i++) {
+			Samples[i].offset = DigiList[i*3]*4096;
+			Samples[i].cache_length = DigiList[i*3+1];
+			Samples[i].priority = DigiList[i*3+2];
+		}
 	}
 
 	if(MusicMode) {
@@ -177,11 +180,6 @@ SND_Startup(void)
 
 	if (SD_Started)
 		return;
-/*
-//GET Volume values
-		wMIDIVol = (musiclevel<<3);
-		wDIGIVol = (digilevel<<11);
-*/
 
 	if(SoundMode) {
 		#ifdef _WIN32
@@ -195,7 +193,7 @@ SND_Startup(void)
 			Digi_Loaded = TRUE;
 
 			FX_SetCallBack(soundcallback);
-			// sosDIGISetMasterVolume(hSOSDriverHandles[DIGI],wDIGIVol);
+			FX_SetVolume((digilevel<<4)-1);
 		}
 
 		for( wIndex=0; wIndex<MAX_ACTIVE_SAMPLES; wIndex++ ) {
@@ -213,7 +211,7 @@ SND_Startup(void)
 		} else {
 			Midi_Loaded = TRUE;
 		}
-		//sosMIDISetMasterVolume(wMIDIVol);
+		MUSIC_SetVolume((musiclevel<<4)-1);
 	}
 
 	// read in offset page list's
@@ -272,18 +270,13 @@ SND_Shutdown(void)
 void
 SND_Mixer( unsigned short wSource, unsigned short wVolume )
 {
-    (void)wSource; (void)wVolume;
-/*
 	if(wSource==MIDI) {
-		wMIDIVol = (wVolume<<3);
-		sosMIDISetMasterVolume((BYTE)wMIDIVol);
+		MUSIC_SetVolume((wVolume<<4)-1);
 	}
 
 	else {
-		wDIGIVol = (wVolume<<11);
-		sosDIGISetMasterVolume(hSOSDriverHandles[DIGI],wDIGIVol);
+		FX_SetVolume((wVolume<<4)-1);
 	}
- */
 }
 
 
@@ -461,7 +454,7 @@ SND_PlaySound(unsigned short sound, int x,int y, unsigned short Pan,unsigned sho
 	}
 
 	for( wIndex=0,flag=0; wIndex<MAX_ACTIVE_SAMPLES; wIndex++ )
-		if( SampleRay[wIndex].handle >= 0 && !FX_SoundActive(SampleRay[wIndex].handle) ) {
+		if( SampleRay[wIndex].handle < 0 || !FX_SoundActive(SampleRay[wIndex].handle) ) {
 			flag=1;
 			break;
 		}
@@ -472,7 +465,7 @@ SND_PlaySound(unsigned short sound, int x,int y, unsigned short Pan,unsigned sho
 	else if(!flag) {                        //none avail but high prio
 		for( wIndex=0; wIndex<MAX_ACTIVE_SAMPLES; wIndex++ )
 		{
-			if(Samples[SampleRay[wIndex].number].priority<9 /*&& sSOSSampleData[wIndex].wLoopCount !=-1*/) {
+			if(Samples[SampleRay[wIndex].number].priority<9 && SampleRay[wIndex].loopcount !=-1) {
 				if(FX_SoundActive(SampleRay[wIndex].handle))
 				{
 					FX_StopSound(SampleRay[wIndex].handle);
@@ -480,7 +473,7 @@ SND_PlaySound(unsigned short sound, int x,int y, unsigned short Pan,unsigned sho
 					if (Samples[SampleRay[wIndex].number].users == 0) {
 						Samples[SampleRay[wIndex].number].cache_lock = 199;
 					}
-					// sSOSSampleData[wIndex].wLoopCount = 0;
+					SampleRay[wIndex].loopcount = 0;
 					SampleRay[wIndex].handle = -1;
 					SampleRay[wIndex].number = -1;
 					break;
@@ -505,11 +498,16 @@ SND_PlaySound(unsigned short sound, int x,int y, unsigned short Pan,unsigned sho
 			return -1;
 		}
 	}
-	// if(loopcount)
-	// 	sSOSSampleData[wIndex].wLoopCount = loopcount;
 
-	SampleRay[wIndex].handle = FX_PlayRaw3D(Samples[sound].cache_ptr, Samples[sound].cache_length,
-		11025, 0, Pan, sqrdist, 1, wIndex);
+	SampleRay[wIndex].loopcount = loopcount;
+	if(loopcount) {
+		SampleRay[wIndex].handle = FX_PlayLoopedRaw(Samples[sound].cache_ptr, Samples[sound].cache_length,
+			Samples[sound].cache_ptr, Samples[sound].cache_ptr+Samples[sound].cache_length,
+       		11025, 0, 255, 255, 255, 1, wIndex);
+	} else {
+		SampleRay[wIndex].handle = FX_PlayRaw3D(Samples[sound].cache_ptr, Samples[sound].cache_length,
+			11025, 0, Pan, sqrdist, 1, wIndex);
+	}
 	if (SampleRay[wIndex].handle < 0) {
 		if (Samples[sound].users == 0)
 			Samples[sound].cache_lock = 199;
@@ -519,7 +517,7 @@ SND_PlaySound(unsigned short sound, int x,int y, unsigned short Pan,unsigned sho
 		SampleRay[wIndex].y = y;
 		SampleRay[wIndex].number = sound;
 	}
-	return(wIndex);
+	return(SampleRay[wIndex].handle);
 }
 
 
@@ -575,13 +573,15 @@ SND_StopLoop(int which)
 	for( wIndex=0; wIndex<MAX_ACTIVE_SAMPLES; wIndex++ )
 		if(which==SampleRay[wIndex].handle)
 			break;
+	if (wIndex==MAX_ACTIVE_SAMPLES)
+		return;
 
 	FX_StopSound(SampleRay[wIndex].handle);
 	Samples[SampleRay[wIndex].number].users--;
 	if (Samples[SampleRay[wIndex].number].users == 0) {
 		Samples[SampleRay[wIndex].number].cache_lock = 199;
 	}
-	// sSOSSampleData[wIndex].wLoopCount = 0;
+	SampleRay[wIndex].loopcount = 0;
 	SampleRay[wIndex].handle = -1;
 	SampleRay[wIndex].number = -1;
 }

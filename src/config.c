@@ -34,6 +34,9 @@ static int tmpjoystick = -1;
 
 //TODO deal with option2[]
 
+extern int musiclevel;
+extern int digilevel;
+
 static struct {
     const char *name;
     int type;
@@ -98,10 +101,20 @@ static struct {
         ";   6 - 44.1 KHz\n"
         ";   7 - 48 KHz\n"
     },
+    { "digilevel", type_int, &digilevel,
+        "; Sound volume level\n"
+        ";   0 - Silent\n"
+        ";  16 - Loud\n"
+    },
     { "music", type_bool, &tmpmusic,
         "; Music playback\n"
         ";   0 - Off\n"
         ";   1 - On\n"
+    },
+    { "musiclevel", type_int, &musiclevel,
+        "; Music volume level\n"
+        ";   0 - Silent\n"
+        ";  16 - Loud\n"
     },
     { "mouse", type_bool, &tmpmouse,
         "; Enable mouse\n"
@@ -252,9 +265,11 @@ int loadsetup(const char *fn)
         option[7] |= 1<<1;  // 16-bit
         option[7] |= 1<<2;  // stereo
     }
+    digilevel = min(16, max(0, digilevel));
     if (tmpmusic >= 0) {
         option[2] = !!tmpmusic;
     }
+    musiclevel = min(16, max(0, musiclevel));
     if (tmpmouse == 0) {
         option[3] &= ~1;
     } else if (tmpmouse > 0) {

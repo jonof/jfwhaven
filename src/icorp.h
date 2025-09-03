@@ -352,6 +352,7 @@ void SND_StopLoop(int which);
 void SND_DIGIFlush(void);
 void dolevelmusic(int level);
 void playsound_loc(int soundnum,int xplc,int yplc);
+void updatesound_loc(void);
 
 // whtag.c
 void operatesprite(int s);

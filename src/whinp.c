@@ -7,8 +7,8 @@
 #include "keydefs.h"                                             // Les 07/24/95
 
 int soundcontrol;
-int musiclevel;
-int digilevel;
+int musiclevel=16;
+int digilevel=16;
 int soundtoggle;
 
 extern int mapon;
@@ -1422,9 +1422,6 @@ void typecheat(char ch) {
 }
 
 void dosoundthing(void) {
-
-		musiclevel=(wMIDIVol>>3);
-		digilevel=(wDIGIVol>>11);
 
 		if( keystatus[keys[KEYFWD]] > 0)
 			soundcontrol++;

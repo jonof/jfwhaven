@@ -230,8 +230,8 @@ struct ambsounds {
 	//
 	//          GLOBAL VARIABLES
 	//
-	int     SoundMode,wDIGIVol;
-	int     MusicMode,wMIDIVol;
+	int     SoundMode;
+	int     MusicMode;
 
 
 #else
@@ -239,7 +239,7 @@ struct ambsounds {
 
 
 
-extern int  SoundMode,wDIGIVol,MusicMode,wMIDIVol;
+extern int  SoundMode,MusicMode;
 
 extern struct ambsounds ambsoundarray[];
 extern int lavasnd,batsnd,cartsnd;

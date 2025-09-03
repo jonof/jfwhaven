@@ -208,7 +208,7 @@ void initwater(void) {
 		 waterradcnt[r]++;
 	  }
 
-   for(z=0;z<16;z++)
+   for(z=0;z<WATERMAXDROPS;z++)
 	  waterdropsizlookup[z] = 8 / (ksqrt(z)+1);
 
    for(z=0;z<WATERSIZ;z++)
@@ -771,7 +771,7 @@ void scary(void) {
 
 void dofx(void) {
 
-	//updatesound_loc();
+	updatesound_loc();
 	lavadryland();
 	scary();
 	if(revolvecnt > 0)
