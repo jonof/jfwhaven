@@ -358,7 +358,7 @@ void operatesector(int s) {
 	  daz = sector[s].floorz+(1024*(sector[s].lotag-1100));
 
 	  if ((j = setanimation(&sector[s].floorz,daz,32L)) >= 0) {
-			  SND_PlaySound(S_STONELOOP1,0,0,0,(sector[s].lotag-1100)/10);
+			  SND_PlaySound(S_STONELOOP1,0,0,0,1024*(sector[s].lotag-1100)/32);
 	  }
    sector[s].lotag=0;
    }
@@ -391,7 +391,7 @@ void operatesector(int s) {
 	  daz = sector[s].floorz-(1024*(sector[s].lotag-1200));
 
 	  if ((j = setanimation(&sector[s].floorz,daz,32L)) >= 0) {
-		SND_PlaySound(S_STONELOOP1,0,0,0,(sector[s].lotag-1200)/10);
+		SND_PlaySound(S_STONELOOP1,0,0,0,1024*(sector[s].lotag-1200)/32);
 	  }
    sector[s].lotag=0;
    }
@@ -404,7 +404,7 @@ void operatesector(int s) {
 
 	  if ((j = setanimation(&sector[s].ceilingz,daz,32L)) >= 0)
 	  {
-		SND_PlaySound(S_STONELOOP1,0,0,0,(sector[s].lotag-1300)/10);
+		SND_PlaySound(S_STONELOOP1,0,0,0,1024*(sector[s].lotag-1300)/32);
 	  }
    sector[s].lotag=0;
    }
@@ -418,7 +418,7 @@ void operatesector(int s) {
 
 	  if ((j = setanimation(&sector[s].ceilingz,daz,32L)) >= 0) {
 //JSA_DEMO
-		SND_PlaySound(S_STONELOOP1,0,0,0,(sector[s].lotag-1400)/10);
+		SND_PlaySound(S_STONELOOP1,0,0,0,1024*(sector[s].lotag-1400)/32);
 	  }
    sector[s].lotag=0;
    }
@@ -438,7 +438,7 @@ void operatesector(int s) {
 	  daz = sector[s].ceilingz+(1024*(sector[s].lotag-1500));
 
 	  if ((j = setanimation(&sector[s].ceilingz,daz,32L)) >= 0) {
-		SND_PlaySound(S_STONELOOP1,0,0,0,(sector[s].lotag-1500)/10);
+		SND_PlaySound(S_STONELOOP1,0,0,0,1024*(sector[s].lotag-1500)/32);
 	  }
 	  sector[s].lotag=0;
    }
@@ -457,7 +457,7 @@ void operatesector(int s) {
 	  daz = sector[s].ceilingz-(1024*(sector[s].lotag-1600));
 
 	  if ((j = setanimation(&sector[s].ceilingz,daz,32L)) >= 0) {
-		SND_PlaySound(S_STONELOOP1,0,0,0,(sector[s].lotag-1600)/10);
+		SND_PlaySound(S_STONELOOP1,0,0,0,1024*(sector[s].lotag-1600)/32);
 	  }
 	  sector[s].lotag=0;
    }
@@ -484,7 +484,7 @@ void operatesector(int s) {
 		 }
 		 if ((j = setanimation(&sector[s].floorz,daz,32L)) >= 0)
 		 {
-			SND_PlaySound(S_STONELOOP1,0,0,0,(sector[s].lotag-1800)/10);
+			SND_PlaySound(S_STONELOOP1,0,0,0,1024*(sector[s].lotag-1800)/32);
 		 }
 	  }
    }

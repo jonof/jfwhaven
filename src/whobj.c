@@ -1523,7 +1523,7 @@ void newstatus(short sn, int  seq) {
 //JSA_DEMO3
 					if(cartsnd==-1) {
 						playsound_loc(S_CLUNK,sprite[sn].x,sprite[sn].y);
-						cartsnd = SND_PlaySound(S_CHAIN1,sprite[sn].x,sprite[sn].y,0,5);
+						cartsnd = SND_PlaySound(S_CHAIN1,sprite[sn].x,sprite[sn].y,0,5*2*CLKIPS);
 					}
 
 					changespritestat(sn,LIFTUP);
@@ -1532,7 +1532,7 @@ void newstatus(short sn, int  seq) {
 //JSA_DEMO3
 					if(cartsnd==-1) {
 						playsound_loc(S_CLUNK,sprite[sn].x,sprite[sn].y);
-						cartsnd = SND_PlaySound(S_CHAIN1,sprite[sn].x,sprite[sn].y,0,5);
+						cartsnd = SND_PlaySound(S_CHAIN1,sprite[sn].x,sprite[sn].y,0,5*2*CLKIPS);
 					}
 
 					changespritestat(sn,LIFTDN);

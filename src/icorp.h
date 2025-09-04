@@ -345,7 +345,7 @@ void SND_StartMusic(unsigned short level);
 void SND_SongFlush(void);
 void SND_FadeMusic(void );
 void SND_Sting(unsigned short sound);
-int SND_PlaySound(unsigned short sound,int x,int y,unsigned short Pan,unsigned short loopcount);
+int SND_PlaySound(unsigned short sound,int x,int y,unsigned short Pan,int looptics);
 int SND_Sound(unsigned short sound );
 void SND_CheckLoops(void);
 void SND_StopLoop(int which);

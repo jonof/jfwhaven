@@ -1142,7 +1142,7 @@ void cracks(void) {
 //JSA PLUTO
 
 //    if ((j = setanimation(&sector[plr->sector].floorz,daz,DOORSPEED)) >= 0) {
-//            SND_PlaySound(S_STONELOOP1,0,0,0,(sector[plr->sector].lotag-5100)/30);
+//            SND_PlaySound(S_STONELOOP1,0,0,0,1024*(sector[plr->sector].lotag-5100)/DOORSPEED);
 //    }
    sector[plr->sector].lotag=0;
    }
@@ -1156,7 +1156,7 @@ void cracks(void) {
 //JSA PLUTO
 //    if ((j = setanimation(&sector[plr->sector].floorz,daz,DOORSPEED<<1)) >= 0) {
 //
-//            SND_PlaySound(S_STONELOOP1,0,0,0,(sector[plr->sector].lotag-5200)/30);
+//            SND_PlaySound(S_STONELOOP1,0,0,0,1024*(sector[plr->sector].lotag-5200)/)DOORSPEED<<1));
 //    }
    sector[plr->sector].lotag=0;
    }
@@ -1216,7 +1216,7 @@ void lavadryland(void) {
 
 //JSA PLUTO
 //          if((j = setanimation(&sector[s].floorz,daz,32L)) >= 0)
-//              SND_PlaySound(S_STONELOOP1,0,0,0,(sector[s].lotag-900)/10);
+//              SND_PlaySound(S_STONELOOP1,0,0,0,1024*(sector[s].lotag-900)/32);
 
 			sector[s].lotag=0;
 		}

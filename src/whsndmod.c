@@ -13,7 +13,7 @@ typedef struct
 	int      handle;
 	int      number;
 	int      x,y;
-	int      loopcount;
+	int      looptics;
 } SampleType;
 
 struct    soundbuffertype {
@@ -89,6 +89,13 @@ soundcallback(unsigned int i)
      }
      SampleRay[i].handle=-1;
      SampleRay[i].number=-1;
+}
+
+static void
+stoploop(unsigned int i)
+{
+	if (SampleRay[i].handle >= 0 && FX_SoundActive(SampleRay[i].handle))
+		FX_EndLooping(SampleRay[i].handle);
 }
 
 
@@ -408,13 +415,11 @@ SND_Sting(unsigned short sound)
 
 
 int
-SND_PlaySound(unsigned short sound, int x,int y, unsigned short Pan,unsigned short loopcount)
+SND_PlaySound(unsigned short sound, int x,int y, unsigned short Pan,int looptics)
 {
 	//unsigned short  wVol;
 	unsigned short flag=0;
 	int  sqrdist, dx, dy, nr, wIndex;
-
-	(void)loopcount;
 
 	if(!SoundMode || !Digi_Loaded)
 		return(-1);
@@ -465,7 +470,7 @@ SND_PlaySound(unsigned short sound, int x,int y, unsigned short Pan,unsigned sho
 	else if(!flag) {                        //none avail but high prio
 		for( wIndex=0; wIndex<MAX_ACTIVE_SAMPLES; wIndex++ )
 		{
-			if(Samples[SampleRay[wIndex].number].priority<9 && SampleRay[wIndex].loopcount !=-1) {
+			if(Samples[SampleRay[wIndex].number].priority<9 && SampleRay[wIndex].looptics !=-1) {
 				if(FX_SoundActive(SampleRay[wIndex].handle))
 				{
 					FX_StopSound(SampleRay[wIndex].handle);
@@ -475,7 +480,7 @@ SND_PlaySound(unsigned short sound, int x,int y, unsigned short Pan,unsigned sho
 							Samples[SampleRay[wIndex].number].cache_lock = 199;
 						}
 					}
-					SampleRay[wIndex].loopcount = 0;
+					SampleRay[wIndex].looptics = 0;
 					SampleRay[wIndex].handle = -1;
 					SampleRay[wIndex].number = -1;
 					break;
@@ -501,8 +506,8 @@ SND_PlaySound(unsigned short sound, int x,int y, unsigned short Pan,unsigned sho
 		}
 	}
 
-	SampleRay[wIndex].loopcount = loopcount;
-	if(loopcount) {
+	SampleRay[wIndex].looptics = looptics;
+	if(looptics) {
 		SampleRay[wIndex].handle = FX_PlayLoopedRaw(Samples[sound].cache_ptr, Samples[sound].cache_length,
 			Samples[sound].cache_ptr, (char*)Samples[sound].cache_ptr+Samples[sound].cache_length-1,
        		11025, 0, 255, 255, 255, 1, wIndex);
@@ -518,6 +523,7 @@ SND_PlaySound(unsigned short sound, int x,int y, unsigned short Pan,unsigned sho
 		SampleRay[wIndex].x = x;
 		SampleRay[wIndex].y = y;
 		SampleRay[wIndex].number = sound;
+		if (looptics>0) setdelayfunc((void(*)(int))stoploop,wIndex,looptics);
 	}
 	return(SampleRay[wIndex].handle);
 }
@@ -585,7 +591,7 @@ SND_StopLoop(int which)
 			Samples[SampleRay[wIndex].number].cache_lock = 199;
 		}
 	}
-	SampleRay[wIndex].loopcount = 0;
+	SampleRay[wIndex].looptics = 0;
 	SampleRay[wIndex].handle = -1;
 	SampleRay[wIndex].number = -1;
 }
