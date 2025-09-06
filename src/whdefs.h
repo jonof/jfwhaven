@@ -5,30 +5,6 @@
 #define   STATUSHEIGHT   46
 #define   STATUSSCREEN   (YDIM-STATUSHEIGHT)
 
-#if 0                                             // Les 07/24/95 see keydefs.h
-#define   KEYFWD    0
-#define   KEYBACK   1
-#define   KEYLEFT   2
-#define   KEYRIGHT  3
-#define   KEYRUN    4
-#define   KEYSTRAFE 5
-#define   KEYFIRE   6
-#define   KEYUSE    7
-#define   KEYSTAND  8
-#define   KEYLAY    9
-#define   KEYUP     10
-#define   KEYDOWN   11
-#define   KEYMAP    12
-#define   KEYVIEW   13
-#define   KEYZOOMIN 14
-#define   KEYZOOMOUT 15
-
-#define   KEYLENTER  28
-
-#define   KEYELEVUP 73
-#define   KEYELEVDN 81
-#endif                                            // Les 07/24/95
-
 #define   ACTIVATESECTOR      1
 #define   ACTIVATESECTORONCE  2
 

@@ -40,9 +40,6 @@ extern int musiclevel;
 extern int digilevel;
 extern int loopinstuff;
 
-//TEMP!!
-volatile  unsigned joetime;
-
 static unsigned short songelements=3;
 static unsigned short arrangements=3;
 static unsigned short songsperlevel;

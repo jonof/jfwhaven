@@ -13,8 +13,6 @@ int vampiretime=0;
 int    justwarpedcnt=0;
 extern int justwarpedfx;
 
-extern int difficulty;
-
 extern int cartsnd;
 
 extern int mapon;
@@ -25,8 +23,6 @@ extern int spellbookframe;
 extern int spellbookflip;
 
 extern int  spiked;
-extern int  pressedkey;
-extern int pageoffset;
 extern int selectedgun;
 extern int currentpotion;
 

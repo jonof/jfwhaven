@@ -114,9 +114,6 @@ int *animateptr[],
      neartaghitdist;
 
 extern
-unsigned int flags32[];
-
-extern
 short neartagsector,
      neartagwall,
      neartagsprite;

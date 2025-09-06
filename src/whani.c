@@ -14,41 +14,16 @@ extern int  cartsnd;
 extern int  batsnd;
 
 extern int mapon;
-extern int spellbooktics;
-extern int spellbook;
-extern int spellbookframe;
-extern int spellbookflip;
-
-extern int  spiked;
-extern int  pressedkey;
-extern int pageoffset;
-extern int selectedgun;
-extern int currentpotion;
 
 extern short torchpattern[];
 
 extern char flashflag;
-extern char tempbuf[];
 extern char displaybuf[];
-extern char scorebuf[];
-extern char healthbuf[];
-
-extern char armorbuf[];
-extern char potionbuf[];
 
 extern int  displaytime;
 extern int  shadowtime;
-extern int  helmettime;
 
-extern int  potiontilenum;
-extern int  debuginfo;
-
-extern int scoretime;
-extern  int strongtime,
-			invincibletime,
-			manatime,
-			invisibletime,
-			nightglowtime;
+extern  int invisibletime;
 
 
 void animateobjs(struct player *plr) {

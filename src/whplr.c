@@ -39,10 +39,8 @@ short neartagsector,
 struct player player[MAXPLAYERS];
 
 extern int justteleported;
-extern int gameactivated;
 extern int selectedgun;
 extern short oldmousestatus;
-extern int oldhoriz;
 
 extern char tempbuf[];
 extern char displaybuf[];
@@ -53,16 +51,10 @@ extern char potionbuf[];
 
 extern int displaytime;
 
-extern int weapontimex;
-extern int weapontimey;
-extern int weapontilenum;
-
 extern int potiontilenum;
 extern int shadowtime;
 
 extern int playerdie;
-extern int frames;
-extern int vel;
 
 int hasshot;
 int orbshot;

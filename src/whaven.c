@@ -16,17 +16,6 @@ int *animateptr[MAXANIMATES],
       animatevel[MAXANIMATES],
       animatecnt=0;
 
-unsigned int flags32[32]={
-      0x80000000,0x40000000,0x20000000,0x10000000,
-      0x08000000,0x04000000,0x02000000,0x01000000,
-      0x00800000,0x00400000,0x00200000,0x00100000,
-      0x00080000,0x00040000,0x00020000,0x00010000,
-      0x00008000,0x00004000,0x00002000,0x00001000,
-      0x00000800,0x00000400,0x00000200,0x00000100,
-      0x00000080,0x00000040,0x00000020,0x00000010,
-      0x00000008,0x00000004,0x00000002,0x00000001
-};
-
 extern short cddrive;
 
 int followx, followy;
@@ -52,15 +41,11 @@ int keys[NUMKEYS]={
      0x23,0x1E,0x14,0x1F,0x35,0x45
 };
 
-extern int followmode;
 extern int loadedgame;
 extern char tempbuf[50];
 extern int  spiked;
 
 extern short brightness;
-extern int goreon;
-extern int musiclevel;
-extern int digilevel;
 
 int synctics;
 int globhiz, globloz, globhihit, globlohit;
@@ -114,8 +99,6 @@ int dragx1[16], dragy1[16], dragx2[16], dragy2[16], dragfloorz[16];
 short warpsectorlist[16], warpsectorcnt;
 
 short bobbingsectorlist[16], bobbingsectorcnt;
-
-extern volatile  unsigned joetime;     //temp
 
 //JSA ends
 
@@ -186,12 +169,6 @@ void rp_delay(int goal) {
 //
 //   game code
 //
-
-void
-showadditionalinfo(void)
-{
-      printf("average synctics = %d\n",totsynctics/frames);
-}
 
 int  crashflag;
 
@@ -1240,15 +1217,6 @@ int app_main(int argc,const char * const argv[]) {
     loadpics("tiles000.art",8*1048576);
 
 
-#if 0
-     unsigned vixen;
-     if (vixen=ismscdex()) {
-          sprintf(tempbuf,"%c:\\whaven\\intro.smk",vixen);
-          if (access(tempbuf,F_OK) != 0) {
-              crash("\nCD-ROM NOT DETECTED  \n");
-         }
-     }
-#endif
     initlava();
     initwater();
 
@@ -1288,8 +1256,6 @@ int app_main(int argc,const char * const argv[]) {
 
     SND_MenuMusic(MENUSONG);
 
-    //intro();
-
     initpaletteshifts();
 
     readpalettetable();
@@ -1308,35 +1274,6 @@ int app_main(int argc,const char * const argv[]) {
     return 0;
 }
 
-
-void intro(void) {
-
-    int i;
-
-
-    //loadtile(CAPSTONE);
-
-    //for(i=0;i<32;i++) {
-    //   overwritesprite(80,40,CAPSTONE,0,0,0);
-    //   nextpage();
-    //}
-
-
-    loadtile(TITLEPIC);
-
-    for(i=0;i<32;i++) {
-        overwritesprite(0L,0L,TITLEPIC,32-i,0,0);
-        nextpage();
-    }
-
-    rp_delay(120);
-
-    for(i=0;i<32;i++) {
-        overwritesprite(0L,0L,TITLEPIC,i,0,0);
-        nextpage();
-    }
-
-}
 
 void drawbackground(void) {
     struct player *plr;
