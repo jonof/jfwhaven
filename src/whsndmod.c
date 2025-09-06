@@ -469,9 +469,11 @@ SND_PlaySound(unsigned short sound, int x,int y, unsigned short Pan,unsigned sho
 				if(FX_SoundActive(SampleRay[wIndex].handle))
 				{
 					FX_StopSound(SampleRay[wIndex].handle);
-					Samples[SampleRay[wIndex].number].users--;
-					if (Samples[SampleRay[wIndex].number].users == 0) {
-						Samples[SampleRay[wIndex].number].cache_lock = 199;
+					if (SampleRay[wIndex].number>=0) {
+						Samples[SampleRay[wIndex].number].users--;
+						if (Samples[SampleRay[wIndex].number].users == 0) {
+							Samples[SampleRay[wIndex].number].cache_lock = 199;
+						}
 					}
 					SampleRay[wIndex].loopcount = 0;
 					SampleRay[wIndex].handle = -1;
@@ -502,7 +504,7 @@ SND_PlaySound(unsigned short sound, int x,int y, unsigned short Pan,unsigned sho
 	SampleRay[wIndex].loopcount = loopcount;
 	if(loopcount) {
 		SampleRay[wIndex].handle = FX_PlayLoopedRaw(Samples[sound].cache_ptr, Samples[sound].cache_length,
-			Samples[sound].cache_ptr, (char*)Samples[sound].cache_ptr+Samples[sound].cache_length,
+			Samples[sound].cache_ptr, (char*)Samples[sound].cache_ptr+Samples[sound].cache_length-1,
        		11025, 0, 255, 255, 255, 1, wIndex);
 	} else {
 		SampleRay[wIndex].handle = FX_PlayRaw3D(Samples[sound].cache_ptr, Samples[sound].cache_length,
@@ -577,9 +579,11 @@ SND_StopLoop(int which)
 		return;
 
 	FX_StopSound(SampleRay[wIndex].handle);
-	Samples[SampleRay[wIndex].number].users--;
-	if (Samples[SampleRay[wIndex].number].users == 0) {
-		Samples[SampleRay[wIndex].number].cache_lock = 199;
+	if (SampleRay[wIndex].number>=0) {
+		Samples[SampleRay[wIndex].number].users--;
+		if (Samples[SampleRay[wIndex].number].users == 0) {
+			Samples[SampleRay[wIndex].number].cache_lock = 199;
+		}
 	}
 	SampleRay[wIndex].loopcount = 0;
 	SampleRay[wIndex].handle = -1;
@@ -600,9 +604,11 @@ SND_DIGIFlush(void)
 		if( SampleRay[wIndex].handle < 0)
 			continue;
 		FX_StopSound(SampleRay[wIndex].handle);
-		Samples[SampleRay[wIndex].number].users--;
-		if (Samples[SampleRay[wIndex].number].users == 0) {
-			Samples[SampleRay[wIndex].number].cache_lock = 199;
+		if (SampleRay[wIndex].number>=0) {
+			Samples[SampleRay[wIndex].number].users--;
+			if (Samples[SampleRay[wIndex].number].users == 0) {
+				Samples[SampleRay[wIndex].number].cache_lock = 199;
+			}
 		}
 		SampleRay[wIndex].handle = -1;
 		SampleRay[wIndex].number = -1;

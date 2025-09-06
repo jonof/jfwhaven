@@ -172,7 +172,7 @@
 #define  MAX_ACTIVE_SAMPLES   10
 #define  MAX_ACTIVE_SONGS     4
 //num of array elements in ambsoundarray[]
-#define MAX_AMB_SOUNDS       6
+#define MAX_AMB_SOUNDS       8
 #define  MAX_ACTIVE_FXLOOPS   4
 
 #define  MAX_SND_LOOPS        8

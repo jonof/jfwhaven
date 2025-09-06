@@ -722,13 +722,13 @@ void sectorsounds(void) {
 
 		if(sec & 1) {           //turn loop on if lsb is 1
 			index=((sec^32769)>>1); //(32768|(sprite[i].lotag<<1)|1)
-			if(ambsoundarray[index].hsound==-1)
+			if(index < MAX_AMB_SOUNDS && ambsoundarray[index].hsound==-1)
 				ambsoundarray[index].hsound = SND_PlaySound(ambsoundarray[index].soundnum,0,0,0,-1);
 		}
 
 		else {              //turn loop off if lsb is 0 and its playing
 			index=((sec^32768)>>1);
-			if(ambsoundarray[index].hsound!=-1) {
+			if(index < MAX_AMB_SOUNDS && ambsoundarray[index].hsound!=-1) {
 				SND_StopLoop(ambsoundarray[index].hsound);
 				ambsoundarray[index].hsound=-1;
 			}
