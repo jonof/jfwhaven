@@ -28,9 +28,6 @@ int escapetomenu=0;
 int selectedgun;
 int  difficulty=2;
 
-int    totsynctics,
-        frames;
-
 int xdimgame = 640, ydimgame = 480, bppgame = 8;
 int forcesetup = 1;
 
@@ -38,7 +35,10 @@ int keys[NUMKEYS]={
      0xC8,0xD0,0xCB,0xCD,0x2A,0x38,0x1D,0x39,
      0x2D,0x2E,0xC9,0xD1,0xC7,0x33,0x34,
      0x0F,0x1C,0x0D,0x0C,0x9C,0x1C,0x29,
-     0x23,0x1E,0x14,0x1F,0x35,0x45
+     0x23,0x1E,0xCF,0x1F,0x35,0x1A,0x1B,
+     0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xA,0xB, // KEYWEAP1..9
+     0x3B,0x3C,0x3D,0x3E,0x3F,0x40,0x41,0x42, // KEYSPELL1..8
+     0x45
 };
 
 extern int loadedgame;
@@ -100,6 +100,8 @@ short warpsectorlist[16], warpsectorcnt;
 
 short bobbingsectorlist[16], bobbingsectorcnt;
 
+int lockclock, ototalclock, gotlastpacketclock, ready2send;
+
 //JSA ends
 
 int justteleported=0;
@@ -125,7 +127,6 @@ int poisontime=0;
 int  shockme=-1;
 int  svgahealth=0;
 int  victor=0;
-int  autohoriz=0;
 int  svga=0;
 char boardname[80];
 char tempboard[80];
@@ -136,13 +137,82 @@ int   delaycnt,
       videoinitflag;
 
 int svgascale, svgaxoff, svgastat, svgaoverstat;
+int nummoves;
 
 //
 //
 //
+
+void getpackets(void) {
+}
+
+void movethings(void) {
+    short i;
+
+    gotlastpacketclock = totalclock;
+    for(i=connecthead;i>=0;i=connectpoint2[i])
+    {
+        copybufbyte(&ffsync[i],&baksync[movefifoend[i]][i],sizeof(input));
+        movefifoend[i] = ((movefifoend[i]+1)&(MOVEFIFOSIZ-1));
+    }
+}
+
+void domovethings(void) {
+    short i;
+
+    nummoves++;
+
+    for(i=connecthead;i>=0;i=connectpoint2[i])
+        copybufbyte(&baksync[movefifoplc][i],&ssync[i],sizeof(input));
+    movefifoplc = ((movefifoplc+1)&(MOVEFIFOSIZ-1));
+
+    lockclock += TICSPERFRAME;
+
+    for(i=connecthead;i>=0;i=connectpoint2[i]) {
+        player[i].ox = player[i].x;
+        player[i].oy = player[i].y;
+        player[i].oz = player[i].z;
+        player[i].ohoriz = player[i].horiz;
+        player[i].oang = player[i].ang;
+        syncprocessinput(i);
+    }
+
+    processobjs(&player[pyrn]);
+    animateobjs(&player[pyrn]);
+    animatetags(&player[pyrn]);
+    doanimations(TICSPERFRAME);
+    dodelayitems(TICSPERFRAME);
+}
 
 void faketimerhandler(void) {
-    return;
+    sampletimer();
+    if ((totalclock < ototalclock+TICSPERFRAME) || (ready2send == 0)) return;
+    ototalclock += TICSPERFRAME;
+
+    getpackets();
+    if (getoutputcirclesize() >= 16) return;
+    getinput();
+
+    if (networkmode == 1) {
+        // TODO broadcast network mode
+        return;
+    }
+
+        //MASTER (or 1 player game)
+    if ((myconnectindex == connecthead) || !netgame) {
+        copybufbyte(&loc,&ffsync[myconnectindex],sizeof(input));
+
+        if (netgame) {
+            // TODO
+        }
+        else if (numplayers >= 2) {
+            // TODO
+        }
+        movethings();
+    }
+    else {                      //I am a SLAVE
+        // TODO
+    }
 }
 
 //
@@ -363,6 +433,10 @@ void setupboard(char *fname) {
     }
 
     plr->ang=daang;
+    plr->ox = plr->x;
+    plr->oy = plr->y;
+    plr->oz = plr->z;
+    plr->oang = plr->ang;
 
     precache();
 
@@ -989,9 +1063,10 @@ void setupboard(char *fname) {
     if(justteleported == 1 || loadedgame == 1) {
 
         plr->hvel=0;
-        angvel=0;
-        svel=0;
-        vel=0;
+        loc.angvel=0;
+        loc.svel=0;
+        loc.vel=0;
+        loc.horizvel=0;
 
         plr->spritenum=insertsprite(plr->sector,0);
         plr->oldsector=plr->sector;
@@ -1017,6 +1092,10 @@ void setupboard(char *fname) {
         loadedgame=0;
     }
 
+    movefifoplc=0;
+    clearbufbyte(&movefifoend,sizeof(movefifoend),0);
+    clearbufbyte(&ffsync[i],sizeof(ffsync),0L);
+    clearbufbyte(&ssync[i],sizeof(ssync),0L);
 
 }
 
@@ -1024,11 +1103,38 @@ void setupboard(char *fname) {
 
 int outsideview=0;
 
-void drawscreen(struct player *plr) {
+#define AVERAGEFRAMES 32
+static unsigned int showfps, averagefps, framecnt, frameval[AVERAGEFRAMES];
+static int osdcmd_showfps(const osdfuncparm_t *parm)
+{
+    if (parm->numparms <= 1) {
+        if (parm->numparms == 1) showfps = min(1,(unsigned)atoi(parm->parms[0]));
+        buildprintf("showfps is %u\n", showfps);
+        return OSDCMD_OK;
+    }
+    return OSDCMD_SHOWHELP;
+}
+
+void drawscreen(struct player *plr, int dasmoothratio) {
+    int cposx, cposy, cposz, choriz;
+    short cang;
+    smoothratio = max(min(dasmoothratio,65536),0);
+
+    if (plr == &player[myconnectindex] && (networkmode == 1 || myconnectindex != connecthead)) {
+        // TODO
+    } else {
+        cposx = plr->ox+mulscale16(plr->x-plr->ox,smoothratio);
+        cposy = plr->oy+mulscale16(plr->y-plr->oy,smoothratio);
+        cposz = plr->oz+mulscale16(plr->z-plr->oz,smoothratio);
+        choriz = plr->ohoriz+mulscale16(plr->horiz-plr->ohoriz,smoothratio);
+        cang = plr->oang+mulscale16(((plr->ang+1024-plr->oang)&2047)-1024,smoothratio);
+    }
 
     if (plr->dimension == 3 || plr->dimension == 2) {
 
-        drawrooms(plr->x,plr->y,plr->z,plr->ang,plr->horiz,plr->sector);
+        sprite[plr->spritenum].cstat |= 0x8000;
+        drawrooms(cposx,cposy,cposz,cang,choriz,plr->sector);
+        sprite[plr->spritenum].cstat &= ~0x8000;
         transformactors(plr);
         drawmasks();
         if( playerdie == 0)
@@ -1049,8 +1155,24 @@ void drawscreen(struct player *plr) {
         whnetmon();
     }
 
+    if (showfps) {
+        int i,j;
+        char fps[60];
+        i = frameval[framecnt&(AVERAGEFRAMES-1)];
+        j = frameval[framecnt&(AVERAGEFRAMES-1)] = getticks(); framecnt++;
+        if (i != j) averagefps = ((mul3(averagefps)+((AVERAGEFRAMES*1000)/(j-i)) )>>2);
+        #ifdef DEBUGGING
+        snprintf(fps,sizeof(fps),"fps %d nummoves %d numframes %d totalclock %d",averagefps,nummoves,numframes,totalclock);
+        #else
+        snprintf(fps,sizeof(fps),"fps %d",averagefps);
+        #endif
+        printext256(0L,0L,31,-1,fps,0);
+    }
+
     nextpage();
 
+    while (ready2send && totalclock >= ototalclock+TICSPERFRAME)
+        faketimerhandler();
 }
 
 int app_main(int argc,const char * const argv[]) {
@@ -1235,7 +1357,7 @@ int app_main(int argc,const char * const argv[]) {
 
     playerdie=0;
     plr->oldsector=plr->sector;
-    plr->horiz=100;
+    plr->horiz=plr->ohoriz=100;
     plr->zoom=256;
     plr->screensize=320;
 
@@ -1259,6 +1381,8 @@ int app_main(int argc,const char * const argv[]) {
     initpaletteshifts();
 
     readpalettetable();
+
+    OSD_RegisterFunction("showfps","showfps [state]: show frame rate", osdcmd_showfps);
 
     gameactivated=0;
     escapetomenu=0;
@@ -1318,14 +1442,17 @@ void setviewport(int screensize) {
 void playloop(void) {
 
     struct player *plr;
-    int exit=0;
+    int exit=0, olockclock;
 
     plr=&player[pyrn];
 
     if (netgame) {
          initmulti(MAXPLAYERS);
+    } else {
+        initsingleplayers();
     }
 
+    ready2send = 1;
     while (!exit) {
         handleevents();
         OSD_DispatchQueued();
@@ -1337,22 +1464,22 @@ void playloop(void) {
             plr->z=sector[plr->sector].floorz-(PLAYERHEIGHT<<8);
         }
 
-        drawscreen(plr);
-        processinput(plr);
+        olockclock = lockclock;
+        if (networkmode == 0 || !netgame) {
+            while (movefifoplc != movefifoend[0]) domovethings();
+        } else {
+            // TODO
+        }
+        synctics = lockclock - olockclock;
+        drawscreen(plr, (totalclock-gotlastpacketclock)*(65536/TICSPERFRAME));
 
         if (netgame) {
+            // TODO: Reorganise into getpackets/sendpackets?
              netgetmove();
              netsendmove();
         }
-        processobjs(plr);
-        animateobjs(plr);
-        animatetags(plr);
-        doanimations((int)synctics);
-        dodelayitems((int)synctics);
-
+        processinput(plr);
     }
-
-
 }
 
 void drawoverheadmap(struct player *plr) {

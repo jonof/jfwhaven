@@ -24,10 +24,6 @@
 int justwarpedfx=0;
 int lastbat=-1;
 
-extern int angvel,
-			svel,
-			vel;
-
 extern int justteleported;
 
 extern short lavadrylandsector[32];
@@ -498,7 +494,7 @@ void revolvefx(void) {
 
 }
 
-extern int bobbingsectorcnt, bobbingsectorlist[];
+extern short bobbingsectorcnt, bobbingsectorlist[];
 
 void bobbingsector(void) {
 
@@ -564,9 +560,10 @@ void teleporter(void) {
 				case NEXTLEVEL:
 					justteleported=1;
 					mapon++;
-					vel=0;
-					angvel=0;
-					svel=0;
+					loc.vel=0;
+					loc.angvel=0;
+					loc.svel=0;
+					loc.horizvel=0;
 					playsound_loc(S_CHAINDOOR1,plr->x,plr->y);
 					loadnewlevel(mapon);
 					warpfxsprite(plr->spritenum);
@@ -645,7 +642,6 @@ void ironbars(void) {
 
 	int i;
 	int spritenum;
-	//int ironbarmove;
 
 	for(i=0;i<ironbarscnt;i++) {
 		if( ironbarsdone[i] == 1 ) {
@@ -655,7 +651,7 @@ void ironbars(void) {
 				sprite[ironbarsanim[i]].ang+=synctics<<1;
 				if(sprite[ironbarsanim[i]].ang > 2047)
 					sprite[ironbarsanim[i]].ang-=2047;
-					//ironbarmove=ironbarsgoal[i]+=synctics<<1;
+					ironbarsgoal[i]+=synctics<<1;
 					setsprite(spritenum,sprite[spritenum].x,sprite[spritenum].y,sprite[spritenum].z);
 					if( ironbarsgoal[i] > 512 ) {
 						ironbarsgoal[i]=0;
@@ -805,6 +801,7 @@ void thunder(void) {
 
 	int val;
 
+	if (!synctics) return;
 	if( thunderflash == 0) {
 		if((gotpic[SKY>>3]&(1<<(SKY&7))) > 0) {
 			gotpic[SKY>>3] &= ~(1<<(SKY&7));
@@ -1024,7 +1021,7 @@ void makeasplash(int picnum, struct player *plr) {
 	}
 //JSA ends
 
-	movesprite((short)j,(((int)sintable[(sprite[j].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[j].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
+	movesprite((short)j,(((int)sintable[(sprite[j].ang+512)&2047])*TICSPERFRAME)<<3,(((int)sintable[sprite[j].ang])*TICSPERFRAME)<<3,0L,4L<<8,4L<<8,0);
 }
 
 
@@ -1266,11 +1263,11 @@ void warpfxsprite(int s) {
 	sprite[j].hitag=0;
 	sprite[j].pal=0;
 
-	daz=((((int)sprite[j].zvel)*synctics)>>3);
+	daz=((((int)sprite[j].zvel)*TICSPERFRAME)>>3);
 
 			movesprite((short)j,
-				(((int)sintable[(daang+512)&2047])*synctics)<<3,
-				(((int)sintable[daang])*synctics)<<3,
+				(((int)sintable[(daang+512)&2047])*TICSPERFRAME)<<3,
+				(((int)sintable[daang])*TICSPERFRAME)<<3,
 				daz,4L<<8,4L<<8,1);
 
 

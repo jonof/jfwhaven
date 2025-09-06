@@ -945,7 +945,7 @@ nethitsprite(short p, char guntype, char taghit)
                     sprite[j].clipdist = 48;
                     dax = sprite[j].xvel;
                     day = sprite[j].yvel;
-                    movesprite((short) j, (dax * synctics) << 3, (day * synctics) << 3, 0L,
+                    movesprite((short) j, (dax * TICSPERFRAME) << 3, (day * TICSPERFRAME) << 3, 0L,
                                4L << 8, 4L << 8, 0);
                     setsprite(j, sprite[j].x, sprite[j].y, sprite[j].z);
                }
@@ -971,7 +971,7 @@ nethitsprite(short p, char guntype, char taghit)
                sprite[j].clipdist = 64;
                dax = sprite[j].xvel;
                day = sprite[j].yvel;
-               movesprite((short) j, (dax * synctics) << 3, (day * synctics) << 3, 0L,
+               movesprite((short) j, (dax * TICSPERFRAME) << 3, (day * TICSPERFRAME) << 3, 0L,
                           4L << 8, 4L << 8, 0);
                setsprite(j, sprite[j].x, sprite[j].y, sprite[j].z);
                return;
@@ -996,7 +996,7 @@ nethitsprite(short p, char guntype, char taghit)
                sprite[j].clipdist = 128;
                dax = sprite[j].xvel;
                day = sprite[j].yvel;
-               movesprite((short) j, (dax * synctics) << 3, (day * synctics) << 3, 0L,
+               movesprite((short) j, (dax * TICSPERFRAME) << 3, (day * TICSPERFRAME) << 3, 0L,
                           4L << 8, 4L << 8, 0);
                setsprite(j, sprite[j].x, sprite[j].y, sprite[j].z);
                return;
@@ -1023,7 +1023,7 @@ nethitsprite(short p, char guntype, char taghit)
                playsound_loc(S_ARROWHIT, sprite[j].x, sprite[j].y);
                dax = sprite[j].xvel;
                day = sprite[j].yvel;
-               movesprite((short) j, (dax * synctics) << 3, (day * synctics) << 3, 0L,
+               movesprite((short) j, (dax * TICSPERFRAME) << 3, (day * TICSPERFRAME) << 3, 0L,
                           4L << 8, 4L << 8, 0);
                setsprite(j, sprite[j].x, sprite[j].y, sprite[j].z);
                return;

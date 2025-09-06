@@ -1,4 +1,4 @@
-icorp_h=$(SRC)/icorp.h $(ENGINEINC)/build.h $(ENGINEINC)/pragmas.h $(ENGINEINC)/cache1d.h $(ENGINEINC)/baselayer.h $(SRC)/names.h $(SRC)/sndmod.h $(SRC)/les.h $(SRC)/jeff.h $(SRC)/raf.h $(SRC)/whdefs.h $(SRC)/keydefs.h
+icorp_h=$(SRC)/icorp.h $(ENGINEINC)/build.h $(ENGINEINC)/pragmas.h $(ENGINEINC)/cache1d.h $(ENGINEINC)/baselayer.h $(ENGINEINC)/mmulti.h $(SRC)/names.h $(SRC)/sndmod.h $(SRC)/les.h $(SRC)/jeff.h $(SRC)/raf.h $(SRC)/whdefs.h $(SRC)/keydefs.h
 
 $(SRC)/b5compat.$o: $(SRC)/b5compat.c $(ENGINEINC)/build.h
 $(SRC)/config.$o: $(SRC)/config.c $(ENGINEINC)/compat.h $(ENGINEINC)/osd.h $(ENGINEINC)/scriptfile.h $(ENGINEINC)/baselayer.h $(ENGINEINC)/winlayer.h $(icorp_h)

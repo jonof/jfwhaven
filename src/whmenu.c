@@ -270,6 +270,7 @@ int menuscreen(struct player *plr) {
 
     flushperms();
 
+    ready2send = 0;
     while( !exit ) {
         handleevents();
         menubackground();
@@ -283,24 +284,25 @@ int menuscreen(struct player *plr) {
         nextpage();
 
             if( totalclock >= goaltime ) {
-                goaltime=totalclock+10L;
                 if( keystatus[0xd0] || keystatus[0x50] ) {
                     TEMPSND();
                     select++;
                     if ( select > 4 )
                         select=0;
+                    goaltime=totalclock+20L;
                 }
                 if( keystatus[0xc8] || keystatus[0x48] ) {
                     TEMPSND();
                     select--;
                     if ( select < 0 )
                         select=4;
+                    goaltime=totalclock+20L;
                 }
                 if( keystatus[1] > 0) {
                     TEMPSND();
                     if(gameactivated == 1) {
                         //select=5;
-                        lockclock=totalclock;
+                        totalclock = ototalclock;
                         exit=1;
                     }
                     else
@@ -353,13 +355,14 @@ int menuscreen(struct player *plr) {
                         quit();
                     break;
                     case 5:
-                        lockclock=totalclock;
+                        totalclock=totalclock;
                         exit=1;
                     break;
                     } // switch
                 } // if
             } // the delay
       } // while
+    ready2send = 1;
 
     escapetomenu=0;
 
@@ -460,11 +463,11 @@ void loadsave(struct player *plr) {
 
         if( totalclock >= goaltime ) {
             goaltime=totalclock+10L;
-                if( keystatus[keys[KEYBACK]] || keystatus[RDN] ) {
+                if( keystatus[0xd0] || keystatus[RDN] ) {
                     TEMPSND();
                     select=1;
                 }
-                if( keystatus[keys[KEYFWD]] || keystatus[RUP] ) {
+                if( keystatus[0xc8] || keystatus[RUP] ) {
                     TEMPSND();
                     select=0;
                 }
@@ -598,13 +601,12 @@ void thedifficulty(void) {
             handleevents();
 
         if( totalclock >= goaltime ) {
-            goaltime=totalclock+10L;
 
-            if(keystatus[keys[KEYFWD]] > 0 || keystatus[RUP] > 0) {
+            if(keystatus[0xc8] > 0 || keystatus[RUP] > 0) {
                 TEMPSND();
                 select2=0;
             }
-            if(keystatus[keys[KEYBACK]] > 0 || keystatus[RDN] > 0) {
+            if(keystatus[0xd0] > 0 || keystatus[RDN] > 0) {
                 TEMPSND();
                 select2=1;
             }
@@ -639,13 +641,13 @@ void thedifficulty(void) {
             nextpage();
 
             if( pickone == 1 ) {
-                if( keystatus[keys[KEYLEFT]] > 0 || keystatus[RLEFT] > 0) {
+                if( keystatus[0xcb] > 0 || keystatus[RLEFT] > 0) {
                     TEMPSND();
                     select--;
                     if( select < 0)
                         select=0;
                 }
-                if( keystatus[keys[KEYRIGHT]] > 0 || keystatus[RRIGHT] > 0) {
+                if( keystatus[0xcd] > 0 || keystatus[RRIGHT] > 0) {
                     TEMPSND();
                     select++;
                     if( select > 3)
@@ -654,11 +656,11 @@ void thedifficulty(void) {
                 selected=select;
             }
             else {
-                if( keystatus[keys[KEYLEFT]] > 0 || keystatus[RLEFT] > 0) {
+                if( keystatus[0xcb] > 0 || keystatus[RLEFT] > 0) {
                     TEMPSND();
                     select3=0;
                 }
-                if( keystatus[keys[KEYRIGHT]] > 0 || keystatus[RRIGHT] > 0) {
+                if( keystatus[0xcd] > 0 || keystatus[RRIGHT] > 0) {
                     TEMPSND();
                     select3=1;
                 }
@@ -773,17 +775,15 @@ void loadgame(struct player *plr) {
             goaltime=totalclock+10L;
 
 
-            if ( keystatus[keys[KEYFWD]] > 0 || keystatus[RUP] > 0) {
+            if ( keystatus[0xc8] > 0 || keystatus[RUP] > 0) {
                 select--;
                 if( select < 0 )
                     select=4;
-                keystatus[keys[KEYFWD]]=0;
             }
-            if ( keystatus[keys[KEYBACK]] > 0 || keystatus[RDN] > 0) {
+            if ( keystatus[0xd0] > 0 || keystatus[RDN] > 0) {
                 select++;
                 if( select > 4 )
                     select=0;
-                keystatus[keys[KEYBACK]]=0;
             }
 
             if ( keystatus[1] > 0 ) {
@@ -849,13 +849,13 @@ void savegame(struct player *plr) {
         if( totalclock >= goaltime ) {
             goaltime=totalclock+10L;
 
-            if( keystatus[keys[KEYFWD]] > 0 || keystatus[RUP] > 0) {
+            if( keystatus[0xc8] > 0 || keystatus[RUP] > 0) {
                 select--;
                 if ( select < 0)
                     select=4;
             }
 
-            if( keystatus[keys[KEYBACK]] > 0 || keystatus[RDN] > 0) {
+            if( keystatus[0xd0] > 0 || keystatus[RDN] > 0) {
                 select++;
                 if( select > 4 )
                     select=0;
@@ -992,15 +992,7 @@ int savedgamename(int gn) {
     plr->screensize=320;
 
     sprintf(tempbuf,"svgn%d.dat",gn);
-
-    //if ((fil = open("save0000.gam"
-    //,O_BINARY|O_TRUNC|O_CREAT|O_WRONLY,S_IWRITE)) == -1)
-    //    return(-1);
-
-
-    //file = open(tempbuf,O_CREAT | O_BINARY | O_WRONLY,S_IREAD | S_IWRITE ); // | S_IFREG);
-
-    file = open(tempbuf,O_BINARY|O_TRUNC|O_CREAT|O_WRONLY,S_IWRITE );
+    file = open(tempbuf,O_BINARY|O_TRUNC|O_CREAT|O_WRONLY,S_IREAD|S_IWRITE );
 
     if (file != -1)
     {
@@ -1027,8 +1019,8 @@ int savedgamename(int gn) {
         write(file,&mapon,sizeof(mapon));
 
         write(file,&totalclock,sizeof(totalclock));
+        write(file,&ototalclock,sizeof(ototalclock));
         write(file,&lockclock,sizeof(lockclock));
-        write(file,&synctics,sizeof(synctics));
 
         //Warning: only works if all pointers are in sector structures!
         for(i=MAXANIMATES-1;i>=0;i--)
@@ -1122,8 +1114,8 @@ void loadplayerstuff(void) {
     read(fh,&mapon,sizeof(mapon));
 
     read(fh,&totalclock,sizeof(totalclock));
+    read(fh,&ototalclock,sizeof(ototalclock));
     read(fh,&lockclock,sizeof(lockclock));
-    read(fh,&synctics,sizeof(synctics));
 
         //Warning: only works if all pointers are in sector structures!
     read(fh,tmpanimateptr,MAXANIMATES<<2);

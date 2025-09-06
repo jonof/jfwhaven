@@ -17,11 +17,6 @@ extern int cartsnd;
 
 extern int mapon;
 
-extern int spellbooktics;
-extern int spellbook;
-extern int spellbookframe;
-extern int spellbookflip;
-
 extern int  spiked;
 extern int selectedgun;
 extern int currentpotion;
@@ -3310,10 +3305,10 @@ void throwhalberd(int s) {
 	sprite[j].pal=0;
 
 		sprite[j].cstat=0;
-		daz=((((int)sprite[j].zvel)*synctics)>>3);
+		daz=((((int)sprite[j].zvel)*TICSPERFRAME)>>3);
 			movesprite((short)j,
-				(((int)sintable[(sprite[j].extra+512)&2047])*synctics)<<7,
-				(((int)sintable[sprite[j].extra])*synctics)<<7,
+				(((int)sintable[(sprite[j].extra+512)&2047])*TICSPERFRAME)<<7,
+				(((int)sintable[sprite[j].extra])*TICSPERFRAME)<<7,
 				daz,4L<<8,4L<<8,1);
 		sprite[j].cstat=21;
 

@@ -993,7 +993,7 @@ void animatetags(struct player *plr) {
 	 for (i=0 ; i < swingcnt ; i++) {
 		  if (swingdoor[i].anginc != 0) {
 			   oldang=swingdoor[i].ang;
-			   for (j=0 ; j < (((int)synctics)<<2) ; j++) {
+			   for (j=0 ; j < (TICSPERFRAME<<2) ; j++) {
 					swingdoor[i].ang=((swingdoor[i].ang+2048+swingdoor[i].anginc)&2047);
 					if (swingdoor[i].ang == swingdoor[i].angclosed) {
 						 swingdoor[i].anginc=0;

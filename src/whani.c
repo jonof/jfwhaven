@@ -5,8 +5,6 @@
  ***************************************************************************/
 #include "icorp.h"
 
-#define TICSPERFRAME 3
-
 extern short lastbat;
 extern int difficulty;
 
@@ -54,7 +52,7 @@ void animateobjs(struct player *plr) {
 	i=headspritestat[PULLTHECHAIN];
 	while (i != -1) {
 		nexti=nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 		if(sprite[i].lotag < 0) {
 			sprite[i].picnum++;
 			sprite[i].lotag=24;
@@ -69,7 +67,7 @@ void animateobjs(struct player *plr) {
 	i=headspritestat[ANIMLEVERDN];
 	while (i != -1) {
 		nexti=nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 		if(sprite[i].lotag < 0) {
 			sprite[i].picnum++;
 			sprite[i].lotag=24;
@@ -84,7 +82,7 @@ void animateobjs(struct player *plr) {
 	i=headspritestat[ANIMLEVERUP];
 	while (i != -1) {
 		nexti=nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 		if(sprite[i].lotag < 0) {
 			sprite[i].picnum--;
 			sprite[i].lotag=24;
@@ -99,7 +97,7 @@ void animateobjs(struct player *plr) {
 	i=headspritestat[WARPFX];
 	while (i != -1) {
 		nexti=nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 		//rotatesprite(320<<15,200<<15,16384,0,sprite[i].picnum,0,0,1+2);
 		if( sprite[i].lotag < 0) {
 			sprite[i].lotag=12;
@@ -113,7 +111,7 @@ void animateobjs(struct player *plr) {
 	i=headspritestat[CHARCOAL];
 	while (i != -1) {
 		nexti=nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 		if(sprite[i].lotag < 0) {
 			sprite[i].picnum++;
 			sprite[i].lotag=24;
@@ -140,7 +138,7 @@ void animateobjs(struct player *plr) {
 	i=headspritestat[FROZEN];
 	while (i != -1) {
 		nexti=nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 		if(sprite[i].lotag < 0) {
 			sprite[i].pal=0;
 			newstatus(i,FACE);
@@ -230,8 +228,8 @@ void animateobjs(struct player *plr) {
 			k=sprite[i].owner;
 			sprite[i].z=sector[sprite[i].sectnum].floorz;
 			sprite[i].ang=(getangle(sprite[k].x-sprite[i].x,sprite[k].y-sprite[i].y)&2047);
-			//movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
-			movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,2);
+			//movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*TICSPERFRAME)<<3,(((int)sintable[sprite[i].ang])*TICSPERFRAME)<<3,0L,4L<<8,4L<<8,0);
+			movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*TICSPERFRAME)<<3,(((int)sintable[sprite[i].ang])*TICSPERFRAME)<<3,0L,4L<<8,4L<<8,2);
 			if(sector[sprite[i].sectnum].floorpicnum == WATER
 				|| sector[sprite[i].sectnum].floorpicnum == LAVA
 				|| sector[sprite[i].sectnum].floorpicnum == SLIME ) {
@@ -337,10 +335,10 @@ void animateobjs(struct player *plr) {
 
 		break;
 		case 3: // flee
-			sprite[i].lotag-=synctics;
+			sprite[i].lotag-=TICSPERFRAME;
 			sprite[i].z=sector[sprite[i].sectnum].floorz;
-			//movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
-			movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,2);
+			//movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*TICSPERFRAME)<<3,(((int)sintable[sprite[i].ang])*TICSPERFRAME)<<3,0L,4L<<8,4L<<8,0);
+			movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*TICSPERFRAME)<<3,(((int)sintable[sprite[i].ang])*TICSPERFRAME)<<3,0L,4L<<8,4L<<8,2);
 			if(sector[sprite[i].sectnum].floorpicnum == WATER
 				|| sector[sprite[i].sectnum].floorpicnum == LAVA
 				|| sector[sprite[i].sectnum].floorpicnum == SLIME) {
@@ -399,7 +397,7 @@ void animateobjs(struct player *plr) {
 						case EXPLO2:
 						case SMOKEFX:
 						case MONSTERBALL:
-							sprite[i].hitag-=synctics<<2;
+							sprite[i].hitag-=TICSPERFRAME<<2;
 							if( sprite[i].hitag < 0) {
 								newstatus(i,DIE);
 							}
@@ -416,7 +414,7 @@ void animateobjs(struct player *plr) {
 	i=headspritestat[PAIN];
 	while(i != -1) {
 		nexti=nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 		sprite[i].z=sector[sprite[i].sectnum].floorz;
 
 		if( sprite[i].lotag < 0) {
@@ -461,8 +459,8 @@ void animateobjs(struct player *plr) {
 		sprite[i].ang=(short)plr->ang;
 		newstatus(i,FLEE);
 		}
-		//movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
-		movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,2);
+		//movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*TICSPERFRAME)<<3,(((int)sintable[sprite[i].ang])*TICSPERFRAME)<<3,0L,4L<<8,4L<<8,0);
+		movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*TICSPERFRAME)<<3,(((int)sintable[sprite[i].ang])*TICSPERFRAME)<<3,0L,4L<<8,4L<<8,2);
 		setsprite(i,sprite[i].x,sprite[i].y,sprite[i].z);
 
 		j=headspritesect[sprite[i].sectnum];
@@ -483,7 +481,7 @@ void animateobjs(struct player *plr) {
 						case EXPLO2:
 						case SMOKEFX:
 						case MONSTERBALL:
-							sprite[i].hitag-=synctics<<2;
+							sprite[i].hitag-=TICSPERFRAME<<2;
 							if( sprite[i].hitag < 0) {
 								newstatus(i,DIE);
 							}
@@ -496,7 +494,7 @@ void animateobjs(struct player *plr) {
 						switch (sprite[j].picnum) {
 						case EXPLO2:
 						case MONSTERBALL:
-							sprite[i].hitag-=synctics<<2;
+							sprite[i].hitag-=TICSPERFRAME<<2;
 							if( sprite[i].hitag < 0) {
 								newstatus(i,DIE);
 							}
@@ -514,7 +512,7 @@ void animateobjs(struct player *plr) {
 	i=headspritestat[FLOCKSPAWN];
 	while(i != -1) {
 		nexti=nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 		if( sprite[i].lotag < 0) {
 			sprite[i].extra--;
 			sprite[i].lotag=krand()&48+24;
@@ -529,7 +527,7 @@ void animateobjs(struct player *plr) {
 	i=headspritestat[FLOCK];
 	while(i != -1) {
 		nexti=nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 		switch(sprite[i].extra) {
 		case 0: // going out of the cave
 			if( sprite[i].lotag < 0 ) {
@@ -537,7 +535,7 @@ void animateobjs(struct player *plr) {
 				sprite[i].lotag=512;
 			}
 			else {
-				movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
+				movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*TICSPERFRAME)<<3,(((int)sintable[sprite[i].ang])*TICSPERFRAME)<<3,0L,4L<<8,4L<<8,0);
 				setsprite(i,sprite[i].x,sprite[i].y,sprite[i].z);
 				if( movestat != 0 )
 					sprite[i].ang=rand()&2047;
@@ -550,9 +548,9 @@ void animateobjs(struct player *plr) {
 				sprite[i].ang=((getangle(sprite[sprite[i].hitag].x-sprite[i].x,sprite[sprite[i].hitag].y-sprite[i].y)&2047)-1024)&2047;
 			}
 			else {
-				sprite[i].z-=synctics<<4;
-				sprite[i].ang=(sprite[i].ang+(synctics<<2))&2047;
-				movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
+				sprite[i].z-=TICSPERFRAME<<4;
+				sprite[i].ang=(sprite[i].ang+(TICSPERFRAME<<2))&2047;
+				movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*TICSPERFRAME)<<3,(((int)sintable[sprite[i].ang])*TICSPERFRAME)<<3,0L,4L<<8,4L<<8,0);
 				setsprite(i,sprite[i].x,sprite[i].y,sprite[i].z);
 				if( movestat != 0 )
 					sprite[i].ang=rand()&2047;
@@ -567,7 +565,7 @@ void animateobjs(struct player *plr) {
 				deletesprite((short)i);
 			}
 			else {
-				movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
+				movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*TICSPERFRAME)<<3,(((int)sintable[sprite[i].ang])*TICSPERFRAME)<<3,0L,4L<<8,4L<<8,0);
 				setsprite(i,sprite[i].x,sprite[i].y,sprite[i].z);
 				if ((movestat&0xc000) == 16384 ) {//Hits a ceiling / floor
 					if( i == lastbat && batsnd != -1) {
@@ -588,7 +586,7 @@ void animateobjs(struct player *plr) {
 	i=headspritestat[CHILL];
 	while(i != -1) {
 		nexti=nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 		if(sprite[i].lotag < 0 ) {
 			sprite[i].picnum++;
 			sprite[i].lotag=18;
@@ -608,15 +606,15 @@ void animateobjs(struct player *plr) {
 	i=headspritestat[SKIRMISH];
 	while(i != -1) {
 		nexti=nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 
 		if(sprite[i].lotag < 0 ) {
 			newstatus(i,FACE);
 		}
 
 		sprite[i].z=sector[sprite[i].sectnum].floorz;
-		//movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
-		movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,2);
+		//movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*TICSPERFRAME)<<3,(((int)sintable[sprite[i].ang])*TICSPERFRAME)<<3,0L,4L<<8,4L<<8,0);
+		movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*TICSPERFRAME)<<3,(((int)sintable[sprite[i].ang])*TICSPERFRAME)<<3,0L,4L<<8,4L<<8,2);
 		if (movestat != 0) {
 			sprite[i].ang=(getangle(plr->x-sprite[i].x,plr->y-sprite[i].y)&2047);
 			newstatus(i,FACE);
@@ -676,7 +674,7 @@ void animateobjs(struct player *plr) {
 						case EXPLO2:
 						case SMOKEFX:
 						case MONSTERBALL:
-							sprite[i].hitag-=synctics<<2;
+							sprite[i].hitag-=TICSPERFRAME<<2;
 							if( sprite[i].hitag < 0) {
 								newstatus(i,DIE);
 							}
@@ -689,7 +687,7 @@ void animateobjs(struct player *plr) {
 						switch (sprite[j].picnum) {
 						case EXPLO2:
 						case MONSTERBALL:
-							sprite[i].hitag-=synctics<<2;
+							sprite[i].hitag-=TICSPERFRAME<<2;
 							if( sprite[i].hitag < 0) {
 								newstatus(i,DIE);
 							}
@@ -708,7 +706,7 @@ void animateobjs(struct player *plr) {
 	i=headspritestat[FINDME];
 	while(i != -1) {
 		nexti=nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 
 		if(sprite[i].picnum == RAT) {
 			sprite[i].ang=((rand()&512-256)+sprite[i].ang+1024)&2047;  // NEW
@@ -724,7 +722,7 @@ void animateobjs(struct player *plr) {
 
 		sprite[i].z=sector[sprite[i].sectnum].floorz;
 
-		movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,2);
+		movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*TICSPERFRAME)<<3,(((int)sintable[sprite[i].ang])*TICSPERFRAME)<<3,0L,4L<<8,4L<<8,2);
 
 		if( checkdist(i,plr->x,plr->y,plr->z) ) {
 			if(shadowtime > 0) {
@@ -754,7 +752,7 @@ void animateobjs(struct player *plr) {
 				sprite[i].lotag=30;
 			}
 			else {
-				sprite[i].ang+=(synctics<<4)&2047;
+				sprite[i].ang+=(TICSPERFRAME<<4)&2047;
 			}
 
 		}
@@ -821,7 +819,7 @@ void animateobjs(struct player *plr) {
 						case EXPLO2:
 						case SMOKEFX:
 						case MONSTERBALL:
-							sprite[i].hitag-=synctics<<2;
+							sprite[i].hitag-=TICSPERFRAME<<2;
 							if( sprite[i].hitag < 0) {
 								newstatus(i,DIE);
 							}
@@ -834,7 +832,7 @@ void animateobjs(struct player *plr) {
 						switch (sprite[j].picnum) {
 						case EXPLO2:
 						case MONSTERBALL:
-							sprite[i].hitag-=synctics<<2;
+							sprite[i].hitag-=TICSPERFRAME<<2;
 							if( sprite[i].hitag < 0) {
 								newstatus(i,DIE);
 							}
@@ -893,7 +891,7 @@ void animateobjs(struct player *plr) {
 
 	while(i != -1) {
 		nexti=nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 
 		if( sprite[i].lotag <= 0) {
 			newstatus(i,FACE);
@@ -978,7 +976,7 @@ void animateobjs(struct player *plr) {
 
 		switch(sprite[i].lotag) {
 		case 1821:
-			sprite[i].z-=(synctics<<6);
+			sprite[i].z-=(TICSPERFRAME<<6);
 			setsprite(i,sprite[i].x,sprite[i].y,sprite[i].z);
 			if(sprite[i].z <= sector[sprite[i].sectnum].ceilingz+32768) {
 
@@ -992,7 +990,7 @@ void animateobjs(struct player *plr) {
 			}
 		break;
 		case 1811:
-			sprite[i].z-=(synctics<<6);
+			sprite[i].z-=(TICSPERFRAME<<6);
 			setsprite(i,sprite[i].x,sprite[i].y,sprite[i].z);
 			if(sprite[i].z <= sector[sprite[i].sectnum].ceilingz+65536) {
 				changespritestat(i,0);
@@ -1001,7 +999,7 @@ void animateobjs(struct player *plr) {
 			}
 		break;
 		case 1801:
-			sprite[i].z-=(synctics<<6);
+			sprite[i].z-=(TICSPERFRAME<<6);
 			setsprite(i,sprite[i].x,sprite[i].y,sprite[i].z);
 			if( sprite[i].z <= sector[sprite[i].sectnum].ceilingz+65536 ) {
 				changespritestat(i,0);
@@ -1023,7 +1021,7 @@ void animateobjs(struct player *plr) {
 		switch(sprite[i].lotag) {
 		case 1820:
 
-			sprite[i].z+=ironbarmove=synctics<<6;
+			sprite[i].z+=ironbarmove=TICSPERFRAME<<6;
 			setsprite(i,sprite[i].x,sprite[i].y,sprite[i].z);
 			if(sprite[i].z >= (sector[sprite[i].sectnum].floorz-32768)) {
 				SND_StopLoop(cartsnd);
@@ -1035,7 +1033,7 @@ void animateobjs(struct player *plr) {
 			}
 		break;
 		case 1810:
-			sprite[i].z+=ironbarmove=synctics<<6;
+			sprite[i].z+=ironbarmove=TICSPERFRAME<<6;
 			setsprite(i,sprite[i].x,sprite[i].y,sprite[i].z);
 			if( sprite[i].z >= sector[sprite[i].sectnum].floorz ) {
 				changespritestat(i,0);
@@ -1044,7 +1042,7 @@ void animateobjs(struct player *plr) {
 			}
 		break;
 		case 1800:
-			sprite[i].z+=ironbarmove=synctics<<6;
+			sprite[i].z+=ironbarmove=TICSPERFRAME<<6;
 			setsprite(i,sprite[i].x,sprite[i].y,sprite[i].z);
 			if( sprite[i].z >= sector[sprite[i].sectnum].floorz ) {
 				changespritestat(i,0);
@@ -1064,7 +1062,7 @@ void animateobjs(struct player *plr) {
 		nexti=nextspritestat[i];
 		sprite[i].ang=(getangle(plr->x-sprite[i].x,plr->y-sprite[i].y)&2047);
 		if( cansee(plr->x,plr->y,plr->z,plr->sector,sprite[i].x,sprite[i].y,sprite[i].z-(tilesizy[sprite[i].picnum]<<7),sprite[i].sectnum) == 1 ) {
-			sprite[i].lotag-=synctics;
+			sprite[i].lotag-=TICSPERFRAME;
 			if( sprite[i].lotag < 0 ) {
 				sprite[i].picnum++;
 				sprite[i].lotag=12;
@@ -1138,7 +1136,7 @@ void animateobjs(struct player *plr) {
 						case EXPLO2:
 						case SMOKEFX:
 						case MONSTERBALL:
-							sprite[i].hitag-=synctics<<2;
+							sprite[i].hitag-=TICSPERFRAME<<2;
 							if( sprite[i].hitag < 0) {
 								newstatus(i,DIE);
 							}
@@ -1151,7 +1149,7 @@ void animateobjs(struct player *plr) {
 						switch (sprite[j].picnum) {
 						case EXPLO2:
 						case MONSTERBALL:
-							sprite[i].hitag-=synctics<<2;
+							sprite[i].hitag-=TICSPERFRAME<<2;
 							if( sprite[i].hitag < 0) {
 								newstatus(i,DIE);
 							}
@@ -1171,7 +1169,7 @@ void animateobjs(struct player *plr) {
 	i=headspritestat[MASPLASH];
 	while (i >= 0) {
 		nexti=nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 		sprite[i].z=sector[sprite[i].sectnum].floorz+(tilesizy[sprite[i].picnum]<<8);
 		setsprite(i,sprite[i].x,sprite[i].y,sprite[i].z);
 
@@ -1189,7 +1187,7 @@ void animateobjs(struct player *plr) {
 	i=headspritestat[ATTACK2];
 	while (i >= 0) {
 		nexti=nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 		if( sprite[i].lotag < 0 ) {
 			if( cansee(plr->x,plr->y,plr->z,plr->sector,
 				sprite[i].x,sprite[i].y,sprite[i].z-(tilesizy[sprite[i].picnum]<<7),sprite[i].sectnum) == 1
@@ -1229,7 +1227,7 @@ void animateobjs(struct player *plr) {
 		switch( sprite[i].picnum) {
 			case JUDYATTACK1:
 			case JUDYATTACK2:
-				sprite[i].extra-=synctics;
+				sprite[i].extra-=TICSPERFRAME;
 			case GRONHALATTACK:
 			case GRONMUATTACK:
 			case DRAGONATTACK2:
@@ -1238,7 +1236,7 @@ void animateobjs(struct player *plr) {
 			case GUARDIANATTACK:
 			case SKULLYATTACK:
 			case FATWITCHATTACK:
-				sprite[i].lotag-=synctics;
+				sprite[i].lotag-=TICSPERFRAME;
 				if( sprite[i].lotag < 0 ) {
 					if( cansee(plr->x,plr->y,plr->z,plr->sector,
 								sprite[i].x,sprite[i].y,sprite[i].z-(tilesizy[sprite[i].picnum]<<7),sprite[i].sectnum) == 1 )
@@ -1252,7 +1250,7 @@ void animateobjs(struct player *plr) {
 					sprite[i].ang=(getangle(plr->x-sprite[i].x,plr->y-sprite[i].y)&2047);
 			break;
 			case WILLOW:
-				sprite[i].lotag-=synctics;
+				sprite[i].lotag-=TICSPERFRAME;
 				if(sprite[i].lotag < 0) {
 					if(cansee(plr->x,plr->y,plr->z,plr->sector,
 						sprite[i].x,sprite[i].y,sprite[i].z-(tilesizy[sprite[i].picnum]<<7),sprite[i].sectnum) == 1 )
@@ -1357,7 +1355,7 @@ void animateobjs(struct player *plr) {
 					else
 						newstatus(i,CHASE);
 				}
-				sprite[i].lotag-=synctics;
+				sprite[i].lotag-=TICSPERFRAME;
 			break;
 		}
 
@@ -1381,7 +1379,7 @@ void animateobjs(struct player *plr) {
 
 		nexti=nextspritestat[i];
 
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 
 		if( sprite[i].lotag < 0 ) {
 			sprite[i].picnum++;
@@ -1404,10 +1402,10 @@ void animateobjs(struct player *plr) {
 
 		nexti=nextspritestat[i];
 
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 
 		if( sprite[i].z < sector[sprite[i].sectnum].floorz )
-			sprite[i].z+=(int)synctics<<8;
+			sprite[i].z+=(int)TICSPERFRAME<<8;
 		if( sprite[i].z > sector[sprite[i].sectnum].floorz )
 			sprite[i].z=sector[sprite[i].sectnum].floorz;
 
@@ -1445,11 +1443,11 @@ void animateobjs(struct player *plr) {
 		nexti=nextspritestat[i];
 
 		if( sprite[i].z < sector[sprite[i].sectnum].floorz )
-			daz=sprite[i].zvel+=(synctics<<9);
+			daz=sprite[i].zvel+=(TICSPERFRAME<<9);
 
 		hitobject=movesprite((short)i,
-							(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,
-							(((int)sintable[sprite[i].ang])*synctics)<<3,
+							(((int)sintable[(sprite[i].ang+512)&2047])*TICSPERFRAME)<<3,
+							(((int)sintable[sprite[i].ang])*TICSPERFRAME)<<3,
 							daz,4L<<8,4L<<8,0);
 
 		setsprite(i,sprite[i].x,sprite[i].y,sprite[i].z);
@@ -1493,11 +1491,11 @@ void animateobjs(struct player *plr) {
 		nexti=nextspritestat[i];
 
 		if( sprite[i].z < sector[sprite[i].sectnum].floorz )
-			daz=sprite[i].zvel+=(synctics<<5);
+			daz=sprite[i].zvel+=(TICSPERFRAME<<5);
 
 		hitobject=movesprite((short)i,
-							(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,
-							(((int)sintable[sprite[i].ang])*synctics)<<3,
+							(((int)sintable[(sprite[i].ang+512)&2047])*TICSPERFRAME)<<3,
+							(((int)sintable[sprite[i].ang])*TICSPERFRAME)<<3,
 							daz,4L<<8,4L<<8,0);
 
 		setsprite(i,sprite[i].x,sprite[i].y,sprite[i].z);
@@ -1546,7 +1544,7 @@ void animateobjs(struct player *plr) {
 
 		nexti=nextspritestat[i];
 
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 
 		osectnum=sprite[i].sectnum;
 
@@ -1560,9 +1558,9 @@ void animateobjs(struct player *plr) {
 		}
 
 		if( sprite[i].z < sector[sprite[i].sectnum].floorz )
-			daz=sprite[i].zvel+=(synctics<<1);
+			daz=sprite[i].zvel+=(TICSPERFRAME<<1);
 																	 // clip type was 1
-		hitobject=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,daz,4L<<8,4L<<8,0);
+		hitobject=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*TICSPERFRAME)<<3,(((int)sintable[sprite[i].ang])*TICSPERFRAME)<<3,daz,4L<<8,4L<<8,0);
 
 		setsprite(i,sprite[i].x,sprite[i].y,sprite[i].z);
 
@@ -1583,7 +1581,7 @@ void animateobjs(struct player *plr) {
 	i=headspritestat[DORMANT];
 	while (i != -1) {
 		nexti=nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 		sprite[i].xrepeat=sprite[i].yrepeat=2;
 		if( sprite[i].lotag < 0) {
 			newstatus(i,ACTIVE);
@@ -1596,7 +1594,7 @@ void animateobjs(struct player *plr) {
 	i=headspritestat[ACTIVE];
 	while (i != -1) {
 		nexti=nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 		sprite[i].xrepeat=48;
 		sprite[i].yrepeat=32;
 		if( sprite[i].lotag < 0) {
@@ -1612,7 +1610,7 @@ void animateobjs(struct player *plr) {
 	while (i != -1) {
 
 		nexti=nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 		osectnum=sprite[i].sectnum;
 
 		switch(sprite[i].picnum) {
@@ -1658,11 +1656,11 @@ void animateobjs(struct player *plr) {
 				sprite[i].z=sector[sprite[i].sectnum].floorz;
 
 			if(sprite[i].picnum == GUARDIAN) {
-				if(totalclock%100 > 70)
+				if(lockclock%100 > 70)
 					trailingsmoke(i);
 			}
 
-			movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,2);
+			movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*TICSPERFRAME)<<3,(((int)sintable[sprite[i].ang])*TICSPERFRAME)<<3,0L,4L<<8,4L<<8,2);
 			if (movestat != 0) {
 				sprite[i].ang=(getangle(plr->x-sprite[i].x,plr->y-sprite[i].y)&2047);
 				newstatus(i,FACE);
@@ -1748,7 +1746,7 @@ void animateobjs(struct player *plr) {
 						case EXPLO2:
 						case SMOKEFX:
 						case MONSTERBALL:
-							sprite[i].hitag-=synctics<<2;
+							sprite[i].hitag-=TICSPERFRAME<<2;
 							if( sprite[i].hitag < 0) {
 								newstatus(i,DIE);
 							}
@@ -1764,7 +1762,7 @@ void animateobjs(struct player *plr) {
 						switch (sprite[j].picnum) {
 						case EXPLO2:
 						case MONSTERBALL:
-							sprite[i].hitag-=synctics<<2;
+							sprite[i].hitag-=TICSPERFRAME<<2;
 							if( sprite[i].hitag < 0) {
 								newstatus(i,DIE);
 							}
@@ -1785,7 +1783,7 @@ void animateobjs(struct player *plr) {
 	i=headspritestat[CHASE];
 	while (i != -1) {
 		nexti = nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 
 		if(sprite[i].picnum == RAT) {
 			newstatus(i,FLEE);
@@ -1842,7 +1840,7 @@ void animateobjs(struct player *plr) {
 				checksight(i,&daang);
 
 				if(sprite[i].picnum == GUARDIAN) {
-					if(totalclock%100 > 70)
+					if(lockclock%100 > 70)
 					trailingsmoke(i);
 				}
 
@@ -1860,7 +1858,7 @@ void animateobjs(struct player *plr) {
 			break;
 		case JUDY:
 			if( mapon < 24 ) {
-				sprite[i].extra-=synctics;
+				sprite[i].extra-=TICSPERFRAME;
 				if(sprite[i].extra < 0) {
 					for(j=0;j<8;j++)
 						trailingsmoke(i);
@@ -1929,8 +1927,8 @@ void animateobjs(struct player *plr) {
 
 					sprite[i].z = sector[sprite[i].sectnum].floorz;
 
-					//movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
-					movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,2);
+					//movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*TICSPERFRAME)<<3,(((int)sintable[sprite[i].ang])*TICSPERFRAME)<<3,0L,4L<<8,4L<<8,0);
+					movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*TICSPERFRAME)<<3,(((int)sintable[sprite[i].ang])*TICSPERFRAME)<<3,0L,4L<<8,4L<<8,2);
 
 					if (movestat != 0)  {
 						if((movestat&4095) != plr->spritenum) {
@@ -2044,7 +2042,7 @@ void animateobjs(struct player *plr) {
 						case EXPLO2:
 						case SMOKEFX:
 						case MONSTERBALL:
-							sprite[i].hitag-=synctics<<2;
+							sprite[i].hitag-=TICSPERFRAME<<2;
 							if( sprite[i].hitag < 0) {
 								newstatus(i,DIE);
 							}
@@ -2058,7 +2056,7 @@ void animateobjs(struct player *plr) {
 						case EXPLO2:
 						case SMOKEFX:
 						case MONSTERBALL:
-							sprite[i].hitag-=synctics<<2;
+							sprite[i].hitag-=TICSPERFRAME<<2;
 							if( sprite[i].hitag < 0) {
 								newstatus(i,DIE);
 							}
@@ -2078,7 +2076,7 @@ void animateobjs(struct player *plr) {
 	i = headspritestat[DRAIN];
 	while (i >= 0) {
 		nexti = nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 		if(sprite[i].lotag < 0) {
 			playsound_loc(S_FIREBALL,sprite[i].x,sprite[i].y);
 			castspell(i);
@@ -2092,7 +2090,7 @@ void animateobjs(struct player *plr) {
 	while (i >= 0) {
 		nexti = nextspritestat[i];
 
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 
 
 		if(sprite[i].lotag < 0) {
@@ -2334,7 +2332,7 @@ void animateobjs(struct player *plr) {
 	i=headspritestat[DIE];
 	while (i>=0) {
 		nexti=nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 
 		switch(sprite[i].picnum) {
 		case RAT:
@@ -2457,11 +2455,11 @@ void animateobjs(struct player *plr) {
 		nexti=nextspritestat[i];
 		spr=&sprite[i];
 
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 
 			checkheat(i);
 
-			movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
+			movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*TICSPERFRAME)<<3,(((int)sintable[sprite[i].ang])*TICSPERFRAME)<<3,0L,4L<<8,4L<<8,0);
 
 			if( movestat !=0 || sprite[i].lotag < 0 ) {
 
@@ -2519,7 +2517,7 @@ void animateobjs(struct player *plr) {
 
 		nexti = nextspritestat[i];
 
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 
 		switch(sprite[i].picnum) {
 			case THROWPIKE:
@@ -2549,7 +2547,7 @@ void animateobjs(struct player *plr) {
 				dax = sprite[i].xvel;
 				day = sprite[i].yvel;
 				//daz = sprite[i].zvel;
-				daz=((((int)sprite[i].zvel)*synctics)>>3);
+				daz=((((int)sprite[i].zvel)*TICSPERFRAME)>>3);
 			break;
 			case BULLET:
 				dax = sprite[i].xvel;
@@ -2565,8 +2563,8 @@ void animateobjs(struct player *plr) {
 		sprite[i].cstat=0;
 
 		hitobject=movesprite((short)i,
-				(((int)sintable[(sprite[i].extra+512)&2047])*synctics)<<6,
-				(((int)sintable[sprite[i].extra])*synctics)<<6,
+				(((int)sintable[(sprite[i].extra+512)&2047])*TICSPERFRAME)<<6,
+				(((int)sintable[sprite[i].extra])*TICSPERFRAME)<<6,
 				daz,4L<<8,4L<<8,1);
 
 
@@ -2576,8 +2574,8 @@ void animateobjs(struct player *plr) {
 		else {
 
 			hitobject=movesprite((short)i,
-				(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<6,//was 3
-				(((int)sintable[sprite[i].ang])*synctics)<<6,//was 3
+				(((int)sintable[(sprite[i].ang+512)&2047])*TICSPERFRAME)<<6,//was 3
+				(((int)sintable[sprite[i].ang])*TICSPERFRAME)<<6,//was 3
 				daz,4L<<8,4L<<8,1);
 
 		}
@@ -2664,7 +2662,7 @@ bulletisdeletedskip:
 	i=headspritestat[JAVLIN];
 	while (i != -1) {
 		nexti=nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 		switch(sprite[i].picnum) {
 			case THROWPIKE:
 			case WALLARROW:
@@ -2687,7 +2685,7 @@ bulletisdeletedskip:
 				}
 				dax=sprite[i].xvel;
 				day=sprite[i].yvel;
-				daz=((((int)sprite[i].zvel)*synctics)>>3);
+				daz=((((int)sprite[i].zvel)*TICSPERFRAME)>>3);
 			break;
 		}
 
@@ -2696,8 +2694,8 @@ bulletisdeletedskip:
 		sprite[i].cstat=0;
 
 		hitobject=movesprite((short)i,
-				(((int)sintable[(sprite[i].extra+512)&2047])*synctics)<<6,
-				(((int)sintable[sprite[i].extra])*synctics)<<6,
+				(((int)sintable[(sprite[i].extra+512)&2047])*TICSPERFRAME)<<6,
+				(((int)sintable[sprite[i].extra])*TICSPERFRAME)<<6,
 				daz,4L<<8,4L<<8,0);
 
 		if( sprite[i].picnum == WALLARROW
@@ -2765,12 +2763,12 @@ javlinskip:
 	i=headspritestat[CHUNKOWALL];
 	while (i >= 0) {
 		nexti=nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 		dax=sprite[i].xvel>>3;
 		day=sprite[i].yvel>>3;
-		daz=sprite[i].zvel-=synctics<<2;
-		//movestat=movesprite(i,dax,day,daz,4<<8,4<<8,1,((int)synctics));
-		movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,1);
+		daz=sprite[i].zvel-=TICSPERFRAME<<2;
+		//movestat=movesprite(i,dax,day,daz,4<<8,4<<8,1,((int)TICSPERFRAME));
+		movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*TICSPERFRAME)<<3,(((int)sintable[sprite[i].ang])*TICSPERFRAME)<<3,0L,4L<<8,4L<<8,1);
 		setsprite(i,sprite[i].x,sprite[i].y,sprite[i].z);
 		if(sprite[i].extra == 0) {
 			if(sprite[i].lotag < 0) {
@@ -2791,24 +2789,24 @@ javlinskip:
 	i=headspritestat[CHUNKOMEAT];
 	while (i >= 0) {
 		nexti=nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 
 		sprite[i].z+=sprite[i].zvel;
 
-		daz=sprite[i].zvel+=synctics<<4;
+		daz=sprite[i].zvel+=TICSPERFRAME<<4;
 
 		if( sprite[i].picnum == BONECHUNK1
 			&& sprite[i].picnum == BONECHUNKEND ) {
 			daz>>=1;
 			movestat=movesprite((short)i,
-							(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<2,
-							(((int)sintable[sprite[i].ang])*synctics)<<2,
+							(((int)sintable[(sprite[i].ang+512)&2047])*TICSPERFRAME)<<2,
+							(((int)sintable[sprite[i].ang])*TICSPERFRAME)<<2,
 							daz,4L<<8,4L<<8,1);
 		}
 		else
 			movestat=movesprite((short)i,
-							(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,
-							(((int)sintable[sprite[i].ang])*synctics)<<3,
+							(((int)sintable[(sprite[i].ang+512)&2047])*TICSPERFRAME)<<3,
+							(((int)sintable[sprite[i].ang])*TICSPERFRAME)<<3,
 							daz,4L<<8,4L<<8,1);
 
 		if((movestat&0xc000) == 16384 ) {
@@ -2851,7 +2849,7 @@ javlinskip:
 	i=headspritestat[BLOOD];
 	while (i != -1 ) {
 		nexti=nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 		if(sprite[i].lotag < 0 ) {
 			if( sprite[i].z < sector[sprite[i].sectnum].floorz ) {
 				sprite[i].lotag=600;
@@ -2868,7 +2866,7 @@ javlinskip:
 	while (i != -1 ) {
 		nexti=nextspritestat[i];
 		if(invisibletime < 0) {
-			sprite[i].lotag-=synctics;
+			sprite[i].lotag-=TICSPERFRAME;
 			if(sprite[i].lotag < 0) {
 				sprite[i].lotag=krand()&120+360;
 				if( cansee( plr->x,
@@ -2892,12 +2890,12 @@ javlinskip:
 	i=headspritestat[DRIP];
 	while (i != -1 ) {
 		nexti=nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 		sprite[i].z+=sprite[i].zvel;
 		dax=0L;
 		day=0L;
-		daz=sprite[i].zvel+=synctics<<1;
-		daz=((((int)sprite[i].zvel)*synctics)<<1);
+		daz=sprite[i].zvel+=TICSPERFRAME<<1;
+		daz=((((int)sprite[i].zvel)*TICSPERFRAME)<<1);
 		movestat=movesprite((short)i,dax,day,daz,4L<<8,4L<<8,1);
 
 		if((movestat&0xc000) == 16384) {
@@ -2912,11 +2910,11 @@ javlinskip:
 	i=headspritestat[SMOKE];
 	while (i >= 0) {
 		nexti=nextspritestat[i];
-		sprite[i].lotag-=synctics;
-		sprite[i].z-=(synctics<<6);
+		sprite[i].lotag-=TICSPERFRAME;
+		sprite[i].z-=(TICSPERFRAME<<6);
 
 		if( sprite[i].xrepeat > 1)
-			sprite[i].xrepeat=sprite[i].yrepeat-=synctics;
+			sprite[i].xrepeat=sprite[i].yrepeat-=TICSPERFRAME;
 
 		setsprite(i,sprite[i].x,sprite[i].y,sprite[i].z);
 		if(sprite[i].lotag < 0)
@@ -2927,19 +2925,19 @@ javlinskip:
 	i=headspritestat[EXPLO];
 	while (i >= 0) {
 		nexti=nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 
-		//sprite[i].x+=((sprite[i].xvel*synctics)>>4);
-		//sprite[i].y+=((sprite[i].yvel*synctics)>>4);
-		//sprite[i].z-=((sprite[i].zvel*synctics)>>4);
+		//sprite[i].x+=((sprite[i].xvel*TICSPERFRAME)>>4);
+		//sprite[i].y+=((sprite[i].yvel*TICSPERFRAME)>>4);
+		//sprite[i].z-=((sprite[i].zvel*TICSPERFRAME)>>4);
 
-		sprite[i].x+=((sprite[i].xvel*synctics)>>5);
-		sprite[i].y+=((sprite[i].yvel*synctics)>>5);
-		sprite[i].z-=((sprite[i].zvel*synctics)>>6);
+		sprite[i].x+=((sprite[i].xvel*TICSPERFRAME)>>5);
+		sprite[i].y+=((sprite[i].yvel*TICSPERFRAME)>>5);
+		sprite[i].z-=((sprite[i].zvel*TICSPERFRAME)>>6);
 
 
-		//sprite[i].zvel+=(synctics<<5);
-		sprite[i].zvel+=(synctics<<4);
+		//sprite[i].zvel+=(TICSPERFRAME<<5);
+		sprite[i].zvel+=(TICSPERFRAME<<4);
 
 		if (sprite[i].z < sector[sprite[i].sectnum].ceilingz+(4<<8))
 		{
@@ -2955,10 +2953,10 @@ javlinskip:
 		//sprite[i].xrepeat = (sprite[i].lotag>>2);
 		//sprite[i].yrepeat = (sprite[i].lotag>>2);
 
-		sprite[i].xrepeat+=synctics;
-		sprite[i].yrepeat+=synctics;
+		sprite[i].xrepeat+=TICSPERFRAME;
+		sprite[i].yrepeat+=TICSPERFRAME;
 
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 
 
 		if(rand()%100 > 90) {
@@ -2989,7 +2987,7 @@ javlinskip:
 	i=headspritestat[BROKENVASE];
 	while (i >= 0) {
 		nexti=nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 		if(sprite[i].lotag < 0) {
 			sprite[i].picnum++;
 			sprite[i].lotag=18;
@@ -3009,7 +3007,7 @@ javlinskip:
 	i = headspritestat[FX]; //Go through explosion sprites
 	while (i >= 0) {
 		nexti=nextspritestat[i];
-		sprite[i].lotag-=synctics;
+		sprite[i].lotag-=TICSPERFRAME;
 
 		if(//sprite[i].picnum == PLASMA ||
 			sprite[i].picnum == BULLET
@@ -3019,7 +3017,7 @@ javlinskip:
 			|| sprite[i].picnum == FATSPANK) {
 
 			//sprite[i].z+=sprite[i].zvel;
-			sprite[i].zvel+=(synctics<<5);
+			sprite[i].zvel+=(TICSPERFRAME<<5);
 			if(sprite[i].z < sector[sprite[i].sectnum].ceilingz+(4<<8)) {
 				sprite[i].z = sector[sprite[i].sectnum].ceilingz+(4<<8);
 				sprite[i].zvel = -(sprite[i].zvel>>1);
@@ -3030,9 +3028,9 @@ javlinskip:
 				sprite[i].zvel=0;
 				sprite[i].lotag=4;
 			}
-			dax=((((int)sprite[i].xvel)*synctics)>>3);
-			day=((((int)sprite[i].yvel)*synctics)>>3);
-			daz=(((int)sprite[i].zvel)*synctics);
+			dax=((((int)sprite[i].xvel)*TICSPERFRAME)>>3);
+			day=((((int)sprite[i].yvel)*TICSPERFRAME)>>3);
+			daz=(((int)sprite[i].zvel)*TICSPERFRAME);
 			movestat=movesprite((short)i,dax,day,daz,4L<<8,4L<<8,1);
 			setsprite(i,sprite[i].x,sprite[i].y,sprite[i].z);
 		}
@@ -3040,11 +3038,11 @@ javlinskip:
 		if( sprite[i].picnum == ICECUBE ) {
 			sprite[i].z+=sprite[i].zvel;
 
-			daz=sprite[i].zvel+=synctics<<4;
+			daz=sprite[i].zvel+=TICSPERFRAME<<4;
 
 		movestat=movesprite((short)i,
-							(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,
-							(((int)sintable[sprite[i].ang])*synctics)<<3,
+							(((int)sintable[(sprite[i].ang+512)&2047])*TICSPERFRAME)<<3,
+							(((int)sintable[sprite[i].ang])*TICSPERFRAME)<<3,
 							daz,4L<<8,4L<<8,1);
 
 		}
