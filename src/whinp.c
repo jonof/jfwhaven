@@ -45,6 +45,7 @@ int mousecalibrate=0;
 int mousespeed=3;
 int  mousxspeed=3,
 	 mousyspeed=3;
+int mousekeys[2]={KEYFIRE,KEYUSE};
 
 int angvel,
 	 svel,
@@ -75,13 +76,9 @@ short jcalibration=0,
 	 jlowy,jhighy,
 	 jmovespeed=16,
 	 joyx,joyy,
-	 joykeys[4],
 	 jstickenabled=0,
 	 jturnspeed=16;
-
-short mousekeys[2];
-
-char option2[7];
+int joykeys[4]={KEYFIRE,KEYUSE,KEYUSEP,KEYSTRAFE};
 
 extern int wet;
 extern char foggy;
@@ -117,22 +114,6 @@ initjstick(void)
 {
 	 jcalibration=1;
 	 jstickenabled=0;
-	 if (option2[3] == 0) {
-		  option2[3]=KEYFIRE;
-	 }
-	 if (option2[4] == 0) {
-		  option2[4]=KEYUSE;
-	 }
-	 if (option2[5] == 0) {
-		  option2[5]=KEYUSEP;
-	 }
-	 if (option2[6] == 0) {
-		  option2[6]=KEYSTRAFE;
-	 }
-	 joykeys[0]=option2[3];
-	 joykeys[1]=option2[4];
-	 joykeys[2]=option2[5];
-	 joykeys[3]=option2[6];
 }
 
 void

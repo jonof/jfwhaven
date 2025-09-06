@@ -32,8 +32,6 @@ static int tmpmusic = -1;
 static int tmpmouse = -1;
 static int tmpjoystick = -1;
 
-//TODO deal with option2[]
-
 extern int musiclevel;
 extern int digilevel;
 
@@ -175,6 +173,28 @@ static struct {
     { "keyflydown", type_hex, &keys[KEYFLYDN], NULL },
     { "keyconsole", type_hex, &keys[KEYCONSOLE], NULL },
 
+    { "mousebutton1", type_int, &mousekeys[0],
+        "; Mouse Button Actions\n"
+        ";   4 - Run\n"
+        ";   5 - Strafe\n"
+        ";   6 - Fire\n"
+        ";   7 - Use\n"
+        ";   8 - Jump\n"
+        ";   9 - Crouch\n"
+        ";  20 - Use potion\n"
+    },
+    { "mousebutton2", type_int, &mousekeys[1], NULL },
+    { "mousexspeed", type_int, &mousxspeed,
+        "; Mouse speed (1-16)\n" },
+    { "mouseyspeed", type_int, &mousyspeed, NULL },
+
+    { "joystickbutton1", type_int, &joykeys[0],
+        "; Joystick Button Actions (see Mouse Buttons Actions above)\n"
+    },
+    { "joystickbutton2", type_int, &joykeys[1], NULL },
+    { "joystickbutton3", type_int, &joykeys[2], NULL },
+    { "joystickbutton4", type_int, &joykeys[3], NULL },
+
     { "gore", type_bool, &goreon,
         "; Gore preference\n"
     },
@@ -275,12 +295,14 @@ int loadsetup(const char *fn)
     } else if (tmpmouse > 0) {
         option[3] |= 1;
     }
+    mousxspeed = max(1,min(16,mousxspeed));
+    mousyspeed = max(1,min(16,mousyspeed));
     if (tmpjoystick == 0) {
         option[3] &= ~2;
     } else if (tmpjoystick > 0) {
         option[3] |= 2;
     }
-    OSD_CaptureKey(keys[19]);
+    OSD_CaptureKey(keys[KEYCONSOLE]);
 
     scriptfile_close(cfg);
     scriptfile_clearsymbols();

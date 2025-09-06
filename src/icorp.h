@@ -130,7 +130,6 @@ extern int goreon, difficulty;
 extern short brightness, gbrightness;
 
 
-//#define NUMOPTIONS 8
 #define NUMOPTIONS 12
 #define NUMKEYS 28                                               // Les 07/24/95
 #define XDIM    320
@@ -156,13 +155,11 @@ extern int  delaycnt,
             timerinitflag,
             videoinitflag;
 
-extern
-char option2[];
-
 extern int synctics;
 extern int globhiz, globloz, globhihit, globlohit;
-extern char option[];
-extern int keys[];
+extern char option[NUMOPTIONS];
+extern int keys[NUMKEYS], mousekeys[2], joykeys[4];
+extern int mousxspeed, mousyspeed;
 
 extern int svgascale, svgaxoff, svgastat, svgaoverstat;
 

@@ -46,9 +46,9 @@ int xdimgame = 640, ydimgame = 480, bppgame = 8;
 int forcesetup = 1;
 
 int keys[NUMKEYS]={
-     0xC8,0xD0,0xCB,0xCD,0x2A,0x9D,0x1D,0x39,
+     0xC8,0xD0,0xCB,0xCD,0x2A,0x38,0x1D,0x39,
      0x2D,0x2E,0xC9,0xD1,0xC7,0x33,0x34,
-     0x0F,0x1C,0x0D,0x0C,0x9C,0x13,0x16,
+     0x0F,0x1C,0x0D,0x0C,0x9C,0x1C,0x29,
      0x23,0x1E,0x14,0x1F,0x35,0x45
 };
 
@@ -1076,12 +1076,6 @@ void drawscreen(struct player *plr) {
 
 }
 
-extern
-char option2[];
-
-extern
-short mousekeys[];
-
 int app_main(int argc,const char * const argv[]) {
 
     struct player *plr;
@@ -1186,8 +1180,8 @@ int app_main(int argc,const char * const argv[]) {
         settings.ydim3d = ydimgame;
         settings.bpp3d = bppgame;
         settings.forcesetup = forcesetup;
-        settings.usemouse = !!option[3];
-        settings.usejoy = !!option2[2];
+        settings.usemouse = !!(option[3]&1);
+        settings.usejoy = !!(option[3]&2);
         settings.samplerate = digihz[option[7]>>4];
         settings.bitspersample = 1<<(((option[7]&2)>0)+3);
         settings.channels = ((option[7]&4)>0)+1;
@@ -1204,8 +1198,7 @@ int app_main(int argc,const char * const argv[]) {
         ydimgame = settings.ydim3d;
         bppgame = settings.bpp3d;
         forcesetup = settings.forcesetup;
-        option[3] = settings.usemouse;
-        option2[2] = settings.usejoy;
+        option[3] = (settings.usemouse) | (settings.usejoy<<1);
         option[7] = 0;
         for (i=0;i<8;i++) if (digihz[i] <= settings.samplerate) option[7] = i<<4;
         option[7] |= (settings.bitspersample == 16)<<1;
@@ -1224,13 +1217,11 @@ int app_main(int argc,const char * const argv[]) {
         SoundMode=0;
 
 
-    if (option[3] != 0) {                                        // Les 07/27/95
+    if (option[3]&1) {                                        // Les 07/27/95
         initmouse();
-        mousekeys[0]=option2[0];                                 // Les 07/27/95
-        mousekeys[1]=option2[1];                                 // Les 07/27/95
     }                                                            // Les 07/27/95
 
-     if (option2[2] != 0) {                                      // Les 07/27/95
+     if (option[3]&2) {                                      // Les 07/27/95
           initjstick();                                          // Les 07/27/95
      }
 
