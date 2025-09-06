@@ -84,6 +84,22 @@ struct savedgame savedgamenames[MAXSAVEDGAMES];
 
 extern int gameactivated;
 
+static void menubackground(void) {
+    if (svga)
+        svgafullscreenpic(SVGAMENU, SVGAMENU2);
+
+    rotatesprite(svgaxoff,0<<15,svgascale,0,MAINMENU,0,
+                0,svgastat,0,0,xdim-1,ydim-1);
+}
+
+static void menuwritesprite(int thex, int they, short tilenum, signed char shade,
+        char stat, unsigned char dapalnum) {
+    (void)stat;
+    rotatesprite(svgaxoff+thex*svgascale,they*svgascale,svgascale,0,tilenum,shade,dapalnum,
+                 svgaoverstat,0,0,xdim-1,ydim-1);
+}
+
+
 //
 // fancy font
 //
@@ -120,11 +136,11 @@ void fancyfont(int x, int y, short tilenum, char *string, char pal) {
             }
         }
         if( i == 0 ) {
-            overwritesprite(x,y,tilenum+number,0,0,pal);
+            menuwritesprite(x,y,tilenum+number,0,0,pal);
             incr+=tilesizx[tilenum+number]+1;
         }
         else if( tempbuf[i] != ' ' ) {
-            overwritesprite(x+incr,y,tilenum+number,0,0,pal);
+            menuwritesprite(x+incr,y,tilenum+number,0,0,pal);
             incr+=tilesizx[tilenum+number]+1;
         }
         else
@@ -208,21 +224,6 @@ void svgafullscreenpic(short pic1, short pic2) {
                 0,8+16+64,0,0,xdim-1,ydim-1);
     rotatesprite(svgaxoff,ydim<<15,svgascale,0,pic2,0,
                 0,8+16+64,0,0,xdim-1,ydim-1);
-}
-
-static void menubackground(void) {
-    if (svga)
-        svgafullscreenpic(SVGAMENU, SVGAMENU2);
-
-    rotatesprite(svgaxoff,0<<15,svgascale,0,MAINMENU,0,
-                0,svgastat,0,0,xdim-1,ydim-1);
-}
-
-static void menuwritesprite(int thex, int they, short tilenum, signed char shade,
-        char stat, unsigned char dapalnum) {
-    (void)stat;
-    rotatesprite(svgaxoff+thex*svgascale,they*svgascale,svgascale,0,tilenum,shade,dapalnum,
-                 svgaoverstat,0,0,xdim-1,ydim-1);
 }
 
 int menuscreen(struct player *plr) {
