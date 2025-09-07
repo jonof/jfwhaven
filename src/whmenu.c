@@ -283,18 +283,19 @@ int menuscreen(struct player *plr) {
         nextpage();
 
             if( totalclock >= goaltime ) {
-                goaltime=totalclock+10L;
-                if( keystatus[0xd0] || keystatus[0x50] ) {
+                if( keystatus[LDN] || keystatus[RDN] ) {
                     TEMPSND();
                     select++;
                     if ( select > 4 )
                         select=0;
+                    goaltime=totalclock+15L;
                 }
-                if( keystatus[0xc8] || keystatus[0x48] ) {
+                if( keystatus[LUP] || keystatus[RUP] ) {
                     TEMPSND();
                     select--;
                     if ( select < 0 )
                         select=4;
+                    goaltime=totalclock+15L;
                 }
                 if( keystatus[1] > 0) {
                     TEMPSND();
@@ -391,7 +392,7 @@ void help(void) {
     };
 
     int select=0;
-    int goaltime = totalclock;
+    int goaltime = totalclock+10;
     int exit=0;
 
     while (!exit) {
@@ -401,8 +402,7 @@ void help(void) {
         nextpage();
 
         if(totalclock >= goaltime) {
-            goaltime=totalclock+10L;
-                if( keystatus[0xd0]
+                if( keystatus[LDN]
                     || keystatus[keys[KEYRIGHT]]
                     || keystatus[RDN]
                     || keystatus[keys[KEYBACK]]
@@ -411,8 +411,9 @@ void help(void) {
                     select++;
                     if ( select > 9 )
                         select=9;
+                    goaltime=totalclock+15L;
                 }
-                if( keystatus[0xc8]
+                if( keystatus[LUP]
                     || keystatus[keys[KEYLEFT]]
                     || keystatus[RUP]
                     || keystatus[keys[KEYFWD]]
@@ -421,6 +422,7 @@ void help(void) {
                     select--;
                     if ( select < 0 )
                         select=0;
+                    goaltime=totalclock+15L;
                 }
                 if( keystatus[1] > 0) {
                     exit=1;
@@ -459,14 +461,15 @@ void loadsave(struct player *plr) {
         nextpage();
 
         if( totalclock >= goaltime ) {
-            goaltime=totalclock+10L;
-                if( keystatus[keys[KEYBACK]] || keystatus[RDN] ) {
+                if( keystatus[LDN] || keystatus[RDN] ) {
                     TEMPSND();
                     select=1;
+                    goaltime=totalclock+15L;
                 }
-                if( keystatus[keys[KEYFWD]] || keystatus[RUP] ) {
+                if( keystatus[LUP] || keystatus[RUP] ) {
                     TEMPSND();
                     select=0;
+                    goaltime=totalclock+15L;
                 }
                 if( keystatus[1] > 0) {
                     exit=1;
@@ -598,15 +601,16 @@ void thedifficulty(void) {
             handleevents();
 
         if( totalclock >= goaltime ) {
-            goaltime=totalclock+10L;
 
-            if(keystatus[keys[KEYFWD]] > 0 || keystatus[RUP] > 0) {
+            if(keystatus[LUP] > 0 || keystatus[RUP] > 0) {
                 TEMPSND();
                 select2=0;
+                goaltime=totalclock+15L;
             }
-            if(keystatus[keys[KEYBACK]] > 0 || keystatus[RDN] > 0) {
+            if(keystatus[LDN] > 0 || keystatus[RDN] > 0) {
                 TEMPSND();
                 select2=1;
+                goaltime=totalclock+15L;
             }
             if(select2 == 0)
                 pickone=0;
@@ -639,28 +643,32 @@ void thedifficulty(void) {
             nextpage();
 
             if( pickone == 1 ) {
-                if( keystatus[keys[KEYLEFT]] > 0 || keystatus[RLEFT] > 0) {
+                if( keystatus[LLEFT] > 0 || keystatus[RLEFT] > 0) {
                     TEMPSND();
                     select--;
                     if( select < 0)
                         select=0;
+                    goaltime=totalclock+15L;
                 }
-                if( keystatus[keys[KEYRIGHT]] > 0 || keystatus[RRIGHT] > 0) {
+                if( keystatus[LRIGHT] > 0 || keystatus[RRIGHT] > 0) {
                     TEMPSND();
                     select++;
                     if( select > 3)
                         select=3;
+                    goaltime=totalclock+15L;
                 }
                 selected=select;
             }
             else {
-                if( keystatus[keys[KEYLEFT]] > 0 || keystatus[RLEFT] > 0) {
+                if( keystatus[LLEFT] > 0 || keystatus[RLEFT] > 0) {
                     TEMPSND();
                     select3=0;
+                    goaltime=totalclock+15L;
                 }
-                if( keystatus[keys[KEYRIGHT]] > 0 || keystatus[RRIGHT] > 0) {
+                if( keystatus[LRIGHT] > 0 || keystatus[RRIGHT] > 0) {
                     TEMPSND();
                     select3=1;
+                    goaltime=totalclock+15L;
                 }
                 if(select3 == 0)
                     goreon=0;
@@ -770,20 +778,17 @@ void loadgame(struct player *plr) {
         nextpage();
 
         if( totalclock >= goaltime ) {
-            goaltime=totalclock+10L;
-
-
-            if ( keystatus[keys[KEYFWD]] > 0 || keystatus[RUP] > 0) {
+            if ( keystatus[LUP] > 0 || keystatus[RUP] > 0) {
                 select--;
                 if( select < 0 )
                     select=4;
-                keystatus[keys[KEYFWD]]=0;
+                goaltime=totalclock+15L;
             }
-            if ( keystatus[keys[KEYBACK]] > 0 || keystatus[RDN] > 0) {
+            if ( keystatus[LDN] > 0 || keystatus[RDN] > 0) {
                 select++;
                 if( select > 4 )
                     select=0;
-                keystatus[keys[KEYBACK]]=0;
+                goaltime=totalclock+15L;
             }
 
             if ( keystatus[1] > 0 ) {
@@ -847,18 +852,18 @@ void savegame(struct player *plr) {
         nextpage();
 
         if( totalclock >= goaltime ) {
-            goaltime=totalclock+10L;
-
-            if( keystatus[keys[KEYFWD]] > 0 || keystatus[RUP] > 0) {
+            if( keystatus[LUP] > 0 || keystatus[RUP] > 0) {
                 select--;
                 if ( select < 0)
                     select=4;
+                goaltime=totalclock+15L;
             }
 
-            if( keystatus[keys[KEYBACK]] > 0 || keystatus[RDN] > 0) {
+            if( keystatus[LDN] > 0 || keystatus[RDN] > 0) {
                 select++;
                 if( select > 4 )
                     select=0;
+                goaltime=totalclock+15L;
             }
 
             if( keystatus[1] > 0 ) {

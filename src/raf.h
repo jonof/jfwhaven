@@ -137,6 +137,11 @@ extern int  ironbarsgoal[16];
 #define LPLUS  0x0d
 #define BKSPC  0x0e
 
+#define LUP    0xc8
+#define LDN    0xd0
+#define LRIGHT 0xcd
+#define LLEFT  0xcb
+#define LSHIFT 0x2a
 #define RUP    0x48
 #define RDN    0x50
 #define RRIGHT 0x4d
