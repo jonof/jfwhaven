@@ -783,10 +783,7 @@ syncprocessinput(short snum) {
 			dist>>=2;
 
 		if( dist > 0 && feetoffground <= (plr->height<<8) || onsprite != -1) {
-			if( svga == 1)
-				 oldhoriz = ((dist*sintable[(lockclock<<5)&2047])>>19)>>2;
-			else
-				 oldhoriz = ((dist*sintable[(lockclock<<5)&2047])>>19)>>1;
+			oldhoriz = ((dist*sintable[(lockclock<<5)&2047])>>19)>>1;
 			plr->horiz += oldhoriz;
 		}
 		else
