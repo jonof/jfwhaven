@@ -6,7 +6,7 @@ $(SRC)/whani.$o: $(SRC)/whani.c $(icorp_h)
 $(SRC)/whaven.$o: $(SRC)/whaven.c $(icorp_h) $(ENGINEINC)/osd.h $(SRC)/startwin.h $(SRC)/version.h
 $(SRC)/whfx.$o: $(SRC)/whfx.c $(icorp_h)
 $(SRC)/whinp.$o: $(SRC)/whinp.c $(icorp_h) $(SRC)/keydefs.h
-$(SRC)/whmenu.$o: $(SRC)/whmenu.c $(icorp_h)
+$(SRC)/whmenu.$o: $(SRC)/whmenu.c $(ENGINEINC)/osd.h $(icorp_h)
 $(SRC)/whnet.$o: $(SRC)/whnet.c $(icorp_h) $(ENGINEINC)/mmulti.h
 $(SRC)/whobj.$o: $(SRC)/whobj.c $(icorp_h)
 $(SRC)/whplr.$o: $(SRC)/whplr.c $(icorp_h)

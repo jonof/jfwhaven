@@ -5,6 +5,7 @@
 *********************************************************************/
 
 #include "icorp.h"
+#include "osd.h"
 
 
 int loopinstuff; //here it is
@@ -273,6 +274,7 @@ int menuscreen(struct player *plr) {
     ready2send = 0;
     while( !exit ) {
         handleevents();
+        OSD_DispatchQueued();
         menubackground();
         menuwritesprite(127,58,MENUSELECTIONS,0,0,0);
 

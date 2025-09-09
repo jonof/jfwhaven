@@ -31,7 +31,7 @@ int  difficulty=2;
 int xdimgame = 640, ydimgame = 480, bppgame = 8;
 int forcesetup = 1;
 
-int keys[NUMKEYS]={
+const int defaultkeys[NUMKEYS]={
      0xC8,0xD0,0xCB,0xCD,0x2A,0x38,0x1D,0x39,
      0x2D,0x2E,0xC9,0xD1,0xC7,0x33,0x34,
      0x0F,0x1C,0x0D,0x0C,0x9C,0x1C,0x29,
@@ -40,6 +40,16 @@ int keys[NUMKEYS]={
      0x3B,0x3C,0x3D,0x3E,0x3F,0x40,0x41,0x42, // KEYSPELL1..8
      0x45
 };
+const int modernkeys[NUMKEYS]={
+     0x11,0x1F,0xCB,0xCD,0x2A,0xB8,0x1D,0x12,
+     0x39,0x38,0xC9,0xD1,0xC7,0x1E,0x20,
+     0x0F,0x1C,0x0D,0x0C,0x9C,0x1C,0x29,
+     0x23,0x16,0xCF,0x1F,0x35,0x1A,0x1B,
+     0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xA,0xB, // KEYWEAP1..9
+     0x3B,0x3C,0x3D,0x3E,0x3F,0x40,0x41,0x42, // KEYSPELL1..8
+     0x45
+};
+int keys[NUMKEYS];
 
 extern int loadedgame;
 extern char tempbuf[50];
@@ -144,6 +154,7 @@ int nummoves;
 static unsigned int showfps, averagefps, framecnt, frameval[AVERAGEFRAMES];
 
 static int osdcmd_showfps(const osdfuncparm_t *parm);
+static int osdcmd_setkeys(const osdfuncparm_t *parm);
 static int osdcmd_setting(const osdfuncparm_t *parm);
 
 //
@@ -1263,6 +1274,7 @@ int app_main(int argc,const char * const argv[]) {
     buildprintf(" map name: level%d\n",mapon);
     buildputs(" initengine()\n");
 
+    memcpy(keys,defaultkeys,sizeof(keys));
     loadsetup("whaven.ini");
 
 #if defined RENDERTYPEWIN || (defined RENDERTYPESDL && (defined __APPLE__ || defined HAVE_GTK))
@@ -1381,6 +1393,7 @@ int app_main(int argc,const char * const argv[]) {
     readpalettetable();
 
     OSD_RegisterFunction("showfps","showfps [state]: show frame rate", osdcmd_showfps);
+    OSD_RegisterFunction("setkeys","setkeys [modern|default]: set keys to modern (WASD) or default (arrows)", osdcmd_setkeys);
     OSD_RegisterFunction("mouselookmode","mouselookmode [onf]: set mouse look mode (0 momentary, 1 toggle)", osdcmd_setting);
     OSD_RegisterFunction("mousespeed","mousespeed [x] [y]: set mouse sensitivity (range 1 to 16)", osdcmd_setting);
 
@@ -1758,10 +1771,27 @@ int adjusthp(int hp) {
 
 static int osdcmd_showfps(const osdfuncparm_t *parm)
 {
-    if (parm->numparms <= 1) {
+    if (parm->numparms == 1) {
         if (parm->numparms == 1) showfps = min(1,(unsigned)atoi(parm->parms[0]));
         buildprintf("showfps is %u\n", showfps);
         return OSDCMD_OK;
+    }
+    return OSDCMD_SHOWHELP;
+}
+
+static int osdcmd_setkeys(const osdfuncparm_t *parm)
+{
+    if (parm->numparms == 1) {
+        if (!strcasecmp(parm->parms[0], "modern")) {
+            memcpy(keys,modernkeys,sizeof(keys)-sizeof(keys[KEYCONSOLE]));
+            buildputs("keys set to modern\n");
+            return OSDCMD_OK;
+        }
+        else if (!strcasecmp(parm->parms[0], "default")) {
+            memcpy(keys,defaultkeys,sizeof(keys)-sizeof(keys[KEYCONSOLE]));
+            buildputs("keys set to default\n");
+            return OSDCMD_OK;
+        }
     }
     return OSDCMD_SHOWHELP;
 }
