@@ -76,6 +76,7 @@ CAPTION "More information"
 FONT 8, "MS Shell Dlg", 0, 0, 1
 {
     DEFPUSHBUTTON   "&Close", IDOK, 240, 130, 55, 15, 0, WS_EX_LEFT
+    PUSHBUTTON      "&Download Preview", IDCONTINUE, 5, 130, 80, 15, 0, WS_EX_LEFT
     LTEXT           "", IDC_IMPORTINFO_HEADER, 12, 12, 276, 18, 0, WS_EX_LEFT
     LTEXT           "", IDC_IMPORTINFO_TEXT, 12, 36, 276, 92, 0, WS_EX_LEFT
 }

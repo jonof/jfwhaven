@@ -350,7 +350,9 @@ static INT_PTR CALLBACK importinfo_dlgproc(HWND hwndDlg, UINT uMsg, WPARAM wPara
                 "Click the 'Choose a location...' button, then locate a folder to scan.\n\n"
                 "Common locations to check include:\n"
                 " \x95 CD/DVD drives\n"
-                " \x95 Unzipped data from copies of the full DOS game");
+                " \x95 Unzipped data from copies of the full DOS game\n\n"
+                "To play the 3-level preview version, download the preview data (whcdpreview.zip), "
+                "unzip the file, then select the WHAVEN folder with the 'Choose a location...' option.");
 
             {
                 // Set the font of the header text.
@@ -378,6 +380,9 @@ static INT_PTR CALLBACK importinfo_dlgproc(HWND hwndDlg, UINT uMsg, WPARAM wPara
 
         case WM_COMMAND:
             switch (LOWORD(wParam)) {
+                case IDCONTINUE:
+                    EndDialog(hwndDlg, 1);
+                    return TRUE;
                 case IDOK:
                     EndDialog(hwndDlg, 0);
                     return TRUE;
@@ -392,7 +397,11 @@ static INT_PTR CALLBACK importinfo_dlgproc(HWND hwndDlg, UINT uMsg, WPARAM wPara
 
 static void importinfo_clicked(void)
 {
-    DialogBox((HINSTANCE)win_gethinstance(), MAKEINTRESOURCE(IDD_IMPORTINFO), startupdlg, importinfo_dlgproc);
+    const char *sharewareurl = "https://www.jonof.id.au/files/jfwhaven/whcdpreview.zip";
+
+    if (DialogBox((HINSTANCE)win_gethinstance(), MAKEINTRESOURCE(IDD_IMPORTINFO), startupdlg, importinfo_dlgproc) == 1) {
+        ShellExecute(startupdlg, "open", sharewareurl, NULL, NULL, SW_SHOW);
+    }
 }
 
 static INT_PTR CALLBACK ConfigPageProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)

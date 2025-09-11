@@ -291,6 +291,7 @@ static int importmeta_cancelled(void *data);
 {
     @autoreleasepool {
         NSAlert *alert = [[NSAlert alloc] init];
+        NSURL *sharewareurl = [NSURL URLWithString:@"https://www.jonof.id.au/files/jfwhaven/whcdpreview.zip"];
 
         [alert setAlertStyle:NSAlertStyleInformational];
         [alert setMessageText:@"JFWitchaven can scan locations of your choosing for Witchaven game data"];
@@ -298,10 +299,16 @@ static int importmeta_cancelled(void *data);
             @"a folder to scan.\n\n"
             @"Common locations to check include:\n"
             @" • CD/DVD drives\n"
-            @" • Unzipped data from copies of the full DOS game"];
+            @" • Unzipped data from copies of the full DOS game\n\n"
+            @"To play the 3-level preview version, download the preview data (whcdpreview.zip), "
+            @"unzip the file, then select the WHAVEN folder with the 'Choose a location...' option."];
         [alert addButtonWithTitle:@"OK"];
+        [alert addButtonWithTitle:@"Download Preview"];
         switch ([alert runModal]) {
             case NSAlertFirstButtonReturn:
+                break;
+            case NSAlertSecondButtonReturn:
+                LSOpenCFURLRef((CFURLRef)sharewareurl, nil);
                 break;
         }
     }

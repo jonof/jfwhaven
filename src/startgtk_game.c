@@ -387,6 +387,7 @@ static void on_chooseimportbutton_clicked(GtkButton *button, gpointer user_data)
 static void on_importinfobutton_clicked(GtkButton *button, gpointer user_data)
 {
     GtkWidget *dialog;
+    const char *sharewareurl = "https://www.jonof.id.au/files/jfwhaven/whcdpreview.zip";
 
     (void)button; (void)user_data;
 
@@ -397,8 +398,13 @@ static void on_importinfobutton_clicked(GtkButton *button, gpointer user_data)
         "Click the 'Choose a location...' button, then locate a folder to scan.\n\n"
         "Common locations to check include:\n"
         " • CD/DVD drives\n"
-        " • Unzipped data from copies of the full DOS game");
-    gtk_dialog_run(GTK_DIALOG(dialog));
+        " • Unzipped data from copies of the full DOS game\n\n"
+        "To play the 3-level preview version, download the preview data (whcdpreview.zip), "
+        "unzip the file, then select the WHAVEN folder with the 'Choose a location...' option.");
+    gtk_dialog_add_button(GTK_DIALOG(dialog), "Download Preview", 1);
+    if (gtk_dialog_run(GTK_DIALOG(dialog)) == 1) {
+        g_app_info_launch_default_for_uri(sharewareurl, NULL, NULL);
+    }
     gtk_widget_destroy(dialog);
 }
 
