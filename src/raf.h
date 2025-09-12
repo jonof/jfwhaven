@@ -7,7 +7,6 @@
       Rafael Paiz
 
 **************************************************************************/
-#define WHAVENDEMO
 
 #define EASY        0
 #define NORMAL      1

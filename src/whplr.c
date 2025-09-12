@@ -5,8 +5,6 @@
 
 #include "icorp.h"
 
-//#define   WHDEMO
-
 extern short gametype;
 
 
@@ -24,6 +22,8 @@ int lives;
 int madeahit=0;
 extern int lavasnd;
 extern int mapflag;
+extern int gameactivated;
+extern int escapetomenu;
 
 int  pyrn;
 int  dahand=0;
@@ -1624,14 +1624,24 @@ void loadnewlevel(int mapon) {
 	 SND_StartMusic(mapon-1);
 //JSA_ENDS
 
-#ifdef WHDEMO
-    if (mapon > 3) {
-        victory();
-    }
-#endif
+	if (numlevels == 3 && mapon > 3) {
+		victory();
+		return;
+	}
 
 	setupboard(mapbuf);
 
+}
+
+void countlevels(void) {
+	char mapbuf[16];
+	int fh;
+	for (numlevels=0; numlevels<30; numlevels++) {
+		sprintf(mapbuf,"level%d.map",numlevels+1);
+		fh = kopen4load(mapbuf,0);
+		if (fh < 0) break;
+		kclose(fh);
+	}
 }
 
 void victory(void) {
@@ -1645,16 +1655,6 @@ void victory(void) {
 	if(svga == 1) {
 		SND_Sound(S_PICKUPFLAG);
 		svgafullscreenpic(SVGAVICTORYA1, SVGAVICTORYA2);
-		nextpage();
-		exit=0;
-		while( !exit ){
-			handleevents();
-			if(keystatus[0x39] > 0 || keystatus[1] > 0)
-				exit=1;
-		}
-			keystatus[0x39]=0;
-			keystatus[1]=0;
-
 		nextpage();
 		exit=0;
 		while( !exit ){
@@ -1730,8 +1730,8 @@ void victory(void) {
 		exit=0;
 
 	}
-	shutdowngame();
-
+	gameactivated=0;
+	escapetomenu=1;
 }
 
 void drawweapons(struct player *plr) {

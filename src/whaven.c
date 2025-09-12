@@ -30,6 +30,7 @@ int  difficulty=2;
 
 int xdimgame = 640, ydimgame = 480, bppgame = 8;
 int forcesetup = 1;
+int numlevels;
 
 const int defaultkeys[NUMKEYS]={
      0xC8,0xD0,0xCB,0xCD,0x2A,0x38,0x1D,0x39,
@@ -1270,6 +1271,12 @@ int app_main(int argc,const char * const argv[]) {
     }
 
     initgroupfile("stuff.dat");
+    countlevels();
+    if (numlevels > 3) {
+        wm_setwindowtitle("Registered Version");
+    } else {
+        wm_setwindowtitle("3 Level Preview");
+    }
 
     buildprintf(" map name: level%d\n",mapon);
     buildputs(" initengine()\n");

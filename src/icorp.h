@@ -155,6 +155,7 @@ int lockclock, ototalclock, gotlastpacketclock, ready2send;
 
 extern int xdimgame, ydimgame, bppgame;
 extern int forcesetup;
+extern int numlevels;
 extern int goreon, difficulty;
 extern short brightness, gbrightness;
 
@@ -337,6 +338,7 @@ void potiontext(void);
 void plrfireweapon(struct player *plr);
 void activatedaorb(struct player *plr);
 void plruse(struct player *plr);
+void countlevels(void);
 void loadnewlevel(int mapon);
 void victory(void);
 void drawweapons(struct player *plr);
