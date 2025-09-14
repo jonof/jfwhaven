@@ -91,8 +91,7 @@ GAMEOBJS= \
 	$(SRC)/whsmk.$o \
 	$(SRC)/whsndmod.$o \
 	$(SRC)/whtag.$o \
-	$(SRC)/datascan.$o \
-	$(RSRC)/palette.$o
+	$(SRC)/datascan.$o
 
 GAMEOBJS+= \
 	$(LIBSMACKERSRC)/smacker.$o

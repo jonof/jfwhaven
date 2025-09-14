@@ -28,8 +28,6 @@ $(RSRC)/startgtk_game_gresource.c: $(RSRC)/startgtk_game.gresource.xml $(RSRC)/g
 $(RSRC)/startgtk_game_gresource.h: $(RSRC)/startgtk_game.gresource.xml
 $(RSRC)/sdlappicon_game.c: $(RSRC)/game.png
 $(RSRC)/sdlappicon_game.$o: $(RSRC)/sdlappicon_game.c
-$(RSRC)/palette.c: $(RSRC)/palette.dat
-$(RSRC)/palette.$o: $(RSRC)/palette.c
 
 $(SRC)/gameres.$(res): $(SRC)/gameres.rc $(SRC)/gameres.h $(RSRC)/game.bmp $(RSRC)/game_icon.ico $(RSRC)/game.manifest
 $(SRC)/buildres.$(res): $(SRC)/buildres.rc $(ENGINEINC)/buildres.h $(RSRC)/build.bmp $(RSRC)/build_icon.ico $(RSRC)/build.manifest

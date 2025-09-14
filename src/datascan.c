@@ -12,32 +12,6 @@ enum {
     COPYFILE_ERR_CANCELLED = -4,
 };
 
-extern const unsigned char default_palette[];
-extern const int default_palette_size;
-
-// Write a copy of the palette.dat file.
-static int WritePaletteFile(void)
-{
-    int ofh, rv = COPYFILE_OK;
-    ssize_t b=0, off;
-    const char *fname = "palette.dat";
-
-    ofh = open(fname, O_WRONLY|O_BINARY|O_CREAT|O_EXCL, BS_IREAD|BS_IWRITE);
-    if (ofh < 0) {
-        if (errno == EEXIST) return COPYFILE_ERR_EXISTS;
-        return COPYFILE_ERR_OPEN;
-    }
-    for (off = 0; off < default_palette_size && rv == COPYFILE_OK; off += b) {
-        b = min(16384, default_palette_size - off);
-        if ((b = write(ofh, &default_palette[off], b)) < 0) {
-            rv = COPYFILE_ERR_RW;
-        }
-    }
-    close(ofh);
-    if (rv != COPYFILE_OK) remove(fname);
-    return rv;
-}
-
 
 // Copy the contents of 'fh' to file 'fname', but only if 'fname' doesn't already exist.
 static int CopyFile(int fh, int size, const char *fname, struct importdatameta *cbs)
@@ -112,6 +86,7 @@ static int ImportFilesFromDir(const char *path, struct importdatameta *cbs)
     static const char *pats[] = {
         "tiles???.art",
         "level*.map",
+        "palette.dat",
         "lookup.dat",
         "joesnd",
         "songs",
@@ -179,12 +154,7 @@ int ImportDataFromPath(const char *path, struct importdatameta *cbs)
         }
     }
 
-    if (found) {
-        if (WritePaletteFile() == COPYFILE_OK) {
-            buildprintf("Wrote PALETTE.DAT\n");
-        }
-        return IMPORTDATA_COPIED;         // Finding anything is considered fine.
-    }
+    if (found) return IMPORTDATA_COPIED;         // Finding anything is considered fine.
     else if (errors) return IMPORTDATA_ERROR; // Finding nothing but errors reports back errors.
     return IMPORTDATA_OK;
 }

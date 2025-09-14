@@ -79,7 +79,6 @@ GAMEOBJS= \
 	$(SRC)\whsndmod.$o \
 	$(SRC)\whtag.$o \
 	$(SRC)\datascan.$o \
-	$(RSRC)\palette.$o \
 	$(SRC)\gameres.$(res) \
 	$(SRC)\startwin_game.$o
 
