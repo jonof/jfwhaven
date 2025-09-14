@@ -63,7 +63,7 @@ char option[NUMOPTIONS] = {
   0,  // 0 - Video type
   0,  // 1 -
   0,  // 2 -
-  0,  // 3 - 1 = Mouse
+  1,  // 3 - 1 = Mouse, +2 = Joystick
   0,  // 4 -
   0,  // 5 -
   1,  // 6 - Video mode
