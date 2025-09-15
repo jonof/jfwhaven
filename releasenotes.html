@@ -337,6 +337,18 @@ alt="The initial startup window as it appears on macOS" width="629" height="422"
 			<p>This is a list of more useful console commands and settings and their purpose:</p>
 
 			<dl>
+				<dt>mousebutton &lt;1–2&gt; &lt;action&gt;</dt>
+				<dt>mousebutton list</dt>
+				<dd>Set a mouse button action. The 'list' parameter will show current action mappings.</dd>
+
+				<dt>joystickbutton &lt;1–4&gt; &lt;action&gt;</dt>
+				<dt>joystickbutton list</dt>
+				<dd>Set a joystick button action. The 'list' parameter will show current action mappings.</dd>
+
+				<dt>keybutton &lt;hex scancode&gt; &lt;action&gt;</dt>
+				<dt>keybutton list</dt>
+				<dd>Set a keyboard button action. The 'list' parameter will show current action mappings.</dd>
+
 				<dt>clear</dt>
 				<dd>Clear the console.</dd>
 
@@ -371,14 +383,8 @@ alt="The initial startup window as it appears on macOS" width="629" height="422"
 				<dt>listsymbols</dt>
 				<dd>Displays the names of all commands and variables available in the console.</dd>
 
-				<dt>novoxmips &lt;0 or 1&gt;</dt>
-				<dd>Disables or enables the use of voxel mipmaps to improve voxel visual quality.</dd>
-
 				<dt>osdrows &lt;num&gt;</dt>
 				<dd>Sets the number of visible lines of the console when it is open.</dd>
-
-				<dt>restartvid</dt>
-				<dd>Reinitialise video to apply settings changes.</dd>
 
 				<dt>screencaptureformat &lt;0 or 1 or 2&gt;</dt>
 				<dd>0 = Targa, 1 = PCX, 2 = PNG (default)</dd>
@@ -391,10 +397,6 @@ alt="The initial startup window as it appears on macOS" width="629" height="422"
 				gives better looking transparent textures at the expense of some sprites behind the transparent
 				item potentially being invisible in certain circumstances. 0 is a more compatible value (and is
 				the default) for this option but slight visual degradation will result.</dd>
-
-				<dt>vidmode &lt;bpp&gt;<br>
-				    vidmode &lt;xdim&gt; &lt;ydim&gt; [bpp [fs]]</dt>
-				<dd>Change the video mode. <em>xdim ydim</em> are the resolution. <em>bpp</em> is the colour depth (8, 16, 24, 32). <em>fs</em> is 0 for windowed, 1 for fullscreen.</dd>
 			</dl>
 
 			<h1 id="license">License</h1>
