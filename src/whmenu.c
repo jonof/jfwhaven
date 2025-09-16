@@ -82,6 +82,7 @@ struct savedgame savedgamenames[MAXSAVEDGAMES];
 
 
 static void menubackground(void) {
+    clearallviews(0);
     if (svga)
         svgafullscreenpic(SVGAMENU, SVGAMENU2);
 
@@ -239,6 +240,8 @@ int menuscreen(struct player *plr) {
     int select=0;
     short redpicnum;
     int goaltime;
+    const char settingsstr[] = "Press / for settings";
+    void configmenu(void);
 
 
     if (netgame) {
@@ -282,6 +285,8 @@ int menuscreen(struct player *plr) {
             redpicnum=NEWGAMEGREEN+select;
             menuwritesprite(redpic[select].x,redpic[select].y,redpicnum,0,0,0);
         }
+        printext256(xdim-(svgaxoff>>16)-8*sizeof(settingsstr)-18+2,ydim-18+2,2,-1,settingsstr,2);
+        printext256(xdim-(svgaxoff>>16)-8*sizeof(settingsstr)-18,ydim-18,29,-1,settingsstr,2);
 
         nextpage();
 
@@ -310,6 +315,10 @@ int menuscreen(struct player *plr) {
                     else
                         select=4;
                     keystatus[1]=0;
+                }
+                if( keystatus[0x35] ) {
+                    keystatus[0x35]=0;
+                    configmenu();
                 }
                 if( keystatus[0x1c] > 0 || keystatus[0x9c] > 0) {
                     keystatus[0x1c]=keystatus[0x9c]=0;keystatus[1]=0;
@@ -1618,3 +1627,265 @@ void cleanup(void) {
 
 }
 
+
+enum configverb {
+    init = 0,
+    increase = 1,
+    decrease = -1,
+    draw = -2,
+    activate = -3,
+};
+
+static const char *configitem_setvolume(enum configverb verb, int source) {
+    static char digistr[16]={0}, midistr[16]={0};
+    switch (verb) {
+        case increase:
+        case decrease: {
+            int vol = source == DIGI ? digilevel : musiclevel;
+            vol = max(1, min(16, vol + (int)verb));
+            SND_Mixer(source, vol);
+            if (source == DIGI) {
+                digilevel = vol;
+                SND_Sound(10);
+                digistr[0]=0;
+            } else {
+                musiclevel = vol;
+                midistr[0]=0;
+            }
+            break;
+        }
+        case draw:
+            if (source == DIGI) {
+                if (!digistr[0]) snprintf(digistr,sizeof(digistr),"%d",digilevel);
+                return digistr;
+            } else {
+                if (!midistr[0]) snprintf(midistr,sizeof(midistr),"%d",musiclevel);
+                return midistr;
+            }
+            break;
+        default: break;
+    }
+    return NULL;
+};
+
+static const char *configitem_videomode(enum configverb verb, int param) {
+    static char colourstr[64]={0}, resstr[64]={0};
+    static int sel = -1, newsel;
+    int rx, ry;
+    switch (verb) {
+        case init: {
+            rx = xres, ry = yres;
+            sel = checkvideomode(&rx, &ry, bpp, fullscreen, 0);
+            break;
+        }
+        case increase:
+        case decrease: {
+            if (param == 0) {
+                for (newsel=sel + (int)verb; newsel>=0 && newsel<validmodecnt; newsel += (int)verb) {
+                    if (validmode[sel].bpp == validmode[newsel].bpp &&
+                            (validmode[sel].fs&1) == (validmode[newsel].fs&1))
+                        continue;
+                    rx = validmode[sel].xdim, ry = validmode[sel].ydim;
+                    newsel = checkvideomode(&rx, &ry, validmode[newsel].bpp, validmode[newsel].fs&1, 0);
+                    if (newsel >= 0) {
+                        sel = newsel;
+                        colourstr[0]=0;
+                        break;
+                    }
+                }
+            } else {
+                for (newsel=sel + (int)verb; newsel>=0 && newsel<validmodecnt; newsel += (int)verb) {
+                    if (validmode[sel].bpp != validmode[newsel].bpp ||
+                            (validmode[sel].fs&1) != (validmode[newsel].fs&1))
+                        continue;
+                    sel = newsel;
+                    resstr[0]=0;
+                    break;
+                }
+            }
+            break;
+        }
+        case activate: {
+            fullscreen = (validmode[sel].fs&1);
+            xdimgame = validmode[sel].xdim;
+            ydimgame = validmode[sel].ydim;
+            bppgame = validmode[sel].bpp;
+            setup3dscreen();
+            break;
+        }
+        case draw:
+            if (param == 0) {
+                if (!colourstr[0]) snprintf(colourstr,sizeof(colourstr),"%d-bpp %s", validmode[sel].bpp,
+                    (validmode[sel].fs&1) ? "fullscreen" : "window");
+                return colourstr;
+            } else {
+                if (!resstr[0]) snprintf(resstr,sizeof(resstr),"%dx%d", validmode[sel].xdim, validmode[sel].ydim);
+                return resstr;
+            }
+        default: break;
+    }
+    return NULL;
+};
+
+static const char *configitem_setkeys(enum configverb verb, int param) {
+    extern const int defaultkeys[NUMKEYS];
+    extern const int modernkeys[NUMKEYS];
+    if (verb==activate) {
+        if (param == 0) memcpy(keys,defaultkeys,sizeof(keys));
+        else if (param == 1) memcpy(keys,modernkeys,sizeof(keys));
+    }
+    return NULL;
+};
+
+static const char *configitem_showosd(enum configverb verb, int param) {
+    (void)param;
+    if (verb==activate) OSD_ShowDisplay(1);
+    return NULL;
+}
+
+void configmenu(void) {
+    enum menuitemtype {
+        spacer,
+        inttoggle,
+        callback,
+    };
+    static const struct {
+        enum menuitemtype type;
+        const char *label;
+        union {
+            struct {
+                int *value;
+            } inttoggle;
+            struct {
+                const char * (*func)(enum configverb,int);
+                int param;
+            } callback;
+        } value;
+    } items[] = {
+        {
+            .type = callback,
+            .label = "Sound volume",
+            .value = { .callback = { configitem_setvolume, DIGI } }
+        },
+        {
+            .type = callback,
+            .label = "Music volume",
+            .value = { .callback = { configitem_setvolume, MIDI } }
+        },
+        { .type = spacer },
+        {
+            .type = callback,
+            .label = "Colour/window",
+            .value = { .callback = { configitem_videomode, 0 } }
+        },
+        {
+            .type = callback,
+            .label = "Resolution",
+            .value = { .callback = { configitem_videomode, 1 } }
+        },
+        { .type = spacer },
+        {
+            .type = inttoggle,
+            .label = "Mouse look toggle",
+            .value = { .inttoggle = { &mouselookmode } }
+        },
+        { .type = spacer },
+        {
+            .type = callback,
+            .label = "Set default keys (arrows movement)",
+            .value = { .callback = { configitem_setkeys, 0 } }
+        },
+        {
+            .type = callback,
+            .label = "Set modern keys (WASD movement)",
+            .value = { .callback = { configitem_setkeys, 1 } }
+        },
+        { .type = spacer },
+        {
+            .type = callback,
+            .label = "Show console",
+            .value = { .callback = { configitem_showosd, 0 } }
+        },
+    };
+
+    int delaytime=totalclock+10, item, select=0, y;
+
+    for (item=0; item<(int)Barraylen(items); item++) {
+        if (items[item].type == callback)
+            (void)items[item].value.callback.func(init, items[item].value.callback.param);
+    }
+
+    while (1) {
+        handleevents();
+        OSD_DispatchQueued();
+
+        if (keystatus[1]) {
+            keystatus[1]=0;
+            break;
+        }
+        if (totalclock >= delaytime) {
+            enum configverb verb=init;
+            if (keystatus[LUP] || keystatus[RUP]) {
+                delaytime=totalclock+15;
+                do select = max(0, select-1);
+                while (select > 0 && items[select].type == spacer);
+            }
+            if (keystatus[LDN] || keystatus[RDN]) {
+                delaytime=totalclock+15;
+                do select = min((int)Barraylen(items)-1, select+1);
+                while (select < (int)Barraylen(items)-1 && items[select].type == spacer);
+            }
+            switch (items[select].type) {
+                case callback:
+                    if (keystatus[LLEFT] || keystatus[RLEFT]) verb=decrease;
+                    else if (keystatus[LRIGHT] || keystatus[RRIGHT]) verb=increase;
+                    // fallthrough
+                case inttoggle:
+                    if (keystatus[0x1c]) verb=activate, keystatus[0x1c]=0;
+                    break;
+                default: break;
+            }
+            if (verb != init) {
+                delaytime=totalclock+20;
+                switch (items[select].type) {
+                    case inttoggle:
+                        *items[select].value.inttoggle.value = !*items[select].value.inttoggle.value;
+                        break;
+                    case callback:
+                        items[select].value.callback.func(verb, items[select].value.callback.param);
+                        break;
+                    default: break;
+                }
+            }
+        }
+
+        clearallviews(0);
+        if (svga) svgafullscreenpic(SVGAMENU, SVGAMENU2);
+        rotatesprite(svgaxoff,0<<15,svgascale,0,TITLEPIC,0, 0,svgastat,0,0,xdim-1,ydim-1);
+
+        y=32;
+        for (item=0; item<(int)Barraylen(items); item++) {
+            if (items[item].type == spacer) {
+                y+=8;
+                continue;
+            }
+            printext256((svgaxoff>>16)+32,y, item==select ? 237 : 29, -1, items[item].label, 2);
+            switch (items[item].type) {
+                case spacer: break;
+                case inttoggle: {
+                    int val = *items[item].value.inttoggle.value;
+                    printext256((svgaxoff>>16)+200,y, item==select ? 125 : 29, -1, val ? "On":"Off", 2);
+                    break;
+                }
+                case callback: {
+                    const char *str = items[item].value.callback.func(draw, items[item].value.callback.param);
+                    if (str) printext256((svgaxoff>>16)+200,y, item==select ? 125 : 29, -1, str, 2);
+                    break;
+                }
+            }
+            y+=15;
+        }
+
+        nextpage();
+    }
+}

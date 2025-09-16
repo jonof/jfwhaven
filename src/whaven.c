@@ -1403,6 +1403,9 @@ int app_main(int argc,const char * const argv[]) {
     OSD_RegisterFunction("setkeys","setkeys [modern|default]: set keys to modern (WASD) or default (arrows)", osdcmd_setkeys);
     OSD_RegisterFunction("mouselookmode","mouselookmode [onf]: set mouse look mode (0 momentary, 1 toggle)", osdcmd_setting);
     OSD_RegisterFunction("mousespeed","mousespeed [x] [y]: set mouse sensitivity (range 1 to 16)", osdcmd_setting);
+    OSD_RegisterFunction("mousebutton","mousebutton [button] [action]: set mouse button actions (use 'mousebutton list' to show actions)", osdcmd_setting);
+    OSD_RegisterFunction("joystickbutton","joystickbutton [button] [action]: set joystick button actions (use 'joystickbutton list' to show actions)", osdcmd_setting);
+    OSD_RegisterFunction("keybutton","keybutton [scancode] [action]: set an action to a key scancode (use 'keybutton list' to show actions)", osdcmd_setting);
 
     gameactivated=0;
     escapetomenu=0;
@@ -1803,8 +1806,54 @@ static int osdcmd_setkeys(const osdfuncparm_t *parm)
     return OSDCMD_SHOWHELP;
 }
 
+static const struct {
+    const char *name;
+    int key;
+} keymap[] = {
+    { "backward", KEYBACK },
+    { "turnleft", KEYLEFT },
+    { "turnright", KEYRIGHT },
+    { "run", KEYRUN },
+    { "strafe", KEYSTRAFE },
+    { "fire", KEYFIRE },
+    { "use", KEYUSE },
+    { "jump", KEYJUMP },
+    { "crouch", KEYCROUCH },
+    { "lookup", KEYLKUP },
+    { "lookdown", KEYLKDN },
+    { "centre", KEYCNTR },
+    { "strafeleft", KEYSTFL },
+    { "straferight", KEYSTFR },
+    { "map", KEYMAP },
+    { "zoomin", KEYZOOMI },
+    { "zoomout", KEYZOOMO },
+    { "usepotion", KEYUSEP },
+    { "cast", KEYCAST },
+    { "fly", KEYFLY },
+    { "looking", KEYLOOKING },
+    { "uncast", KEYUNCAST },
+    { "flyup", KEYFLYUP },
+    { "flydown", KEYFLYDN },
+    { "console", KEYCONSOLE },
+};
+static int matchkeyname(const char *name) {
+    for (unsigned i=0; i<Barraylen(keymap); i++)
+        if (!strcasecmp(name, keymap[i].name))
+            return keymap[i].key;
+    return -1;
+}
+static const char * matchkeynum(int key) {
+    for (unsigned i=0; i<Barraylen(keymap); i++)
+        if (keymap[i].key == key)
+            return keymap[i].name;
+    return NULL;
+}
+
 static int osdcmd_setting(const osdfuncparm_t *parm)
 {
+    int button, action;
+    const char *name;
+
     if (!strcasecmp(parm->name, "mouselookmode")) {
         if (parm->numparms == 1) mouselookmode = (int)max(0,min(1,(unsigned)atoi(parm->parms[0])));
         buildprintf("mouselookmode is %d\n", mouselookmode);
@@ -1817,6 +1866,56 @@ static int osdcmd_setting(const osdfuncparm_t *parm)
         }
         buildprintf("mousespeed is %d,%d\n", mousxspeed,mousyspeed);
         return OSDCMD_OK;
+    }
+    else if (!strcasecmp(parm->name, "mousebutton")) {
+        if (parm->numparms == 1 && !strcasecmp("list", parm->parms[0])) {
+            buildputs("mouse buttons\n");
+            for (button=0; button<2; button++) {
+                name = matchkeynum(mousekeys[button]);
+                buildprintf(" %u ... %s\n", button+1, name ? name : "");
+            }
+            return OSDCMD_OK;
+        } else if (parm->numparms == 2) {
+            button = atoi(parm->parms[0]);
+            action = matchkeyname(parm->parms[1]);
+            if (button < 1 || button > 2) return OSDCMD_SHOWHELP;
+            if (action < 0 || action == KEYCONSOLE) return OSDCMD_SHOWHELP;
+            mousekeys[button-1] = action;
+            return OSDCMD_OK;
+        }
+    }
+    else if (!strcasecmp(parm->name, "joystickbutton")) {
+        if (parm->numparms == 1 && !strcasecmp("list", parm->parms[0])) {
+            buildputs("joystick buttons\n");
+            for (button=0; button<4; button++) {
+                const char *name = matchkeynum(joykeys[button]);
+                buildprintf(" %u ... %s\n", button+1, name ? name : "");
+            }
+            return OSDCMD_OK;
+        } else if (parm->numparms == 2) {
+            button = atoi(parm->parms[0]);
+            action = matchkeyname(parm->parms[1]);
+            if (button < 1 || button > 4) return OSDCMD_SHOWHELP;
+            if (action < 0 || action == KEYCONSOLE) return OSDCMD_SHOWHELP;
+            joykeys[button-1] = action;
+            return OSDCMD_OK;
+        }
+    }
+    else if (!strcasecmp(parm->name, "keybutton")) {
+        if (parm->numparms == 1 && !strcasecmp("list", parm->parms[0])) {
+            buildputs("key buttons\n");
+            for (int i=0; i < (int)Barraylen(keymap); i++)
+                buildprintf(" %-11s ... %02X\n", keymap[i].name, keys[keymap[i].key]);
+            return OSDCMD_OK;
+        } else if (parm->numparms == 2) {
+            button = (int)strtoul(parm->parms[0], NULL, 16);
+            action = matchkeyname(parm->parms[1]);
+            if (button < 2 || button > 255) return OSDCMD_SHOWHELP;
+            if (action < 0) return OSDCMD_SHOWHELP;
+            keys[action] = button;
+            if (action == KEYCONSOLE) OSD_CaptureKey(button);
+            return OSDCMD_OK;
+        }
     }
     return OSDCMD_SHOWHELP;
 }

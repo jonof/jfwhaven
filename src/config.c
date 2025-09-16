@@ -32,10 +32,6 @@ static int tmpmusic = -1;
 static int tmpmouse = -1;
 static int tmpjoystick = -1;
 
-extern int musiclevel;
-extern int digilevel;
-extern int mouselook;
-
 static struct {
     const char *name;
     int type;

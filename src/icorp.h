@@ -159,6 +159,8 @@ extern int numlevels;
 extern int goreon, difficulty;
 extern short brightness, gbrightness;
 
+extern int musiclevel;
+extern int digilevel;
 
 #define NUMOPTIONS 12
 #define NUMKEYS 48
@@ -189,7 +191,7 @@ extern int synctics;
 extern int globhiz, globloz, globhihit, globlohit;
 extern char option[NUMOPTIONS];
 extern int keys[NUMKEYS], mousekeys[2], joykeys[4];
-extern int mouselookmode, mousxspeed, mousyspeed;
+extern int mouselookmode, mouselook, mousxspeed, mousyspeed;
 
 extern int svgascale, svgaxoff, svgastat, svgaoverstat;
 
