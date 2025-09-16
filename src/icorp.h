@@ -8,6 +8,7 @@
 #include "pragmas.h"
 #include "cache1d.h"
 #include "baselayer.h"
+#include "mmulti.h"
 #include "names.h"
 #include "sndmod.h"
 #include "les.h"
@@ -42,15 +43,37 @@ struct swingdoor swingdoor[MAXSWINGDOORS];
 // plr->equipment flag values
 //
 
+struct inputkeys {
+     unsigned run:1;
+     unsigned fire:1;
+     unsigned use:1;
+     unsigned jump:1;
+     unsigned crouch:1;
+     unsigned cntr:1;
+     unsigned usep:1;
+     unsigned cast:1;
+     unsigned uncast:1;
+     unsigned flyup:1;
+     unsigned flydn:1;
+     unsigned prevp:1;
+     unsigned nextp:1;
+     unsigned weapon:4;
+     unsigned spell:4;
+};
+
+typedef struct {
+     short angvel, svel, vel, horizvel;
+     struct inputkeys keys;
+} input;
 
 struct player {
-     int x,y,z;
-     short ang;
-     int horiz;
+     int x,y,z,ox,oy,oz;
+     short ang,oang;
+     int horiz,ohoriz;
      int zoom;
      int height;
      int hvel;
-     short sector,oldsector;
+     short sector,oldsector,lastsndsector;
      short screensize;
      short spritenum;
      char dimension;
@@ -103,7 +126,16 @@ int  pyrn;
 extern
 int angvel,
      svel,
-     vel;
+     vel,
+     horizvel;
+
+#define TICSPERFRAME 3
+#define MOVEFIFOSIZ 256
+
+extern input loc;
+extern input ffsync[MAXPLAYERS], ssync[MAXPLAYERS];
+extern int   movefifoplc, movefifoend[MAXPLAYERS];
+extern input baksync[MOVEFIFOSIZ][MAXPLAYERS];
 
 extern
 int *animateptr[],
@@ -119,7 +151,7 @@ short neartagsector,
      neartagsprite;
 
 extern
-int lockclock;
+int lockclock, ototalclock, gotlastpacketclock, ready2send;
 
 extern int xdimgame, ydimgame, bppgame;
 extern int forcesetup;
@@ -128,7 +160,7 @@ extern short brightness, gbrightness;
 
 
 #define NUMOPTIONS 12
-#define NUMKEYS 28                                               // Les 07/24/95
+#define NUMKEYS 48
 #define XDIM    320
 #define YDIM    200
 
@@ -156,7 +188,7 @@ extern int synctics;
 extern int globhiz, globloz, globhihit, globlohit;
 extern char option[NUMOPTIONS];
 extern int keys[NUMKEYS], mousekeys[2], joykeys[4];
-extern int mousxspeed, mousyspeed;
+extern int mouselookmode, mousxspeed, mousyspeed;
 
 extern int svgascale, svgaxoff, svgastat, svgaoverstat;
 
@@ -174,14 +206,14 @@ void animateobjs(struct player *plr);
 // whaven.c
 void shutdowngame(void );
 void crashgame(char *fmt,...);
-void doanimations(int numtics);
+void doanimations(void);
 int getanimationgoal(int *animptr);
 int setanimation(int *animptr,int thegoal,int thevel);
 void setdelayfunc(void (*func)(int),int item,int delay);
-void dodelayitems(int tics);
+void dodelayitems(void);
 void setup3dscreen(void);
 void setupboard(char *fname);
-void drawscreen(struct player *plr);
+void drawscreen(struct player *plr, int dasmoothratio);
 void drawbackground(void);
 void setviewport(int screensize);
 void playloop(void);
@@ -204,12 +236,14 @@ void bats(short k);
 void cracks(void);
 void lavadryland(void);
 void warpfxsprite(int s);
+void checkscary(void);
+void scary(void);
 
 // whinp.c
 void initjstick(void);
-void keytimerstuff(void);
+void getinput(void);
+void syncprocessinput(short snum);
 void processinput(struct player *plr);
-void autothehoriz(struct player *plr);
 void nettypeletter(void);
 void typeletter(void);
 void checkcheat(void);
@@ -291,13 +325,14 @@ void monsternoise(short i);
 void randompotion(short i);
 void spawnabaddy(short i,short monster);
 void spawnapentagram(short sn);
+void doobjtimes(void);
 
 // whplr.c
 void playerdead(struct player *plr);
 void spikeheart(struct player *plr);
 void initplayersprite(void);
 void autoweaponchange(int dagun);
-void weaponchange(void);
+void weaponchange(struct player *plr, int weaps, int spells, int potiondir);
 void potiontext(void);
 void plrfireweapon(struct player *plr);
 void activatedaorb(struct player *plr);
@@ -324,6 +359,7 @@ void keyspic(void);
 int lvlspellcheck(struct player *plr);
 void displayspelltext(void);
 void painsound(int xplc,int yplc);
+void doplrtimes(void);
 
 // whsmk.c
 int smkplayseq(char *name);

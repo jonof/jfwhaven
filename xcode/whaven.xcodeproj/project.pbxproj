@@ -826,6 +826,7 @@
 					"USE_POLYMOST=1",
 					"USE_OPENGL=1",
 					RENDERTYPESDL,
+					DEBUGGING,
 				);
 				HEADER_SEARCH_PATHS = (
 					../src,

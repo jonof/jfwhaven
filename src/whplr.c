@@ -585,14 +585,13 @@ void playerdead(struct player *plr) {
 	while ( totalclock < clockgoal ) {
 		handleevents();
 		if (plr->horiz < 100+(YDIM>>1)) {
-			plr->horiz+=(synctics<<1);
+			plr->horiz+=(TICSPERFRAME<<1);
 		}
-		drawscreen(plr);
+		drawscreen(plr,65536);
 		animateobjs(plr);
 		animatetags(plr);
-		doanimations((int)synctics);
-		dodelayitems((int)synctics);
-		nextpage();
+		doanimations();
+		dodelayitems();
 	}
 
 	goaltime=totalclock+240;
@@ -739,8 +738,6 @@ void spikeheart(struct player *plr) {
 	int  dax, day;
 
 	plr=&player[pyrn];
-
-	spiketics-=synctics;
 
 	if( spiketics < 0 ) {
 		currspikeframe++;
@@ -991,19 +988,14 @@ void autoweaponchange(int dagun) {
 
 }
 
-void weaponchange(void) {
+void weaponchange(struct player *plr, int weapon, int spell, int potiondir) {
 
 	int i;
 	int  j;
-	struct player *plr;
 
-	plr=&player[pyrn];
-
-	if(currweaponanim == 0 && currweaponflip == 0)
-	for(i=0x2;i<=0xb;i++) {
-		if(keystatus[i] > 0 && plr->weapon[i-0x2] > 0) {
-			selectedgun=i-0x2;
-			keystatus[i]=0;
+	if(currweaponanim == 0 && currweaponflip == 0) {
+		if(weapon && plr->weapon[weapon-1] > 0) {
+			selectedgun=weapon-1;
 			hasshot=0;
 			currweaponfired=2; // drop weapon
 			levelpic();
@@ -1068,9 +1060,8 @@ void weaponchange(void) {
 	*/
 
 
-	  if(currweaponflip == 0)
-	  for(i=0x3b;i<=0x42;i++) {
-		if (keystatus[i] > 0) {
+	  if(currweaponflip == 0) {
+		if (spell) {
 			if(selectedgun > 0) {
 				hasshot=0;
 				currweaponfired=2; // drop weapon
@@ -1080,7 +1071,7 @@ void weaponchange(void) {
 				//selectedgun=spellcasthands
 				levelpic();
 			}
-			currentorb=i-0x3b;
+			currentorb=spell-1;
 			if( spellbookflip == 0 ) {
 				spellbook=0;
 				spellbooktics=10;
@@ -1092,38 +1083,27 @@ void weaponchange(void) {
 			}
 			orbshot=0;
 		}
-		keystatus[i]=0;
 		orbpic(currentorb);
 	}
 
 
 	for(j=0;j<MAXNUMORBS;j++) {
 		if( plr->orbactive[j] > -1 ) {
-			plr->orbactive[j]-=synctics;
+			plr->orbactive[j]-=TICSPERFRAME;
 		 }
 	 }
 
-	 if(keystatus[0x1a] > 0) {
-		currentpotion--;
+	if (potiondir) {
+	 	currentpotion += potiondir;
 		if(currentpotion < 0)
 			currentpotion=4;
-			keystatus[0x1a]=0;
-			//JSA_NEW
-			SND_PlaySound(S_BOTTLES,0,0,0,0);
-			potionpic(currentpotion);
-			potiontext();
-	 }
-	 if(keystatus[0x1b] > 0) {
-		currentpotion++;
-		if(currentpotion > 4)//MAXPOTIONS
+		else if(currentpotion > 4)//MAXPOTIONS
 			currentpotion=0;
-			keystatus[0x1B]=0;
-			//JSA_NEW
-			SND_PlaySound(S_BOTTLES,0,0,0,0);
-			potionpic(currentpotion);
-			potiontext();
-	 }
-
+		//JSA_NEW
+		SND_PlaySound(S_BOTTLES,0,0,0,0);
+		potionpic(currentpotion);
+		potiontext();
+	}
 
 }
 
@@ -1763,9 +1743,6 @@ void drawweapons(struct player *plr) {
 	char dashade;
 	char dapalnum;
 
-	if( spelltime > 0)
-		spelltime-=synctics;
-
 	if( spellbook == 8 && spelltime > 0 && plr->screensize > 320) {
 		spellbookframe=spellbookanim[currentorb][8].daweaponframe;
 		dax=spellbookanim[currentorb][8].currx;
@@ -1831,7 +1808,7 @@ void drawweapons(struct player *plr) {
 
 			swingdaweapon(plr);
 
-		currweapontics-=synctics;
+		currweapontics-=synctics; //TODO
 
 		if( helmettime > 0)
 			currweapontics--;
@@ -1993,7 +1970,7 @@ void drawweapons(struct player *plr) {
 					swingdaweapon(plr);
 			}
 
-			currweapontics-=((int)synctics);
+			currweapontics-=((int)synctics); //TODO
 			if( helmettime > 0)
 				currweapontics--;
 
@@ -2120,9 +2097,9 @@ void drawweapons(struct player *plr) {
 			else
 				currweaponframe=weaponanimtics[currweapon][0].daweaponframe;
 
-			if( vel != 0 ) {
+			if( loc.vel != 0 ) {
 				snakex=(sintable[(lockclock<<4)&2047]>>12);
-				snakey=(sintable[(totalclock<<4)&2047]>>12);
+				snakey=(sintable[(lockclock<<4)&2047]>>12);
 
 				if( plr->screensize <= 320 ) {
 					if( currweaponframe == BOWREADYEND ) {
@@ -2167,9 +2144,9 @@ void drawweapons(struct player *plr) {
 		break;
 		case 2: // unready
 			if( currweapon == 1 )
-				weapondrop+=synctics<<1;
+				weapondrop+=synctics<<1; //TODO
 			else
-				weapondrop+=synctics;
+				weapondrop+=synctics; //TODO
 			if( weapondrop > weapondropgoal ) {
 				currweaponfired=3;
 				weaponraise=40;
@@ -2208,7 +2185,7 @@ void drawweapons(struct player *plr) {
 			}
 		break;
 		case 3: // ready
-			currweapontics-=((int)synctics);
+			currweapontics-=((int)synctics); //TODO
 			if( currweapontics < 0 ) {
 				currweaponanim++;
 				if( currweaponanim == 12 ) {
@@ -2254,7 +2231,7 @@ void drawweapons(struct player *plr) {
 		break;
 
 		case 5: //cock
-			currweapontics-=((int)synctics);
+			currweapontics-=((int)synctics); //TODO
 			if( currweapontics < 0 ) {
 				currweaponanim++;
 				if( currweaponanim == 4 ) {
@@ -2290,7 +2267,7 @@ void drawweapons(struct player *plr) {
 				castaorb(plr);
 			}
 
-			currweapontics-=((int)synctics);
+			currweapontics-=((int)synctics); //TODO
 			if( currweapontics < 0 ) {
 				currweaponanim++;
 				if( currweaponanim > 12 ) {
@@ -2341,7 +2318,7 @@ void drawweapons(struct player *plr) {
 
 		if( currweaponfired == 1 ) {
 			snakex=(sintable[(lockclock<<4)&2047]>>12);
-			snakey=(sintable[(totalclock<<4)&2047]>>12);
+			snakey=(sintable[(lockclock<<4)&2047]>>12);
 		}
 
 		if( shieldpoints > 75 ) {
@@ -2367,7 +2344,7 @@ void drawweapons(struct player *plr) {
 		if( plr->screensize <= 320 )
 			rotatesprite(121<<16,154<<16,65536,0,SPELLBOOKBACK,0,0,2+8+16,0,0,xdim-1,ydim-1);
 
-		spellbooktics-=synctics;
+		spellbooktics-=synctics; //TODO
 		if( spellbooktics < 0 ) {
 			spellbook++;
 			if( spellbook > 8 )
@@ -2615,7 +2592,7 @@ void chunksofmeat(struct player *plr,short hitsprite,int hitx,int hity,int hitz,
 			sprite[j].lotag = 512;
 			sprite[j].hitag = 0;
 			sprite[j].pal = 0;
-			movesprite((short)j,(((int)sintable[(sprite[j].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[j].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
+			movesprite((short)j,(((int)sintable[(sprite[j].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[j].ang])*synctics)<<3,0L,4L<<8,4L<<8,0); //TODO
 		}
 	}
 
@@ -3326,7 +3303,7 @@ void shootgun ( struct player *plr, short daang, char guntype ) {
 			sprite[j].owner=4096;
 			sprite[j].lotag=32;
 			sprite[j].hitag=0;
-			movesprite((short)j,(((int)sintable[(sprite[j].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[j].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
+			movesprite((short)j,(((int)sintable[(sprite[j].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[j].ang])*synctics)<<3,0L,4L<<8,4L<<8,0); //TODO
 		}
 		if ((hitsprite >= 0) && (sprite[hitsprite].statnum < MAXSTATUS)) {
 			switch(sprite[hitsprite].picnum) {
@@ -3579,7 +3556,7 @@ void shootgun ( struct player *plr, short daang, char guntype ) {
 
 		 //movesprite
 		 //setsprite
-		movesprite((short)j,(((int)sintable[(sprite[j].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[j].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
+		movesprite((short)j,(((int)sintable[(sprite[j].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[j].ang])*synctics)<<3,0L,4L<<8,4L<<8,0); //TODO
 		setsprite(j,sprite[j].x,sprite[j].y,sprite[j].z);
 
 	  break;
@@ -3612,7 +3589,7 @@ void shootgun ( struct player *plr, short daang, char guntype ) {
 		//dax=(sintable[(sprite[j].ang+512)&2047]>>6);
 		//day=(sintable[sprite[j].ang]>>6);
 
-		movesprite((short)j,(((int)sintable[(sprite[j].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[j].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
+		movesprite((short)j,(((int)sintable[(sprite[j].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[j].ang])*synctics)<<3,0L,4L<<8,4L<<8,0); //TODO
 		setsprite(j,sprite[j].x,sprite[j].y,sprite[j].z);
 
 
@@ -4321,3 +4298,14 @@ painsound(int xplc,int yplc)
 {
 	playsound_loc(S_BREATH1+(rand()%6),xplc,yplc);
 }
+
+void
+doplrtimes(void)
+{
+	if( spelltime > 0)
+		spelltime-=TICSPERFRAME;
+
+	if( spiked )
+		spiketics-=TICSPERFRAME;
+}
+

@@ -34,6 +34,7 @@ static int tmpjoystick = -1;
 
 extern int musiclevel;
 extern int digilevel;
+extern int mouselook;
 
 static struct {
     const char *name;
@@ -187,6 +188,14 @@ static struct {
     { "mousexspeed", type_int, &mousxspeed,
         "; Mouse speed (1-16)\n" },
     { "mouseyspeed", type_int, &mousyspeed, NULL },
+    { "mouselookmode", type_bool, &mouselookmode,
+        "; Mouse look mode\n"
+        ";   0 - Momentary\n"
+        ";   1 - Toggle\n"
+    },
+    { "mouselook", type_bool, &mouselook,
+        "; Mouse look enabled (if Toggle mode)\n"
+    },
 
     { "joystickbutton1", type_int, &joykeys[0],
         "; Joystick Button Actions (see Mouse Buttons Actions above)\n"

@@ -24,10 +24,6 @@
 int justwarpedfx=0;
 int lastbat=-1;
 
-extern int angvel,
-			svel,
-			vel;
-
 extern int justteleported;
 
 extern short lavadrylandsector[32];
@@ -478,7 +474,7 @@ void revolvefx(void) {
 	  startwall = sector[revolvesector[i]].wallptr;
 	  endwall = startwall + sector[revolvesector[i]].wallnum - 1;
 
-	  revolveang[i] = ((revolveang[i]+2048-(((int)synctics)<<1))&2047);
+	  revolveang[i] = ((revolveang[i]+2048-(((int)TICSPERFRAME)<<1))&2047);
 	  for(k=startwall;k<=endwall;k++) {
 		 rotatepoint(revolvepivotx[i],revolvepivoty[i],revolvex[i][k-startwall],revolvey[i][k-startwall],revolveang[i],&dax,&day);
 		 dragpoint(k,dax,day);
@@ -488,7 +484,7 @@ void revolvefx(void) {
 		revolvesyncrotang = 0;
 		revolvesyncx = plr->x;
 		revolvesyncy = plr->y;
-		revolvesyncrotang = ((revolvesyncrotang+2048-(((int)synctics)<<1))&2047);
+		revolvesyncrotang = ((revolvesyncrotang+2048-(((int)TICSPERFRAME)<<1))&2047);
 		rotatepoint(revolvepivotx[i],revolvepivoty[i],revolvesyncx,revolvesyncy,revolvesyncrotang,&plr->x,&plr->y);
 		plr->ang = ((revolvesyncang+revolvesyncrotang)&2047);
 	  }
@@ -498,7 +494,7 @@ void revolvefx(void) {
 
 }
 
-extern int bobbingsectorcnt, bobbingsectorlist[];
+extern short bobbingsectorcnt, bobbingsectorlist[];
 
 void bobbingsector(void) {
 
@@ -567,6 +563,7 @@ void teleporter(void) {
 					vel=0;
 					angvel=0;
 					svel=0;
+					horizvel=0;
 					playsound_loc(S_CHAINDOOR1,plr->x,plr->y);
 					loadnewlevel(mapon);
 					warpfxsprite(plr->spritenum);
@@ -645,17 +642,16 @@ void ironbars(void) {
 
 	int i;
 	int spritenum;
-	//int ironbarmove;
 
 	for(i=0;i<ironbarscnt;i++) {
 		if( ironbarsdone[i] == 1 ) {
 			spritenum=ironbarsanim[i];
 			switch(sprite[ironbarsanim[i]].hitag) {
 			case 1:
-				sprite[ironbarsanim[i]].ang+=synctics<<1;
+				sprite[ironbarsanim[i]].ang+=TICSPERFRAME<<1;
 				if(sprite[ironbarsanim[i]].ang > 2047)
 					sprite[ironbarsanim[i]].ang-=2047;
-					//ironbarmove=ironbarsgoal[i]+=synctics<<1;
+					ironbarsgoal[i]+=TICSPERFRAME<<1;
 					setsprite(spritenum,sprite[spritenum].x,sprite[spritenum].y,sprite[spritenum].z);
 					if( ironbarsgoal[i] > 512 ) {
 						ironbarsgoal[i]=0;
@@ -664,10 +660,10 @@ void ironbars(void) {
 					}
 			break;
 			case 2:
-				sprite[ironbarsanim[i]].ang-=synctics<<1;
+				sprite[ironbarsanim[i]].ang-=TICSPERFRAME<<1;
 				if(sprite[ironbarsanim[i]].ang < 0)
 					sprite[ironbarsanim[i]].ang+=2047;
-					ironbarsgoal[i]+=synctics<<1;
+					ironbarsgoal[i]+=TICSPERFRAME<<1;
 					setsprite(spritenum,sprite[spritenum].x,sprite[spritenum].y,sprite[spritenum].z);
 					if( ironbarsgoal[i] > 512 ) {
 						ironbarsgoal[i]=0;
@@ -676,7 +672,7 @@ void ironbars(void) {
 					}
 			break;
 			case 3:
-				sprite[ironbarsanim[i]].z-=synctics<<4;
+				sprite[ironbarsanim[i]].z-=TICSPERFRAME<<4;
 				if( sprite[ironbarsanim[i]].z < ironbarsgoal[i] ) {
 					sprite[ironbarsanim[i]].z=ironbarsgoal[i];
 					sprite[ironbarsanim[i]].hitag=4;
@@ -686,7 +682,7 @@ void ironbars(void) {
 				setsprite(spritenum,sprite[spritenum].x,sprite[spritenum].y,sprite[spritenum].z);
 			break;
 			case 4:
-				sprite[ironbarsanim[i]].z+=synctics<<4;
+				sprite[ironbarsanim[i]].z+=TICSPERFRAME<<4;
 				if( sprite[ironbarsanim[i]].z > ironbarsgoal[i] ) {
 					sprite[ironbarsanim[i]].z=ironbarsgoal[i];
 					sprite[ironbarsanim[i]].hitag=3;
@@ -747,16 +743,20 @@ void sectorsounds(void) {
 int scarytime=-1;
 int scarysize=0;
 
-void scary(void) {
-
+void checkscary(void) {
 	if( (rand()&32767) > 32600 && (rand()&32767) > 32600 && scarytime < 0) {
 		scarytime=180;
 		scarysize=30;
 		SND_PlaySound(S_SCARYDUDE,0,0,0,0);
 	}
+	if (scarytime >= 0) {
+		scarytime-=TICSPERFRAME<<1;
+		scarysize+=TICSPERFRAME<<1;
+	}
+}
+
+void scary(void) {
 	if(scarytime >= 0) {
-		scarytime-=synctics<<1;
-		scarysize+=synctics<<1;
 		if( scarytime > 140 && scarytime < 180)
 			rotatesprite(320<<15,200<<15,scarysize<<9,0,SCARY,0,0,1+2,0,0,xdim-1,ydim-1);
 		if( scarytime > 120 && scarytime < 139)
@@ -770,10 +770,9 @@ void scary(void) {
 }
 
 void dofx(void) {
-
 	updatesound_loc();
 	lavadryland();
-	scary();
+	checkscary();
 	if(revolvecnt > 0)
 		revolvefx();
 	//skypanfx();
@@ -795,7 +794,7 @@ void dofx(void) {
 	thesplash();
 	thunder();
 	cracks();
-
+	updatepaletteshifts();
 }
 
 int thunderflash;
@@ -920,7 +919,7 @@ void thunder(void) {
 			visibility=1024;
 	}
 	else {
-		thundertime-=synctics;
+		thundertime-=TICSPERFRAME;
 		if(thundertime < 0) {
 			thunderflash=0;
 			//brightness=0;
@@ -1024,7 +1023,7 @@ void makeasplash(int picnum, struct player *plr) {
 	}
 //JSA ends
 
-	movesprite((short)j,(((int)sintable[(sprite[j].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[j].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
+	movesprite((short)j,(((int)sintable[(sprite[j].ang+512)&2047])*TICSPERFRAME)<<3,(((int)sintable[sprite[j].ang])*TICSPERFRAME)<<3,0L,4L<<8,4L<<8,0);
 }
 
 
@@ -1266,11 +1265,11 @@ void warpfxsprite(int s) {
 	sprite[j].hitag=0;
 	sprite[j].pal=0;
 
-	daz=((((int)sprite[j].zvel)*synctics)>>3);
+	daz=((((int)sprite[j].zvel)*TICSPERFRAME)>>3);
 
 			movesprite((short)j,
-				(((int)sintable[(daang+512)&2047])*synctics)<<3,
-				(((int)sintable[daang])*synctics)<<3,
+				(((int)sintable[(daang+512)&2047])*TICSPERFRAME)<<3,
+				(((int)sintable[daang])*TICSPERFRAME)<<3,
 				daz,4L<<8,4L<<8,1);
 
 

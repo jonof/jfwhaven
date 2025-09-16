@@ -17,11 +17,6 @@ extern int cartsnd;
 
 extern int mapon;
 
-extern int spellbooktics;
-extern int spellbook;
-extern int spellbookframe;
-extern int spellbookflip;
-
 extern int  spiked;
 extern int selectedgun;
 extern int currentpotion;
@@ -52,7 +47,7 @@ extern  int strongtime,
 			nightglowtime;
 
 
-void monitor(void) {
+void monitor(void) { //TODO called each frame
 
 	int i;
 	struct player *plr;
@@ -66,17 +61,13 @@ void monitor(void) {
 	}
 
 	if(justwarpedfx > 0) {
-		justwarpedfx-=synctics;
-		justwarpedcnt+=synctics<<6;
 		rotatesprite(320<<15,200<<15,justwarpedcnt<<9,0,ANNIHILATE,0,0,1+2,0,0,xdim-1,ydim-1);
 		//rotatesprite(320<<15,200<<15,16384,0,ANNIHILATE,0,0,1+2);
-		if( justwarpedfx <= 0)
-			justwarpedcnt=0;
 	}
 
 	if(poisoned == 1) {
 		if(poisontime >= 0) {
-			poisontime-=synctics;
+			poisontime-=synctics; //TODO
 
 			//if(svga == 1)
 			//    rotatesprite(200L<<16,(0L+tilesizy[HELMET]>>2)<<16,16384,0,POISONICON,0,0,0x02);
@@ -93,14 +84,7 @@ void monitor(void) {
 		}
 	}
 
-	if(vampiretime > 0)
-		vampiretime-=synctics;
-
-	if(shockme >= 0)
-		shockme-=synctics;
-
 	if( helmettime > 0 ) {
-		helmettime-=synctics;
 		if(svga == 1)
 			rotatesprite(270L<<16,(tilesizy[HELMET]>>2)<<16,32768,0,HELMET,0,0,0x02,0,0,xdim-1,ydim-1);
 		else
@@ -109,14 +93,10 @@ void monitor(void) {
 
 	if( displaytime > 0 ) {
 		fancyfontscreen(18,24,THEFONT,displaybuf,7);
-		displaytime-=((int)synctics);
 	}
 
-	if( shadowtime >= 0 )
-		shadowtime-=synctics;
-
 	if( nightglowtime >= 0 ) {
-		nightglowtime-=synctics;
+		nightglowtime-=synctics; //TODO
 		visibility=256;
 		if( nightglowtime < 0 )
 			//visibility=2048;
@@ -124,27 +104,19 @@ void monitor(void) {
 	}
 
 	if( strongtime >= 0 ) {
-		strongtime-=synctics;
 		startwhiteflash(10);
 	}
 
-	if( invisibletime >= 0 ) {
-		invisibletime-=synctics;
-	}
-
 	if( invincibletime >= 0) {
-		invincibletime-=synctics;
 		startwhiteflash(10);
 	}
 
 	if( manatime >= 0 ) {
-		manatime-=synctics;
 		startredflash(20);
 	}
 
 	if(svga == 1) {
 		if( svgahealth > 0) {
-			svgahealth-=synctics;
 			sprintf(svgah,"health %d",plr->health);
 			fancyfontscreen(18,44,THEFONT,svgah,7);
 			if(plr->armor < 0)
@@ -153,6 +125,8 @@ void monitor(void) {
 			fancyfontscreen(18,64,THEFONT,svgah,7);
 		}
 	}
+
+	scary();
 
 	return;
 	for(i=0x00;i<0xff;i++)
@@ -164,6 +138,45 @@ void monitor(void) {
 	return;
 
 
+}
+
+void doobjtimes(void) {
+	if(justwarpedfx > 0) {
+		justwarpedfx-=TICSPERFRAME;
+		justwarpedcnt+=TICSPERFRAME<<6;
+		if( justwarpedfx <= 0)
+			justwarpedcnt=0;
+	}
+
+	if(vampiretime > 0)
+		vampiretime-=TICSPERFRAME;
+
+	if(shockme >= 0)
+		shockme-=TICSPERFRAME;
+
+	if( helmettime > 0 )
+		helmettime-=TICSPERFRAME;
+
+	if( displaytime > 0 )
+		displaytime-=TICSPERFRAME;
+
+	if( shadowtime >= 0 )
+		shadowtime-=TICSPERFRAME;
+
+	if( strongtime >= 0 )
+		strongtime-=TICSPERFRAME;
+
+	if( invisibletime >= 0 )
+		invisibletime-=TICSPERFRAME;
+
+	if( invincibletime >= 0)
+		invincibletime-=TICSPERFRAME;
+
+	if( manatime >= 0 )
+		manatime-=TICSPERFRAME;
+
+	if(svga == 1 && svgahealth > 0)
+		svgahealth-=TICSPERFRAME;
 }
 
 // see if picked up any objects?
@@ -2458,9 +2471,9 @@ int checksight(int i,short *daang) {
 		*daang = (getangle(plr->x-sprite[i].x,plr->y-sprite[i].y)&2047);
 
 		if (((sprite[i].ang+2048-*daang)&2047) < 1024)
-			sprite[i].ang = ((sprite[i].ang+2048-(synctics<<1))&2047);
+			sprite[i].ang = ((sprite[i].ang+2048-(TICSPERFRAME<<1))&2047);
 		else
-			sprite[i].ang = ((sprite[i].ang+(synctics<<1))&2047);
+			sprite[i].ang = ((sprite[i].ang+(TICSPERFRAME<<1))&2047);
 
 	  //sprite[i].x=tempx;
 	  //sprite[i].y=tempy;
@@ -2485,8 +2498,8 @@ void checkmove(int i,int dax,int day,short *movestat) {
 
 	plr=&player[pyrn];
 
-	//*movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,0);
-	*movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*synctics)<<3,(((int)sintable[sprite[i].ang])*synctics)<<3,0L,4L<<8,4L<<8,2);
+	//*movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*TICSPERFRAME)<<3,(((int)sintable[sprite[i].ang])*TICSPERFRAME)<<3,0L,4L<<8,4L<<8,0);
+	*movestat=movesprite((short)i,(((int)sintable[(sprite[i].ang+512)&2047])*TICSPERFRAME)<<3,(((int)sintable[sprite[i].ang])*TICSPERFRAME)<<3,0L,4L<<8,4L<<8,2);
 
 	if( *movestat!=0 ) {
 		if( (krand()&1) == 0 ) {
@@ -2502,7 +2515,7 @@ void checkmove(int i,int dax,int day,short *movestat) {
 		}
 		else
 			//sprite[i].ang=((sprite[i].ang+(krand()&2047))&2047);
-			sprite[i].ang=((sprite[i].ang+(synctics))&2047);
+			sprite[i].ang=((sprite[i].ang+(TICSPERFRAME))&2047);
 	}
 
 
@@ -3310,10 +3323,10 @@ void throwhalberd(int s) {
 	sprite[j].pal=0;
 
 		sprite[j].cstat=0;
-		daz=((((int)sprite[j].zvel)*synctics)>>3);
+		daz=((((int)sprite[j].zvel)*TICSPERFRAME)>>3);
 			movesprite((short)j,
-				(((int)sintable[(sprite[j].extra+512)&2047])*synctics)<<7,
-				(((int)sintable[sprite[j].extra])*synctics)<<7,
+				(((int)sintable[(sprite[j].extra+512)&2047])*TICSPERFRAME)<<7,
+				(((int)sintable[sprite[j].extra])*TICSPERFRAME)<<7,
 				daz,4L<<8,4L<<8,1);
 		sprite[j].cstat=21;
 

@@ -270,6 +270,7 @@ int menuscreen(struct player *plr) {
 
     flushperms();
 
+    ready2send = 0;
     while( !exit ) {
         handleevents();
         menubackground();
@@ -301,7 +302,7 @@ int menuscreen(struct player *plr) {
                     TEMPSND();
                     if(gameactivated == 1) {
                         //select=5;
-                        lockclock=totalclock;
+                        totalclock = ototalclock;
                         exit=1;
                     }
                     else
@@ -354,13 +355,14 @@ int menuscreen(struct player *plr) {
                         quit();
                     break;
                     case 5:
-                        lockclock=totalclock;
+                        totalclock=totalclock;
                         exit=1;
                     break;
                     } // switch
                 } // if
             } // the delay
       } // while
+    ready2send = 1;
 
     escapetomenu=0;
 
@@ -997,15 +999,7 @@ int savedgamename(int gn) {
     plr->screensize=320;
 
     sprintf(tempbuf,"svgn%d.dat",gn);
-
-    //if ((fil = open("save0000.gam"
-    //,O_BINARY|O_TRUNC|O_CREAT|O_WRONLY,S_IWRITE)) == -1)
-    //    return(-1);
-
-
-    //file = open(tempbuf,O_CREAT | O_BINARY | O_WRONLY,S_IREAD | S_IWRITE ); // | S_IFREG);
-
-    file = open(tempbuf,O_BINARY|O_TRUNC|O_CREAT|O_WRONLY,S_IWRITE );
+    file = open(tempbuf,O_BINARY|O_TRUNC|O_CREAT|O_WRONLY,S_IREAD|S_IWRITE );
 
     if (file != -1)
     {
@@ -1032,8 +1026,8 @@ int savedgamename(int gn) {
         write(file,&mapon,sizeof(mapon));
 
         write(file,&totalclock,sizeof(totalclock));
+        write(file,&ototalclock,sizeof(ototalclock));
         write(file,&lockclock,sizeof(lockclock));
-        write(file,&synctics,sizeof(synctics));
 
         //Warning: only works if all pointers are in sector structures!
         for(i=MAXANIMATES-1;i>=0;i--)
@@ -1127,8 +1121,8 @@ void loadplayerstuff(void) {
     read(fh,&mapon,sizeof(mapon));
 
     read(fh,&totalclock,sizeof(totalclock));
+    read(fh,&ototalclock,sizeof(ototalclock));
     read(fh,&lockclock,sizeof(lockclock));
-    read(fh,&synctics,sizeof(synctics));
 
         //Warning: only works if all pointers are in sector structures!
     read(fh,tmpanimateptr,MAXANIMATES<<2);
@@ -1181,7 +1175,6 @@ extern char flashflag;
 
 void screenfx(struct player *plr) {
     (void)plr;
-      updatepaletteshifts();
 
  return;
 }
@@ -1479,7 +1472,7 @@ updatepaletteshifts(void)
         white = whitecount/WHITETICS +1;
         if (white>NUMWHITESHIFTS)
             white = NUMWHITESHIFTS;
-        whitecount -= synctics;
+        whitecount -= TICSPERFRAME;
         if (whitecount < 0)
             whitecount = 0;
     }
@@ -1492,7 +1485,7 @@ updatepaletteshifts(void)
         red = redcount/10 +1;
         if (red>NUMREDSHIFTS)
             red = NUMREDSHIFTS;
-        redcount -= synctics;
+        redcount -= TICSPERFRAME;
         if (redcount < 0)
             redcount = 0;
     }
@@ -1505,7 +1498,7 @@ updatepaletteshifts(void)
         green = greencount/10 +1;
         if (green>NUMGREENSHIFTS)
             green = NUMGREENSHIFTS;
-        greencount -= synctics;
+        greencount -= TICSPERFRAME;
         if (greencount < 0)
             greencount = 0;
     }
@@ -1518,7 +1511,7 @@ updatepaletteshifts(void)
         blue = bluecount/10 +1;
         if (blue>NUMBLUESHIFTS)
             blue = NUMBLUESHIFTS;
-        bluecount -= synctics;
+        bluecount -= TICSPERFRAME;
         if (bluecount < 0)
             bluecount = 0;
     }
