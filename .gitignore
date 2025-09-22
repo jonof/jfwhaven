@@ -11,6 +11,7 @@
 *.grp
 *.cfg
 *~
+*.dll
 /src/version-auto.c
 
 /xcode/*.xcodeproj/*
