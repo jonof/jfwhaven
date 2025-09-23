@@ -155,6 +155,7 @@ int nummoves;
 static unsigned int showfps, averagefps, framecnt, frameval[AVERAGEFRAMES];
 
 static int osdcmd_showfps(const osdfuncparm_t *parm);
+static int osdcmd_vidmode(const osdfuncparm_t *parm);
 static int osdcmd_setkeys(const osdfuncparm_t *parm);
 static int osdcmd_setting(const osdfuncparm_t *parm);
 
@@ -1400,6 +1401,8 @@ int app_main(int argc,const char * const argv[]) {
     readpalettetable();
 
     OSD_RegisterFunction("showfps","showfps [state]: show frame rate", osdcmd_showfps);
+    OSD_RegisterFunction("restartvid","restartvid: reinitialise the video mode",osdcmd_vidmode);
+    OSD_RegisterFunction("vidmode","vidmode [xdim ydim] [bpp] [fullscreen]: immediately change the video mode",osdcmd_vidmode);
     OSD_RegisterFunction("setkeys","setkeys [modern|default]: set keys to modern (WASD) or default (arrows)", osdcmd_setkeys);
     OSD_RegisterFunction("mouselookmode","mouselookmode [onf]: set mouse look mode (0 momentary, 1 toggle)", osdcmd_setting);
     OSD_RegisterFunction("mousespeed","mousespeed [x] [y]: set mouse sensitivity (range 1 to 16)", osdcmd_setting);
@@ -1787,6 +1790,49 @@ static int osdcmd_showfps(const osdfuncparm_t *parm)
         return OSDCMD_OK;
     }
     return OSDCMD_SHOWHELP;
+}
+
+static int osdcmd_vidmode(const osdfuncparm_t *parm)
+{
+    int newx = xdim, newy = ydim, newbpp = bpp, newfullscreen = fullscreen;
+
+    if (!strcasecmp(parm->name, "restartvid")) {
+        resetvideomode();
+    } else {
+        if (parm->numparms < 1 || parm->numparms > 4) return OSDCMD_SHOWHELP;
+        switch (parm->numparms) {
+            case 1:   // bpp switch
+                newbpp = atoi(parm->parms[0]);
+                break;
+            case 2: // res switch
+                newx = atoi(parm->parms[0]);
+                newy = atoi(parm->parms[1]);
+                break;
+            case 3:   // res & bpp switch
+            case 4:
+                newx = atoi(parm->parms[0]);
+                newy = atoi(parm->parms[1]);
+                newbpp = atoi(parm->parms[2]);
+                if (parm->numparms == 4)
+                    newfullscreen = (atoi(parm->parms[3]) != 0);
+                break;
+        }
+        if (checkvideomode(&newx, &newy, newbpp, newfullscreen, 0) < 0) {
+            buildputs("vidmode: unrecognised video mode.\n");
+            return OSDCMD_OK;
+        }
+    }
+
+    if (setgamemode(newfullscreen,newx,newy,newbpp))
+        buildputs("vidmode: Mode change failed!\n");
+    else {
+        xdimgame = newx;
+        ydimgame = newy;
+        bppgame = newbpp;
+        fullscreen = newfullscreen;
+        setup3dscreen();
+    }
+    return OSDCMD_OK;
 }
 
 static int osdcmd_setkeys(const osdfuncparm_t *parm)

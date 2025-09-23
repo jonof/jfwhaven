@@ -386,6 +386,9 @@ alt="The initial startup window as it appears on macOS" width="629" height="422"
 				<dt>osdrows &lt;num&gt;</dt>
 				<dd>Sets the number of visible lines of the console when it is open.</dd>
 
+				<dt>restartvid</dt>
+				<dd>Reinitialise video to apply settings changes.</dd>
+
 				<dt>screencaptureformat &lt;0 or 1 or 2&gt;</dt>
 				<dd>0 = Targa, 1 = PCX, 2 = PNG (default)</dd>
 
@@ -397,6 +400,10 @@ alt="The initial startup window as it appears on macOS" width="629" height="422"
 				gives better looking transparent textures at the expense of some sprites behind the transparent
 				item potentially being invisible in certain circumstances. 0 is a more compatible value (and is
 				the default) for this option but slight visual degradation will result.</dd>
+
+				<dt>vidmode &lt;bpp&gt;<br>
+				    vidmode &lt;xdim&gt; &lt;ydim&gt; [bpp [fs]]</dt>
+				<dd>Change the video mode. <em>xdim ydim</em> are the resolution. <em>bpp</em> is the colour depth (8, 16, 24, 32). <em>fs</em> is 0 for windowed, 1 for fullscreen.</dd>
 			</dl>
 
 			<h1 id="license">License</h1>
