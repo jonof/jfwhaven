@@ -1808,16 +1808,20 @@ static int osdcmd_vidmode(const osdfuncparm_t *parm)
                 newx = atoi(parm->parms[0]);
                 newy = atoi(parm->parms[1]);
                 break;
-            case 3:   // res & bpp switch
+            case 3:   // res, bpp, fullscreen, display switch
             case 4:
+            case 5:
                 newx = atoi(parm->parms[0]);
                 newy = atoi(parm->parms[1]);
                 newbpp = atoi(parm->parms[2]);
-                if (parm->numparms == 4)
-                    newfullscreen = (atoi(parm->parms[3]) != 0);
+                if (parm->numparms == 4) {
+                    newfullscreen = (atoi(parm->parms[3]) != 0) | (fullscreen&0xff00);
+                } else if (parm->numparms == 5) {
+                    newfullscreen = (atoi(parm->parms[3]) != 0) | (max(0,atoi(parm->parms[4]))<<8);
+                }
                 break;
         }
-        if (checkvideomode(&newx, &newy, newbpp, newfullscreen, 0) < 0) {
+        if (checkvideomode(&newx, &newy, newbpp, newfullscreen, 1) < 0) {
             buildputs("vidmode: unrecognised video mode.\n");
             return OSDCMD_OK;
         }

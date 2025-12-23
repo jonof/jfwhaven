@@ -1669,8 +1669,8 @@ static const char *configitem_setvolume(enum configverb verb, int source) {
 };
 
 static const char *configitem_videomode(enum configverb verb, int param) {
-    static char colourstr[64]={0}, resstr[64]={0};
-    static int sel = -1, newsel;
+    static char displaystr[64]={0}, colourstr[64]={0}, resstr[64]={0};
+    static int sel = -1;
     int rx, ry;
     switch (verb) {
         case init: {
@@ -1680,33 +1680,39 @@ static const char *configitem_videomode(enum configverb verb, int param) {
         }
         case increase:
         case decrease: {
-            if (param == 0) {
-                for (newsel=sel + (int)verb; newsel>=0 && newsel<validmodecnt; newsel += (int)verb) {
-                    if (validmode[sel].bpp == validmode[newsel].bpp &&
-                            (validmode[sel].fs&1) == (validmode[newsel].fs&1))
-                        continue;
-                    rx = validmode[sel].xdim, ry = validmode[sel].ydim;
-                    newsel = checkvideomode(&rx, &ry, validmode[newsel].bpp, validmode[newsel].fs&1, 0);
-                    if (newsel >= 0) {
-                        sel = newsel;
-                        colourstr[0]=0;
-                        break;
-                    }
-                }
-            } else {
-                for (newsel=sel + (int)verb; newsel>=0 && newsel<validmodecnt; newsel += (int)verb) {
-                    if (validmode[sel].bpp != validmode[newsel].bpp ||
-                            (validmode[sel].fs&1) != (validmode[newsel].fs&1))
-                        continue;
-                    sel = newsel;
-                    resstr[0]=0;
+            int newsel = sel;
+            int vs = validmode[sel].validmodeset;
+            switch (param) {
+                case 0: // Display.
+                    if ((int)verb < 0) vs = validmodeset[vs].prevfsmodeset;
+                    else if ((int)verb > 0) vs = validmodeset[vs].nextfsmodeset;
+                    if (vs < 0) vs = validmode[newsel].validmodeset;
                     break;
-                }
+                case 1: // Colour.
+                    if ((int)verb < 0) vs = validmodeset[vs].prevbppmodeset;
+                    else if ((int)verb > 0) vs = validmodeset[vs].nextbppmodeset;
+                    if (vs < 0) vs = validmode[newsel].validmodeset;
+                    break;
+                case 2: // Resolution.
+                    newsel += (int)verb;
+                    if (newsel < validmodeset[vs].firstmode) newsel = validmodeset[vs].firstmode;
+                    else if (newsel > validmodeset[vs].lastmode) newsel = validmodeset[vs].lastmode;
+                    break;
+                default: return NULL;
+            }
+
+            rx = validmode[newsel].xdim;
+            ry = validmode[newsel].ydim;
+            newsel = checkvideomode(&rx, &ry, validmodeset[vs].bpp,
+                SETGAMEMODE_FULLSCREEN(validmodeset[vs].display, validmodeset[vs].fs), 1);
+            if (newsel >= 0) {
+                sel = newsel;
+                displaystr[0] = colourstr[0] = resstr[0] = 0;
             }
             break;
         }
         case activate: {
-            fullscreen = (validmode[sel].fs&1);
+            fullscreen = SETGAMEMODE_FULLSCREEN(validmode[sel].display,validmode[sel].fs);
             xdimgame = validmode[sel].xdim;
             ydimgame = validmode[sel].ydim;
             bppgame = validmode[sel].bpp;
@@ -1714,13 +1720,24 @@ static const char *configitem_videomode(enum configverb verb, int param) {
             break;
         }
         case draw:
-            if (param == 0) {
-                if (!colourstr[0]) snprintf(colourstr,sizeof(colourstr),"%d-bpp %s", validmode[sel].bpp,
-                    (validmode[sel].fs&1) ? "fullscreen" : "window");
-                return colourstr;
-            } else {
-                if (!resstr[0]) snprintf(resstr,sizeof(resstr),"%dx%d", validmode[sel].xdim, validmode[sel].ydim);
-                return resstr;
+            switch (param) {
+                case 0:
+                    if (!displaystr[0]) {
+                        if (!validmode[sel].fs) strcpy(displaystr, "Windowed");
+                        else if (displaycnt > 1) {
+                            int l = snprintf(displaystr, sizeof(displaystr), "%d: %s", validmode[sel].display,
+                                getdisplayname(validmode[sel].display));
+                            if (l > 12) strcpy(&displaystr[12-3], "...");
+                        }
+                        else strcpy(displaystr, "Fullscreen");
+                    }
+                    return displaystr;
+                case 1:
+                    if (!colourstr[0]) snprintf(colourstr, sizeof(colourstr), "%d-bpp", validmode[sel].bpp);
+                    return colourstr;
+                case 2:
+                    if (!resstr[0]) snprintf(resstr, sizeof(resstr), "%dx%d", validmode[sel].xdim, validmode[sel].ydim);
+                    return resstr;
             }
         default: break;
     }
@@ -1775,13 +1792,18 @@ void configmenu(void) {
         { .type = spacer },
         {
             .type = callback,
-            .label = "Colour/window",
+            .label = "Display",
             .value = { .callback = { configitem_videomode, 0 } }
         },
         {
             .type = callback,
-            .label = "Resolution",
+            .label = "Colour",
             .value = { .callback = { configitem_videomode, 1 } }
+        },
+        {
+            .type = callback,
+            .label = "Resolution",
+            .value = { .callback = { configitem_videomode, 2 } }
         },
         { .type = spacer },
         {
@@ -1863,10 +1885,10 @@ void configmenu(void) {
         if (svga) svgafullscreenpic(SVGAMENU, SVGAMENU2);
         rotatesprite(svgaxoff,0<<15,svgascale,0,TITLEPIC,0, 0,svgastat,0,0,xdim-1,ydim-1);
 
-        y=32;
+        y=24;
         for (item=0; item<(int)Barraylen(items); item++) {
             if (items[item].type == spacer) {
-                y+=8;
+                y+=6;
                 continue;
             }
             printext256((svgaxoff>>16)+32,y, item==select ? 237 : 29, -1, items[item].label, 2);

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24506" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24506"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -10,6 +10,7 @@
             <connections>
                 <outlet property="alwaysShowButton" destination="VkR-qr-Xv2" id="hWK-HI-RS8"/>
                 <outlet property="cancelButton" destination="1Rr-a3-Ovt" id="HjU-fs-ozc"/>
+                <outlet property="displayPUButton" destination="45b-Zy-nh0" id="ZB3-vn-i2g"/>
                 <outlet property="fullscreenButton" destination="vcP-CZ-XN5" id="Wov-ds-vDL"/>
                 <outlet property="messagesView" destination="Xlp-cm-pzd" id="W89-V2-Eqf"/>
                 <outlet property="startButton" destination="lVe-rZ-tKb" id="eN3-t2-OdO"/>
@@ -36,7 +37,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSApplicationIcon" id="XvI-zZ-CYU"/>
                     </imageView>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3Uc-n7-fnC">
+                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3Uc-n7-fnC">
                         <rect key="frame" x="18" y="149" width="132" height="55"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" id="VpB-P1-8DD">
@@ -59,6 +60,7 @@ DQ
                         </buttonCell>
                         <connections>
                             <action selector="start:" target="-2" id="oZw-vf-FBD"/>
+                            <outlet property="nextKeyView" destination="1Rr-a3-Ovt" id="uvl-16-ZDI"/>
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1Rr-a3-Ovt">
@@ -73,6 +75,7 @@ Gw
                         </buttonCell>
                         <connections>
                             <action selector="cancel:" target="-2" id="WRT-DC-oDD"/>
+                            <outlet property="nextKeyView" destination="VkR-qr-Xv2" id="eIG-pn-nvf"/>
                         </connections>
                     </button>
                     <tabView fixedFrame="YES" initialItem="wYq-5E-IaK" translatesAutoresizingMaskIntoConstraints="NO" id="MbR-hz-7Hp">
@@ -85,7 +88,7 @@ Gw
                                     <rect key="frame" x="10" y="33" width="404" height="254"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="X3Q-5l-jWv">
+                                        <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="X3Q-5l-jWv">
                                             <rect key="frame" x="15" y="218" width="111" height="17"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="2D Video mode:" id="3v9-Pa-utI">
@@ -106,8 +109,11 @@ Gw
                                                     </items>
                                                 </menu>
                                             </popUpButtonCell>
+                                            <connections>
+                                                <outlet property="nextKeyView" destination="OoU-E2-12L" id="Ntk-9S-3hx"/>
+                                            </connections>
                                         </popUpButton>
-                                        <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="snn-pR-nfh">
+                                        <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="snn-pR-nfh">
                                             <rect key="frame" x="15" y="192" width="102" height="17"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="3D Video mode:" id="4yz-bN-JvB">
@@ -128,6 +134,9 @@ Gw
                                                     </items>
                                                 </menu>
                                             </popUpButtonCell>
+                                            <connections>
+                                                <outlet property="nextKeyView" destination="vcP-CZ-XN5" id="zCj-bb-oEF"/>
+                                            </connections>
                                         </popUpButton>
                                         <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vcP-CZ-XN5">
                                             <rect key="frame" x="132" y="165" width="85" height="19"/>
@@ -137,9 +146,28 @@ Gw
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
                                             <connections>
-                                                <action selector="fullscreenClicked:" target="-2" id="cfd-e7-pYp"/>
+                                                <action selector="fullscreenOrDisplayClicked:" target="-2" id="26q-8d-VUG"/>
+                                                <outlet property="nextKeyView" destination="45b-Zy-nh0" id="VJI-6T-43M"/>
                                             </connections>
                                         </button>
+                                        <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="45b-Zy-nh0">
+                                            <rect key="frame" x="222" y="160" width="159" height="25"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <popUpButtonCell key="cell" type="push" title="Display 0" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="qge-Gp-uEj" id="2oi-zc-rOm">
+                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="message"/>
+                                                <menu key="menu" id="Yi2-j5-E6P">
+                                                    <items>
+                                                        <menuItem title="Display 0" state="on" id="qge-Gp-uEj"/>
+                                                        <menuItem title="Item 2" id="6tT-Oa-gch"/>
+                                                        <menuItem title="Item 3" id="O1a-J4-fje"/>
+                                                    </items>
+                                                </menu>
+                                            </popUpButtonCell>
+                                            <connections>
+                                                <action selector="fullscreenOrDisplayClicked:" target="-2" id="FoG-W5-XaD"/>
+                                            </connections>
+                                        </popUpButton>
                                     </subviews>
                                 </view>
                             </tabViewItem>
@@ -153,7 +181,7 @@ Gw
                                             <autoresizingMask key="autoresizingMask"/>
                                             <clipView key="contentView" drawsBackground="NO" id="A1S-b5-3J8">
                                                 <rect key="frame" x="1" y="1" width="394" height="246"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <textView editable="NO" selectable="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" usesFontPanel="YES" usesRuler="YES" spellingCorrection="YES" smartInsertDelete="YES" id="Xlp-cm-pzd">
                                                         <rect key="frame" x="0.0" y="0.0" width="387" height="246"/>
@@ -187,6 +215,9 @@ Gw
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
+                        <connections>
+                            <outlet property="nextKeyView" destination="MbR-hz-7Hp" id="SfQ-Co-WoN"/>
+                        </connections>
                     </button>
                 </subviews>
             </view>
