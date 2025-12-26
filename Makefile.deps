@@ -1,7 +1,7 @@
 icorp_h=$(SRC)/icorp.h $(ENGINEINC)/build.h $(ENGINEINC)/pragmas.h $(ENGINEINC)/cache1d.h $(ENGINEINC)/baselayer.h $(ENGINEINC)/mmulti.h $(SRC)/names.h $(SRC)/sndmod.h $(SRC)/les.h $(SRC)/jeff.h $(SRC)/raf.h $(SRC)/whdefs.h $(SRC)/keydefs.h
 
 $(SRC)/b5compat.$o: $(SRC)/b5compat.c $(ENGINEINC)/build.h
-$(SRC)/config.$o: $(SRC)/config.c $(ENGINEINC)/compat.h $(ENGINEINC)/osd.h $(ENGINEINC)/scriptfile.h $(ENGINEINC)/baselayer.h $(ENGINEINC)/winlayer.h $(icorp_h)
+$(SRC)/config.$o: $(SRC)/config.c $(ENGINEINC)/compat.h $(ENGINEINC)/osd.h $(ENGINEINC)/scriptfile.h $(ENGINEINC)/baselayer.h $(icorp_h)
 $(SRC)/whani.$o: $(SRC)/whani.c $(icorp_h)
 $(SRC)/whaven.$o: $(SRC)/whaven.c $(icorp_h) $(ENGINEINC)/osd.h $(SRC)/startwin.h $(SRC)/version.h
 $(SRC)/whfx.$o: $(SRC)/whfx.c $(icorp_h)
@@ -24,11 +24,13 @@ $(SRC)/startwin_game.$o: $(SRC)/startwin_game.c $(ENGINEINC)/build.h $(ENGINEINC
 $(SRC)/startgtk_game.$o: $(SRC)/startgtk_game.c $(ENGINEINC)/build.h $(ENGINEINC)/baselayer.h $(ENGINEINC)/compat.h $(SRC)/startwin.h
 
 # Derived source files from art assets
-$(RSRC)/startgtk_game_gresource.c: $(RSRC)/startgtk_game.gresource.xml $(RSRC)/game.png $(RSRC)/startgtk_game.glade
-$(RSRC)/startgtk_game_gresource.h: $(RSRC)/startgtk_game.gresource.xml
-$(RSRC)/sdlappicon_game.c: $(RSRC)/game.png
-$(RSRC)/sdlappicon_game.$o: $(RSRC)/sdlappicon_game.c
+$(RSRC)/startgtk_game_gresource.c $(RSRC)/startgtk_game_gresource.h: $(RSRC)/startgtk_game.gresource.xml $(RSRC)/game.png $(RSRC)/startgtk_game.glade
+$(RSRC)/startgtk_build_gresource.c $(RSRC)/startgtk_build_gresource.h: $(RSRC)/startgtk_build.gresource.xml $(RSRC)/build.png $(RSRC)/startgtk_build.glade
+$(RSRC)/game_bmp.c: $(RSRC)/game.bmp
+$(RSRC)/game_bmp.$o: $(RSRC)/game_bmp.c
+$(RSRC)/build_bmp.c: $(RSRC)/build.bmp
+$(RSRC)/build_bmp.$o: $(RSRC)/build_bmp.c
 
-$(SRC)/gameres.$(res): $(SRC)/gameres.rc $(SRC)/gameres.h $(RSRC)/game.bmp $(RSRC)/game_icon.ico $(RSRC)/game.manifest
-$(SRC)/buildres.$(res): $(SRC)/buildres.rc $(ENGINEINC)/buildres.h $(RSRC)/build.bmp $(RSRC)/build_icon.ico $(RSRC)/build.manifest
+$(SRC)/gameres.$(res): $(SRC)/gameres.rc $(SRC)/gameres.h $(RSRC)/startwin_game.bmp $(RSRC)/game_icon.ico $(RSRC)/game.manifest
+$(SRC)/buildres.$(res): $(SRC)/buildres.rc $(ENGINEINC)/buildres.h $(RSRC)/startwin_build.bmp $(RSRC)/build_icon.ico $(RSRC)/build.manifest
 

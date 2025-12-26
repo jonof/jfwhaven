@@ -1185,6 +1185,14 @@ void drawscreen(struct player *plr, int dasmoothratio) {
         faketimerhandler();
 }
 
+#if defined(RENDERTYPEWIN)
+# define HAVE_STARTWIN
+#elif defined(RENDERTYPESDL) && defined(__APPLE__) && defined(HAVE_OSX_FRAMEWORKS)
+# define HAVE_STARTWIN
+#elif defined(RENDERTYPESDL) && defined(HAVE_GTK)
+# define HAVE_STARTWIN
+#endif
+
 int app_main(int argc,const char * const argv[]) {
 
     struct player *plr;
@@ -1285,7 +1293,7 @@ int app_main(int argc,const char * const argv[]) {
     memcpy(keys,defaultkeys,sizeof(keys));
     loadsetup("whaven.ini");
 
-#if defined RENDERTYPEWIN || (defined RENDERTYPESDL && (defined __APPLE__ || defined HAVE_GTK))
+#ifdef HAVE_STARTWIN
     {
         int i;
         struct startwin_settings settings;

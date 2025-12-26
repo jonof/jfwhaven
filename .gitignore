@@ -13,6 +13,7 @@
 *~
 *.dll
 /src/version-auto.c
+/rsrc/*.c
 
 /xcode/*.xcodeproj/*
 !/xcode/*.xcodeproj/project.pbxproj
