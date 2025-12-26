@@ -5,6 +5,10 @@
 #include "fx_man.h"
 #include "music.h"
 
+#ifdef RENDERTYPEWIN
+#include "winlayer.h"
+#endif
+
 #define TRUE 1
 #define FALSE 0
 
@@ -186,7 +190,7 @@ SND_Startup(void)
 		return;
 
 	if(SoundMode) {
-		#ifdef _WIN32
+		#ifdef RENDERTYPEWIN
 		initdata = (void *) win_gethwnd();
 		#endif
 
