@@ -828,6 +828,7 @@
 					"USE_POLYMOST=1",
 					"USE_OPENGL=1",
 					RENDERTYPESDL,
+					HAVE_OSX_FRAMEWORKS,
 					DEBUGGING,
 				);
 				HEADER_SEARCH_PATHS = (
@@ -861,6 +862,7 @@
 					"USE_POLYMOST=1",
 					"USE_OPENGL=1",
 					RENDERTYPESDL,
+					HAVE_OSX_FRAMEWORKS,
 				);
 				HEADER_SEARCH_PATHS = (
 					../src,
