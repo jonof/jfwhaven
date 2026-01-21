@@ -38,9 +38,10 @@
 		AB1320582B89DCF400530E73 /* version.c in Sources */ = {isa = PBXBuildFile; fileRef = AB1320572B89DCF400530E73 /* version.c */; };
 		AB1320592B89DCF400530E73 /* version.c in Sources */ = {isa = PBXBuildFile; fileRef = AB1320572B89DCF400530E73 /* version.c */; };
 		AB17554425AC812300C581C8 /* whaven.c in Sources */ = {isa = PBXBuildFile; fileRef = AB9E4AC82312995E0008A90E /* whaven.c */; };
-		AB1755BA25B9BD0800C581C8 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB9E4AC42312976F0008A90E /* Images.xcassets */; };
 		AB3AE6C21A4D423600CE4329 /* b5compat.c in Sources */ = {isa = PBXBuildFile; fileRef = AB3AE6C11A4D423600CE4329 /* b5compat.c */; };
-		AB7F67A72B6BDA0F00CF1300 /* datascan.c in Sources */ = {isa = PBXBuildFile; fileRef = AB7F67A62B6BDA0F00CF1300 /* datascan.c */; };
+		AB68B9212F210BEB0065C299 /* Editor Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB68B9202F210BEB0065C299 /* Editor Images.xcassets */; };
+		AB68B9252F210C8D0065C299 /* StartupWin.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB68B9232F210C8D0065C299 /* StartupWin.xib */; };
+		AB68B9262F210C8D0065C299 /* StartupWin.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB68B9232F210C8D0065C299 /* StartupWin.xib */; };
 		AB807458296AAD9B00CA6B33 /* whsmk.c in Sources */ = {isa = PBXBuildFile; fileRef = AB807450296AAAC900CA6B33 /* whsmk.c */; };
 		AB807465296AAE0500CA6B33 /* smacker.c in Sources */ = {isa = PBXBuildFile; fileRef = AB80745F296AAE0500CA6B33 /* smacker.c */; };
 		AB98B2DF1A6B87E6009E8749 /* config.c in Sources */ = {isa = PBXBuildFile; fileRef = AB98B2DE1A6B87E6009E8749 /* config.c */; };
@@ -58,17 +59,15 @@
 		ABB2756A25C0285D006709E2 /* libjfaudiolib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABB2755E25C02828006709E2 /* libjfaudiolib.a */; };
 		ABB2756C25C02867006709E2 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABB2756B25C02867006709E2 /* AudioToolbox.framework */; };
 		ABB2756E25C0286E006709E2 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABB2756D25C0286E006709E2 /* AudioUnit.framework */; };
-		ABC75BD81A49C19A007D0D43 /* startwin.game.nib in Resources */ = {isa = PBXBuildFile; fileRef = ABC75BD61A49C19A007D0D43 /* startwin.game.nib */; };
 		ABC75BDB1A49C2D8007D0D43 /* libengine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BC91A49BFB1007D0D43 /* libengine.a */; };
 		ABC75BE01A49C347007D0D43 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BDF1A49C347007D0D43 /* AppKit.framework */; };
 		ABC75BE11A49C36C007D0D43 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BDC1A49C30C007D0D43 /* SDL2.framework */; };
-		ABD03E161A5181020012B9D1 /* StartupWinController.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD03E151A5181020012B9D1 /* StartupWinController.m */; };
-		ABD03E771A52745C0012B9D1 /* startwin.editor.nib in Resources */ = {isa = PBXBuildFile; fileRef = ABD03E751A52745C0012B9D1 /* startwin.editor.nib */; };
+		ABC86A342F260C840056D566 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = ABC86A332F260C840056D566 /* Credits.rtf */; };
+		ABC86A352F260C840056D566 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = ABC86A332F260C840056D566 /* Credits.rtf */; };
 		ABD03E781A52747F0012B9D1 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BDC1A49C30C007D0D43 /* SDL2.framework */; };
 		ABD03E791A52747F0012B9D1 /* SDL2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BDC1A49C30C007D0D43 /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		ABD03E7B1A5274870012B9D1 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BDF1A49C347007D0D43 /* AppKit.framework */; };
 		ABD03E7C1A5274910012B9D1 /* libeditor.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BCB1A49BFB1007D0D43 /* libeditor.a */; };
-		ABD03E7D1A5274910012B9D1 /* libeditorsupp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BCD1A49BFB1007D0D43 /* libeditorsupp.a */; };
 		ABD03E7E1A5274910012B9D1 /* libengine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC75BC91A49BFB1007D0D43 /* libengine.a */; };
 		ABD03E811A5275670012B9D1 /* whbuild.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD03E801A5275670012B9D1 /* whbuild.c */; };
 /* End PBXBuildFile section */
@@ -144,13 +143,6 @@
 			remoteGlobalIDString = AB735FCC0A29A916003261DC;
 			remoteInfo = editor;
 		};
-		ABC75BCC1A49BFB1007D0D43 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = ABC75BBE1A49BFB1007D0D43 /* engine.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = AB3FE4550C04336F00D5DBDC;
-			remoteInfo = editorsupp;
-		};
 		ABC75BCE1A49BFB1007D0D43 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = ABC75BBE1A49BFB1007D0D43 /* engine.xcodeproj */;
@@ -200,13 +192,6 @@
 			remoteGlobalIDString = AB735FCB0A29A916003261DC;
 			remoteInfo = editor;
 		};
-		ABD03E701A5273AE0012B9D1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = ABC75BBE1A49BFB1007D0D43 /* engine.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = AB3FE44A0C04336F00D5DBDC;
-			remoteInfo = editorsupp;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -235,7 +220,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		AB0427DB2E766CDE00E2A322 /* gamecontrollerdb.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = gamecontrollerdb.txt; path = ../rsrc/gamecontrollerdb.txt; sourceTree = SOURCE_ROOT; };
+		AB0427DB2E766CDE00E2A322 /* gamecontrollerdb.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = gamecontrollerdb.txt; sourceTree = "<group>"; };
 		AB1320572B89DCF400530E73 /* version.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = version.c; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB13206C2B89E59800530E73 /* Common.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Common.xcconfig; sourceTree = "<group>"; };
 		AB17551125A8029A00C581C8 /* sndmod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sndmod.h; sourceTree = "<group>"; usesTabs = 1; };
@@ -244,14 +229,13 @@
 		AB17551425A802C300C581C8 /* raf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = raf.h; sourceTree = "<group>"; };
 		AB17551525A802E300C581C8 /* whdefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = whdefs.h; sourceTree = "<group>"; };
 		AB17551725A8036900C581C8 /* keydefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keydefs.h; sourceTree = "<group>"; };
-		AB17551F25A9A9CD00C581C8 /* startwin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = startwin.h; sourceTree = "<group>"; };
 		AB17554A25AC898300C581C8 /* JFWitchaven.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = JFWitchaven.entitlements; sourceTree = "<group>"; };
 		AB17555F25AC8B8800C581C8 /* version.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = version.h; sourceTree = "<group>"; };
 		AB1755AE25B8510100C581C8 /* Build Editor for JFWitchaven.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Build Editor for JFWitchaven.entitlements"; sourceTree = "<group>"; };
 		AB3AE6C11A4D423600CE4329 /* b5compat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = b5compat.c; sourceTree = "<group>"; };
 		AB5BD5FD23123FA500BC4BEF /* version-auto.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "version-auto.c"; sourceTree = "<group>"; };
-		AB7F67A62B6BDA0F00CF1300 /* datascan.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = datascan.c; sourceTree = "<group>"; };
-		AB7F67AF2B6BDA7E00CF1300 /* datascan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = datascan.h; sourceTree = "<group>"; };
+		AB68B9202F210BEB0065C299 /* Editor Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Editor Images.xcassets"; sourceTree = "<group>"; };
+		AB68B9242F210C8D0065C299 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = ../jfbuild/rsrc/Base.lproj/StartupWin.xib; sourceTree = "<group>"; };
 		AB807450296AAAC900CA6B33 /* whsmk.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = whsmk.c; sourceTree = "<group>"; };
 		AB80745E296AAE0500CA6B33 /* smk_malloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smk_malloc.h; sourceTree = "<group>"; };
 		AB80745F296AAE0500CA6B33 /* smacker.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smacker.c; sourceTree = "<group>"; };
@@ -275,14 +259,12 @@
 		ABC75B9D1A49BCC3007D0D43 /* JFWitchaven.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JFWitchaven.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ABC75BA11A49BCC3007D0D43 /* JFWitchaven-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "JFWitchaven-Info.plist"; sourceTree = "<group>"; };
 		ABC75BBE1A49BFB1007D0D43 /* engine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = engine.xcodeproj; path = ../jfbuild/xcode/engine.xcodeproj; sourceTree = "<group>"; };
-		ABC75BD61A49C19A007D0D43 /* startwin.game.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = startwin.game.nib; sourceTree = "<group>"; };
 		ABC75BDC1A49C30C007D0D43 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../jfbuild/xcode/frameworks/SDL2.framework; sourceTree = SOURCE_ROOT; };
 		ABC75BDF1A49C347007D0D43 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		ABC75BE61A49C3DB007D0D43 /* names.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = names.h; sourceTree = "<group>"; };
-		ABD03E151A5181020012B9D1 /* StartupWinController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StartupWinController.m; sourceTree = "<group>"; };
+		ABC86A332F260C840056D566 /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		ABD03E481A52720F0012B9D1 /* Build Editor for JFWitchaven.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Build Editor for JFWitchaven.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ABD03E6A1A5272920012B9D1 /* Build Editor-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Build Editor-Info.plist"; sourceTree = "<group>"; };
-		ABD03E751A52745C0012B9D1 /* startwin.editor.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = startwin.editor.nib; sourceTree = "<group>"; };
 		ABD03E801A5275670012B9D1 /* whbuild.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = whbuild.c; path = ../src/whbuild.c; sourceTree = "<group>"; usesTabs = 1; };
 /* End PBXFileReference section */
 
@@ -306,7 +288,6 @@
 			files = (
 				ABD03E7E1A5274910012B9D1 /* libengine.a in Frameworks */,
 				ABD03E7C1A5274910012B9D1 /* libeditor.a in Frameworks */,
-				ABD03E7D1A5274910012B9D1 /* libeditorsupp.a in Frameworks */,
 				ABD03E7B1A5274870012B9D1 /* AppKit.framework in Frameworks */,
 				ABD03E781A52747F0012B9D1 /* SDL2.framework in Frameworks */,
 			);
@@ -315,6 +296,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		AB68B9222F210BF20065C299 /* rsrc */ = {
+			isa = PBXGroup;
+			children = (
+				ABC86A332F260C840056D566 /* Credits.rtf */,
+				AB68B9202F210BEB0065C299 /* Editor Images.xcassets */,
+				AB9E4AC42312976F0008A90E /* Images.xcassets */,
+				AB0427DB2E766CDE00E2A322 /* gamecontrollerdb.txt */,
+			);
+			name = rsrc;
+			path = ../rsrc;
+			sourceTree = "<group>";
+		};
 		AB80745D296AADDD00CA6B33 /* libsmacker */ = {
 			isa = PBXGroup;
 			children = (
@@ -324,14 +317,6 @@
 			);
 			name = libsmacker;
 			path = ../libsmacker;
-			sourceTree = "<group>";
-		};
-		AB8927622B6E37510055B555 /* rsrc */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = rsrc;
-			path = ../rsrc;
 			sourceTree = "<group>";
 		};
 		ABB2755325C02828006709E2 /* Products */ = {
@@ -361,9 +346,11 @@
 				ABD03E681A52726F0012B9D1 /* Editor */,
 				AB1320572B89DCF400530E73 /* version.c */,
 				AB13206C2B89E59800530E73 /* Common.xcconfig */,
+				AB68B9232F210C8D0065C299 /* StartupWin.xib */,
 				ABC75B9E1A49BCC3007D0D43 /* Products */,
 				ABC75BDE1A49C311007D0D43 /* Linked Frameworks */,
 				ABB2756925C0285D006709E2 /* Frameworks */,
+				AB68B9222F210BF20065C299 /* rsrc */,
 			);
 			sourceTree = "<group>";
 		};
@@ -381,7 +368,6 @@
 			children = (
 				ABC75BC91A49BFB1007D0D43 /* libengine.a */,
 				ABC75BCB1A49BFB1007D0D43 /* libeditor.a */,
-				ABC75BCD1A49BFB1007D0D43 /* libeditorsupp.a */,
 				ABC75BCF1A49BFB1007D0D43 /* arttool */,
 				AB5BD5E023123DA000BC4BEF /* bin2c */,
 				ABC75BD11A49BFB1007D0D43 /* kextract */,
@@ -395,14 +381,10 @@
 		ABC75BD41A49C16E007D0D43 /* Game */ = {
 			isa = PBXGroup;
 			children = (
-				AB0427DB2E766CDE00E2A322 /* gamecontrollerdb.txt */,
 				AB80745D296AADDD00CA6B33 /* libsmacker */,
 				ABC75BE41A49C3DB007D0D43 /* src */,
-				AB8927622B6E37510055B555 /* rsrc */,
-				ABC75BD61A49C19A007D0D43 /* startwin.game.nib */,
 				AB17554A25AC898300C581C8 /* JFWitchaven.entitlements */,
 				ABC75BA11A49BCC3007D0D43 /* JFWitchaven-Info.plist */,
-				AB9E4AC42312976F0008A90E /* Images.xcassets */,
 			);
 			name = Game;
 			sourceTree = "<group>";
@@ -421,7 +403,6 @@
 			children = (
 				AB3AE6C11A4D423600CE4329 /* b5compat.c */,
 				AB98B2DE1A6B87E6009E8749 /* config.c */,
-				AB7F67A62B6BDA0F00CF1300 /* datascan.c */,
 				AB5BD5FD23123FA500BC4BEF /* version-auto.c */,
 				AB9E4ADE2312ABAB0008A90E /* whani.c */,
 				AB9E4AC82312995E0008A90E /* whaven.c */,
@@ -434,7 +415,6 @@
 				AB807450296AAAC900CA6B33 /* whsmk.c */,
 				AB9E4ADC2312ABAB0008A90E /* whsndmod.c */,
 				AB9E4ADF2312ABAB0008A90E /* whtag.c */,
-				AB7F67AF2B6BDA7E00CF1300 /* datascan.h */,
 				AB9E4ACF231299700008A90E /* icorp.h */,
 				AB17551325A802C300C581C8 /* jeff.h */,
 				AB17551725A8036900C581C8 /* keydefs.h */,
@@ -442,9 +422,7 @@
 				ABC75BE61A49C3DB007D0D43 /* names.h */,
 				AB17551425A802C300C581C8 /* raf.h */,
 				AB17551125A8029A00C581C8 /* sndmod.h */,
-				AB17551F25A9A9CD00C581C8 /* startwin.h */,
 				AB17551525A802E300C581C8 /* whdefs.h */,
-				ABD03E151A5181020012B9D1 /* StartupWinController.m */,
 				AB17555F25AC8B8800C581C8 /* version.h */,
 			);
 			name = src;
@@ -455,7 +433,6 @@
 			isa = PBXGroup;
 			children = (
 				ABD03E691A5272890012B9D1 /* src */,
-				ABD03E751A52745C0012B9D1 /* startwin.editor.nib */,
 				AB1755AE25B8510100C581C8 /* Build Editor for JFWitchaven.entitlements */,
 				ABD03E6A1A5272920012B9D1 /* Build Editor-Info.plist */,
 			);
@@ -508,7 +485,6 @@
 			dependencies = (
 				ABD03E6D1A5273AE0012B9D1 /* PBXTargetDependency */,
 				ABD03E6F1A5273AE0012B9D1 /* PBXTargetDependency */,
-				ABD03E711A5273AE0012B9D1 /* PBXTargetDependency */,
 			);
 			name = "Build Editor for JFWitchaven";
 			productName = editor;
@@ -614,13 +590,6 @@
 			remoteRef = ABC75BCA1A49BFB1007D0D43 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		ABC75BCD1A49BFB1007D0D43 /* libeditorsupp.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libeditorsupp.a;
-			remoteRef = ABC75BCC1A49BFB1007D0D43 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		ABC75BCF1A49BFB1007D0D43 /* arttool */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
@@ -657,8 +626,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				AB0427DC2E766CDE00E2A322 /* gamecontrollerdb.txt in Resources */,
-				ABC75BD81A49C19A007D0D43 /* startwin.game.nib in Resources */,
 				AB9E4AC52312976F0008A90E /* Images.xcassets in Resources */,
+				AB68B9262F210C8D0065C299 /* StartupWin.xib in Resources */,
+				ABC86A342F260C840056D566 /* Credits.rtf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -667,8 +637,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				AB0427DD2E766CDE00E2A322 /* gamecontrollerdb.txt in Resources */,
-				ABD03E771A52745C0012B9D1 /* startwin.editor.nib in Resources */,
-				AB1755BA25B9BD0800C581C8 /* Images.xcassets in Resources */,
+				AB68B9212F210BEB0065C299 /* Editor Images.xcassets in Resources */,
+				AB68B9252F210C8D0065C299 /* StartupWin.xib in Resources */,
+				ABC86A352F260C840056D566 /* Credits.rtf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -703,7 +674,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AB7F67A72B6BDA0F00CF1300 /* datascan.c in Sources */,
 				AB807465296AAE0500CA6B33 /* smacker.c in Sources */,
 				AB807458296AAD9B00CA6B33 /* whsmk.c in Sources */,
 				AB9E4AE92312ABAB0008A90E /* whplr.c in Sources */,
@@ -718,7 +688,6 @@
 				AB17554425AC812300C581C8 /* whaven.c in Sources */,
 				AB9E4AE52312ABAB0008A90E /* whsndmod.c in Sources */,
 				AB9E4AE72312ABAB0008A90E /* whani.c in Sources */,
-				ABD03E161A5181020012B9D1 /* StartupWinController.m in Sources */,
 				AB9E4AEB2312ABAB0008A90E /* whobj.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -770,12 +739,18 @@
 			name = editor;
 			targetProxy = ABD03E6E1A5273AE0012B9D1 /* PBXContainerItemProxy */;
 		};
-		ABD03E711A5273AE0012B9D1 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = editorsupp;
-			targetProxy = ABD03E701A5273AE0012B9D1 /* PBXContainerItemProxy */;
-		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		AB68B9232F210C8D0065C299 /* StartupWin.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				AB68B9242F210C8D0065C299 /* Base */,
+			);
+			name = StartupWin.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		AB5BD5E523123DD300BC4BEF /* Debug */ = {
@@ -916,7 +891,7 @@
 		ABD03E631A5272100012B9D1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = EditorAppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Build Editor for JFWitchaven.entitlements";
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -934,7 +909,7 @@
 		ABD03E641A5272100012B9D1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = EditorAppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Build Editor for JFWitchaven.entitlements";
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = YES;

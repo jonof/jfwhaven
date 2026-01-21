@@ -38,6 +38,7 @@ DATADIR ?= /usr/local/share/games/jfwhaven
 
 ENGINEROOT=jfbuild
 ENGINEINC=$(ENGINEROOT)/include
+ENGINERSRC=$(ENGINEROOT)/rsrc
 LIBSMACKERSRC=libsmacker
 AUDIOLIBROOT=jfaudiolib
 SRC=src
@@ -90,8 +91,7 @@ GAMEOBJS= \
 	$(SRC)/whplr.$o \
 	$(SRC)/whsmk.$o \
 	$(SRC)/whsndmod.$o \
-	$(SRC)/whtag.$o \
-	$(SRC)/datascan.$o
+	$(SRC)/whtag.$o
 
 GAMEOBJS+= \
 	$(LIBSMACKERSRC)/smacker.$o
@@ -108,8 +108,7 @@ ifeq ($(PLATFORM),BSD)
 	OURCPPFLAGS+= -DDATADIR=\"$(DATADIR)\"
 endif
 ifeq ($(PLATFORM),WINDOWS)
-	GAMEOBJS+= $(SRC)/gameres.$(res) \
-		$(SRC)/startwin_game.$o
+	GAMEOBJS+= $(SRC)/gameres.$(res)
 	EDITOROBJS+= $(SRC)/buildres.$(res)
 endif
 ifeq ($(PLATFORM),DARWIN)
@@ -124,9 +123,8 @@ ifeq ($(RENDERTYPE),SDL)
 		OURCFLAGS+= $(GTKCONFIG_CFLAGS)
 		OURLDFLAGS+= $(GTKCONFIG_LIBS)
 
-		GAMEOBJS+= $(SRC)/startgtk_game.$o \
-			$(RSRC)/startgtk_game_gresource.$o
-		EDITOROBJS+= $(RSRC)/startgtk_build_gresource.$o
+		GAMEOBJS+= $(RSRC)/game_startwin_gtk_gresource.$o
+		EDITOROBJS+= $(RSRC)/build_startwin_gtk_gresource.$o
 	endif
 
 	GAMEOBJS+= $(RSRC)/game_bmp.$o
@@ -179,14 +177,14 @@ $(RSRC)/%.$o: $(RSRC)/%.c
 	$(CC) $(CPPFLAGS) $(OURCPPFLAGS) $(CFLAGS) $(OURCFLAGS) -c $< -o $@
 
 $(SRC)/%.$(res): $(SRC)/%.rc
-	$(RC) -i $< -o $@ --include-dir=$(SRC) --include-dir=$(ENGINEINC)
+	$(RC) -i $< -o $@ --include-dir=$(SRC) --include-dir=$(ENGINEINC) --include-dir=$(RSRC)
 
 $(RSRC)/%.c: $(RSRC)/%.dat | $(ENGINEROOT)/bin2c$(EXESUFFIX)
 	$(ENGINEROOT)/bin2c$(EXESUFFIX) $< default_$* > $@
 $(RSRC)/%_gresource.c: $(RSRC)/%.gresource.xml
-	glib-compile-resources --generate-source --manual-register --c-name=startgtk --target=$@ --sourcedir=$(RSRC) $<
+	glib-compile-resources --generate-source --manual-register --c-name=startwin_gtk --target=$@ --sourcedir=$(RSRC) --sourcedir=$(ENGINERSRC) $<
 $(RSRC)/%_gresource.h: $(RSRC)/%.gresource.xml
-	glib-compile-resources --generate-header --manual-register --c-name=startgtk --target=$@ --sourcedir=$(RSRC) $<
+	glib-compile-resources --generate-header --manual-register --c-name=startwin_gtk --target=$@ --sourcedir=$(RSRC) --sourcedir=$(ENGINERSRC) $<
 
 $(RSRC)/%_bmp.c: $(RSRC)/%.bmp | $(ENGINEROOT)/bin2c$(EXESUFFIX)
 	$(ENGINEROOT)/bin2c$(EXESUFFIX) $< appicon_bmp > $@

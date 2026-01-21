@@ -159,6 +159,124 @@ static int osdcmd_vidmode(const osdfuncparm_t *parm);
 static int osdcmd_setkeys(const osdfuncparm_t *parm);
 static int osdcmd_setting(const osdfuncparm_t *parm);
 
+enum {
+    GAMETYPE_BASE = 1,
+    GAMETYPE_PREVIEW,
+};
+
+struct startwin_settings startwin_settings = {
+    .features = {
+        .video = 1,
+        .audio = 1,
+        .input = 1,
+        .game = 1,
+    },
+    .game = {
+        .gamedatafilepatterns = (const char *[]) { "*.art", "*.map", "*.dat", "joesnd", "songs", "*.smk", NULL },
+        .gamedata = (struct startwin_dataset []) {
+            {
+                .name = "Witchaven",
+                .id = 1,
+                .type = GAMETYPE_BASE,
+                .filespec = (struct startwin_datasetfilespec []) {
+                    { .name = "intro.smk",    .size = 42972676, .crc = 0xf567d9a6, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "joesnd",       .size =  2797568, .crc = 0x4cc892b7, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level1.map",   .size =    96866, .crc = 0xda9612cb, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level2.map",   .size =    76834, .crc = 0x19ef221d, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level3.map",   .size =   106356, .crc = 0x3595a1fe, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level4.map",   .size =   109882, .crc = 0x80ff75d0, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level5.map",   .size =   103838, .crc = 0x729e5fcf, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level6.map",   .size =    91317, .crc = 0xd7383c10, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level7.map",   .size =   113594, .crc = 0xd1a48978, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level8.map",   .size =    88715, .crc = 0x5e073a2b, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level9.map",   .size =    95033, .crc = 0x20616db5, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level10.map",  .size =   105648, .crc = 0x22fd7dde, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level11.map",  .size =   103338, .crc = 0x202e1828, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level12.map",  .size =    66546, .crc = 0xc29e101c, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level13.map",  .size =   111909, .crc = 0xa43746dc, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level14.map",  .size =   105148, .crc = 0x147b4ac9, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level15.map",  .size =    97658, .crc = 0x458c8b50, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level16.map",  .size =   107121, .crc = 0x64045559, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level17.map",  .size =   124741, .crc = 0xddd62486, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level18.map",  .size =   110811, .crc = 0x52eb02ed, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level19.map",  .size =   112013, .crc = 0x70514413, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level20.map",  .size =    68354, .crc = 0x937407a0, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level21.map",  .size =    78429, .crc = 0xd10f0db5, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level22.map",  .size =    70849, .crc = 0x56c38513, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level23.map",  .size =   101943, .crc = 0x19a957eb, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level24.map",  .size =    65694, .crc = 0xaf62f4dd, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level25.map",  .size =    67327, .crc = 0x6085a041, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level30.map",  .size =    25625, .crc = 0x48106941, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level31.map",  .size =    20243, .crc = 0x7c0fd6cc, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level32.map",  .size =    56039, .crc = 0x52763a20, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level33.map",  .size =    56203, .crc = 0xb59bc9f4, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level34.map",  .size =    34589, .crc = 0x8ad80d12, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level35.map",  .size =    19055, .crc = 0xc395cc4f, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "lookup.dat",   .size =     3085, .crc = 0x99d93d5a, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "palette.dat",  .size =    41600, .crc = 0xb006f5ce, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "songs",        .size =   532480, .crc = 0xc81c8045, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "tiles000.art", .size =  4300805, .crc = 0x66610c31, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "tiles001.art", .size =  1996296, .crc = 0x3a34ae61, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "tiles002.art", .size =   904239, .crc = 0xfd42872e, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "tiles003.art", .size =  1928939, .crc = 0x458d93d6, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "tiles004.art", .size =  3074158, .crc = 0xf958daec, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "tiles005.art", .size =  4443091, .crc = 0x5b864f04, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "tiles006.art", .size =  1149902, .crc = 0x214d2888, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "tiles007.art", .size =  3138731, .crc = 0x3c68b92a, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "tiles008.art", .size =  2772715, .crc = 0x62264f08, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "tiles009.art", .size =  2462301, .crc = 0x50f1286e, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "tiles010.art", .size =  5813871, .crc = 0xe56e0cd5, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { 0 }
+                }
+            },
+            {
+                .name = "Witchaven (3 Level Preview)",
+                .id = 2,
+                .type = GAMETYPE_PREVIEW,
+                .filespec = (struct startwin_datasetfilespec []) {
+                    { .name = "intro.smk",    .size = 42972676, .crc = 0xf567d9a6, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "joesnd",       .size =  2797568, .crc = 0x4cc892b7, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level1.map",   .size =    96866, .crc = 0xda9612cb, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level2.map",   .size =    76834, .crc = 0x19ef221d, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level3.map",   .size =   106356, .crc = 0x3595a1fe, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "level4.map", .presence = STARTWIN_PRESENCE_EXCEPT },
+                    { .name = "lookup.dat",   .size =     3085, .crc = 0x99d93d5a, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "palette.dat",  .size =    41600, .crc = 0xb006f5ce, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "songs",        .size =   532480, .crc = 0xc81c8045, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "tiles000.art", .size =  4300805, .crc = 0x66610c31, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "tiles001.art", .size =  1996296, .crc = 0x3a34ae61, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "tiles002.art", .size =   904239, .crc = 0xfd42872e, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "tiles003.art", .size =  1928939, .crc = 0x458d93d6, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "tiles004.art", .size =  3074158, .crc = 0xf958daec, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "tiles005.art", .size =  4443091, .crc = 0x5b864f04, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "tiles006.art", .size =  1149902, .crc = 0x214d2888, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "tiles007.art", .size =  3138731, .crc = 0x3c68b92a, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "tiles008.art", .size =  2772715, .crc = 0x62264f08, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "tiles009.art", .size =  2462301, .crc = 0x50f1286e, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { .name = "tiles010.art", .size =  5813871, .crc = 0xe56e0cd5, .presence = STARTWIN_PRESENCE_REQUIRED },
+                    { 0 }
+                }
+            },
+            { 0 }
+        },
+        .demourl = "https://www.jonof.id.au/files/jfwhaven/whcdpreview.zip",
+        .moreinfobrief = "JFWitchaven can scan locations of your choosing for Witchaven game data",
+        .moreinfodetail = "Click the 'Choose a location...' button, then locate a folder to scan.\n\n"
+            #ifdef _WIN32
+            # define BUL " \x95 "
+            #else
+            # define BUL " • "
+            #endif
+            "Common locations to check include:\n"
+            BUL "CD/DVD drives\n"
+            BUL "Unzipped data from copies of the full DOS game\n\n"
+            "To play the 3-level preview version, download the preview data (whcdpreview.zip), "
+            "unzip the file, then select the WHAVEN folder with the 'Choose a location...' option.",
+            #undef BUL
+    },
+};
+
+
 //
 //
 //
@@ -1185,14 +1303,6 @@ void drawscreen(struct player *plr, int dasmoothratio) {
         faketimerhandler();
 }
 
-#if defined(RENDERTYPEWIN)
-# define HAVE_STARTWIN
-#elif defined(RENDERTYPESDL) && defined(__APPLE__) && defined(HAVE_OSX_FRAMEWORKS)
-# define HAVE_STARTWIN
-#elif defined(RENDERTYPESDL) && defined(HAVE_GTK)
-# define HAVE_STARTWIN
-#endif
-
 int app_main(int argc,const char * const argv[]) {
 
     struct player *plr;
@@ -1279,6 +1389,54 @@ int app_main(int argc,const char * const argv[]) {
         exit(1);
     }
 
+    buildprintf(" map name: level%d\n",mapon);
+    buildputs(" initengine()\n");
+
+    memcpy(keys,defaultkeys,sizeof(keys));
+    loadsetup("whaven.ini");
+
+    if (startwin_scan_gamedata()) {
+        const struct startwin_datasetfound *df = startwin_find_filename("palette.dat");
+        if (df) startwin_settings.game.gamedataid = df->dataset->id;
+    }
+
+    startwin_settings.video.fullscreen = fullscreen&255;
+    startwin_settings.video.display = fullscreen>>8;
+    startwin_settings.video.xdim = xdimgame;
+    startwin_settings.video.ydim = ydimgame;
+    startwin_settings.video.bpp = bppgame;
+    startwin_settings.audio.samplerate = digihz[option[7]>>4];
+    startwin_settings.audio.channels = 1+((option[7]&4)>0);
+    startwin_settings.audio.bitspersample = 1<<(((option[7]&2)>0)+3);
+    startwin_settings.input.mouse = (option[3]&1)>0;
+    startwin_settings.input.controller = (option[3]&2)>0;
+    startwin_settings.alwaysshow = forcesetup;
+
+    if (forcesetup) {
+        int startretval = startwin_run();
+        if (startretval == STARTWIN_CANCEL) {
+            uninitengine();
+            exit(0);
+        } else {
+            fullscreen = SETGAMEMODE_FULLSCREEN(startwin_settings.video.display,
+                 startwin_settings.video.fullscreen);
+            xdimgame = startwin_settings.video.xdim;
+            ydimgame = startwin_settings.video.ydim;
+            bppgame = startwin_settings.video.bpp;
+            option[3] = 0;
+            option[3] |= startwin_settings.input.mouse ? 1 : 0;
+            option[3] |= startwin_settings.input.controller ? 2 : 0;
+            option[7] = 1;
+            for (size_t i=0; i<Barraylen(digihz) && digihz[i] <= startwin_settings.audio.samplerate; i++)
+                 option[7] = (i<<4)|1;
+            option[7] |= startwin_settings.audio.channels == 2 ? 4 : 0;
+            option[7] |= startwin_settings.audio.bitspersample == 16 ? 2 : 0;
+            forcesetup = startwin_settings.alwaysshow;
+        }
+    }
+
+    startwin_free_gamedata();
+
     initgroupfile("stuff.dat");
     countlevels();
     if (numlevels > 3) {
@@ -1286,49 +1444,6 @@ int app_main(int argc,const char * const argv[]) {
     } else {
         wm_setwindowtitle("3 Level Preview");
     }
-
-    buildprintf(" map name: level%d\n",mapon);
-    buildputs(" initengine()\n");
-
-    memcpy(keys,defaultkeys,sizeof(keys));
-    loadsetup("whaven.ini");
-
-#ifdef HAVE_STARTWIN
-    {
-        int i;
-        struct startwin_settings settings;
-
-        memset(&settings, 0, sizeof(settings));
-        settings.fullscreen = fullscreen;
-        settings.xdim3d = xdimgame;
-        settings.ydim3d = ydimgame;
-        settings.bpp3d = bppgame;
-        settings.forcesetup = forcesetup;
-        settings.usemouse = !!(option[3]&1);
-        settings.usejoy = !!(option[3]&2);
-        settings.samplerate = digihz[option[7]>>4];
-        settings.bitspersample = 1<<(((option[7]&2)>0)+3);
-        settings.channels = ((option[7]&4)>0)+1;
-
-        if (forcesetup) {
-            if (startwin_run(&settings) == STARTWIN_CANCEL) {
-                uninitengine();
-                exit(0);
-            }
-        }
-
-        fullscreen = settings.fullscreen;
-        xdimgame = settings.xdim3d;
-        ydimgame = settings.ydim3d;
-        bppgame = settings.bpp3d;
-        forcesetup = settings.forcesetup;
-        option[3] = (settings.usemouse) | (settings.usejoy<<1);
-        option[7] = 0;
-        for (i=0;i<8;i++) if (digihz[i] <= settings.samplerate) option[7] = i<<4;
-        option[7] |= (settings.bitspersample == 16)<<1;
-        option[7] |= (settings.channels == 2)<<2;
-    }
-#endif
 
     if( option[8] == 1 || option[9] == 1)
         MusicMode=1;
