@@ -1435,7 +1435,9 @@ int app_main(int argc,const char * const argv[]) {
     setup3dscreen();
     SND_Startup();
 
-    smkplayseq("intro");
+    // MISTER_HYBRID_NOINTRO=1 (the set's eduke32_env.sh): no intro video
+    if (!(getenv("MISTER_HYBRID_NOINTRO") && atoi(getenv("MISTER_HYBRID_NOINTRO"))))
+        smkplayseq("intro");
     setbrightness(brightness, palette, 0);
 
     SND_MenuMusic(MENUSONG);
