@@ -285,8 +285,8 @@ int menuscreen(struct player *plr) {
             redpicnum=NEWGAMEGREEN+select;
             menuwritesprite(redpic[select].x,redpic[select].y,redpicnum,0,0,0);
         }
-        printext256(xdim-(svgaxoff>>16)-8*sizeof(settingsstr)-18+2,ydim-18+2,2,-1,settingsstr,2);
-        printext256(xdim-(svgaxoff>>16)-8*sizeof(settingsstr)-18,ydim-18,29,-1,settingsstr,2);
+        printext256(xdim-(svgaxoff>>16)-((xdim == 640 && ydim <= 240) ? 16 : 8)*(int)(sizeof(settingsstr)-1)-18+2,ydim-18+2,2,-1,settingsstr,2);
+        printext256(xdim-(svgaxoff>>16)-((xdim == 640 && ydim <= 240) ? 16 : 8)*(int)(sizeof(settingsstr)-1)-18,ydim-18,29,-1,settingsstr,2);
 
         nextpage();
 

@@ -1206,6 +1206,10 @@ void drawscreen(struct player *plr, int dasmoothratio) {
 #include "mister_port.h"
 #endif
 
+#ifdef MISTER_HYBRID
+#include "mister_port.h"
+#endif
+
 int app_main(int argc,const char * const argv[]) {
 
     struct player *plr;
@@ -1288,7 +1292,11 @@ int app_main(int argc,const char * const argv[]) {
 #ifdef MISTER_HYBRID
     MiSTer_Init(); // the launcher keeps what the game prints
 #else
+#ifdef MISTER_HYBRID
+    MiSTer_Init(); // the launcher keeps what the game prints
+#else
     buildsetlogfile("whaven.log");
+#endif
 #endif
 
     wm_setapptitle("JFWitchaven");

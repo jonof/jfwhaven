@@ -74,7 +74,7 @@ char oldjoyb,
 	 oldbstatus,
 #ifdef MISTER_HYBRID
 	 // MiSTer: the core's eight buttons, joyb bits 2..9 (R B A L Y X Select Start)
-	 butbit[]={0x4,0x8,0x10,0x20,0x40,0x80,0x100,0x200};
+	 butbit[]={0x4,0x10,0x8,0x20,0x40,0x80,0x100,0x200}; // 2026-11-19: A jump, B use
 #else
 	 butbit[]={0x1,0x2,0x4,0x8,0x10,0x20,0x40,0x80};
 #endif
@@ -143,6 +143,7 @@ getinput(void)
 
 	horizvel=0;
 
+	{ extern int misterjoydpadstrafekey; misterjoydpadstrafekey = keys[KEYSTRAFE]; }   // MiSTer: d-pad left/right strafe (patch_dpadstrafe_game.py)
 	if(keystatus[keys[KEYSTRAFE]] == 0) {
 		if(keystatus[keys[KEYLEFT]] > 0 || keystatus[RLEFT] > 0) {
 			angvel-=16*TICSPERFRAME;

@@ -72,6 +72,7 @@ add_executable(jfwhaven
 	src/datascan.c
 	src/version.c
 	src/mister_port.c
+	src/mister_crash.c
 )
 
 target_include_directories(jfwhaven PRIVATE
