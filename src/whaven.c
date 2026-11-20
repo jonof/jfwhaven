@@ -23,6 +23,9 @@ int followx, followy;
 int ratcnt=0;
 
 int gameactivated=0;
+#ifdef MISTER_HYBRID
+void mistercheats(int playing); // whinp.c: the core's OSD Cheats page
+#endif
 int escapetomenu=0;
 
 int selectedgun;
@@ -416,7 +419,13 @@ void setup3dscreen(void) {
 
     if (setgamemode(fullscreen, xdimgame, ydimgame, bppgame))
         crashgame("Could not set video mode");
+#ifdef MISTER_HYBRID
+    // MiSTer: every mode is a 320x200 screen to the game's 2D art (the
+    // engine draws a column of it as xdim/320 pixels, the core shows 4:3)
+    svga=0;
+#else
     svga=!(xdim == 320 && ydim == 200) && !(xdim == 640 && ydim == 400);
+#endif
 
     if(svga) {
         svgascale = scale(65536L, ydim, 480);
@@ -1193,6 +1202,14 @@ void drawscreen(struct player *plr, int dasmoothratio) {
 # define HAVE_STARTWIN
 #endif
 
+#ifdef MISTER_HYBRID
+#include "mister_port.h"
+#endif
+
+#ifdef MISTER_HYBRID
+#include "mister_port.h"
+#endif
+
 int app_main(int argc,const char * const argv[]) {
 
     struct player *plr;
@@ -1233,8 +1250,15 @@ int app_main(int argc,const char * const argv[]) {
     // creating a 'user_profiles_disabled' file in the current working
     // directory where the game was launched makes the installation
     // "portable" by writing into the working directory
+#ifdef MISTER_HYBRID
+    // MiSTer: the game data, the settings and the saved games are all in
+    // the folder the launcher starts the game in
+    if (1) {
+        char cwd[BMAX_PATH+1];
+#else
     if (access("user_profiles_disabled", F_OK) == 0) {
         char cwd[BMAX_PATH+1];
+#endif
         if (getcwd(cwd, sizeof(cwd))) {
             addsearchpath(cwd);
         }
@@ -1265,7 +1289,15 @@ int app_main(int argc,const char * const argv[]) {
         }
     }
 
+#ifdef MISTER_HYBRID
+    MiSTer_Init(); // the launcher keeps what the game prints
+#else
+#ifdef MISTER_HYBRID
+    MiSTer_Init(); // the launcher keeps what the game prints
+#else
     buildsetlogfile("whaven.log");
+#endif
+#endif
 
     wm_setapptitle("JFWitchaven");
     buildprintf("\nJFWitchaven\n"
@@ -1292,6 +1324,15 @@ int app_main(int argc,const char * const argv[]) {
 
     memcpy(keys,defaultkeys,sizeof(keys));
     loadsetup("whaven.ini");
+#ifdef MISTER_HYBRID
+    // MiSTer: the screen of the core, and its data check with the logo
+    fullscreen = 0;
+    xdimgame = MiSTer_ScreenWidth();
+    ydimgame = MiSTer_ScreenHeight();
+    bppgame = 8;
+    MiSTer_Loading();
+    MiSTer_PickGame();
+#endif
 
 #ifdef HAVE_STARTWIN
     {
@@ -1342,6 +1383,9 @@ int app_main(int argc,const char * const argv[]) {
 
 
     initinput();
+#ifdef MISTER_HYBRID
+    option[3] |= 2; // MiSTer: the pad is always on
+#endif
     if (option[3]&1) {                                        // Les 07/27/95
         initmouse();
     }                                                            // Les 07/27/95
@@ -1399,7 +1443,9 @@ int app_main(int argc,const char * const argv[]) {
     setup3dscreen();
     SND_Startup();
 
-    smkplayseq("intro");
+    // MISTER_HYBRID_NOINTRO=1 (the set's eduke32_env.sh): no intro video
+    if (!(getenv("MISTER_HYBRID_NOINTRO") && atoi(getenv("MISTER_HYBRID_NOINTRO"))))
+        smkplayseq("intro");
     setbrightness(brightness, palette, 0);
 
     SND_MenuMusic(MENUSONG);
@@ -1490,6 +1536,9 @@ void playloop(void) {
     while (!exit) {
         handleevents();
         OSD_DispatchQueued();
+#ifdef MISTER_HYBRID
+        mistercheats(gameactivated == 1 && escapetomenu == 0);
+#endif
 
         if(gameactivated == 0 || escapetomenu == 1) {
             exit=menuscreen(plr);

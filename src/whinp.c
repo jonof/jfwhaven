@@ -39,6 +39,9 @@ int nettypemode=0;
 extern char displaybuf[];
 extern char tempbuf[];
 extern int  displaytime;
+#ifdef MISTER_HYBRID
+extern int misternoclip; // below: the OSD's No Clipping
+#endif
 extern int  spiked;
 
 int mousecalibrate=0;
@@ -69,7 +72,12 @@ int testpaleffects=0;
 
 char oldjoyb,
 	 oldbstatus,
+#ifdef MISTER_HYBRID
+	 // MiSTer: the core's eight buttons, joyb bits 2..9 (R B A L Y X Select Start)
+	 butbit[]={0x4,0x10,0x8,0x20,0x40,0x80,0x100,0x200}; // 2026-11-19: A jump, B use
+#else
 	 butbit[]={0x1,0x2,0x4,0x8,0x10,0x20,0x40,0x80};
+#endif
 
 short jcalibration=0,
 	 jctrx,
@@ -80,7 +88,13 @@ short jcalibration=0,
 	 joyx,joyy,
 	 jstickenabled=0,
 	 jturnspeed=16;
-int joykeys[4]={KEYFIRE,KEYUSE,KEYUSEP,KEYSTRAFE};
+#ifdef MISTER_HYBRID
+#define NUMJOYKEYS 8
+int joykeys[NUMJOYKEYS]={KEYFIRE,KEYJUMP,KEYUSE,KEYRUN,KEYCAST,KEYUSEP,KEYMAP,-1};
+#else
+#define NUMJOYKEYS 4
+int joykeys[NUMJOYKEYS]={KEYFIRE,KEYUSE,KEYUSEP,KEYSTRAFE};
+#endif
 
 extern int wet;
 extern char foggy;
@@ -129,6 +143,7 @@ getinput(void)
 
 	horizvel=0;
 
+	{ extern int misterjoydpadstrafekey; misterjoydpadstrafekey = keys[KEYSTRAFE]; }   // MiSTer: d-pad left/right strafe (patch_dpadstrafe_game.py)
 	if(keystatus[keys[KEYSTRAFE]] == 0) {
 		if(keystatus[keys[KEYLEFT]] > 0 || keystatus[RLEFT] > 0) {
 			angvel-=16*TICSPERFRAME;
@@ -246,7 +261,8 @@ getinput(void)
 		jangvel = 127*(jangvel-ksgn(jangvel)*deadzone)/(32767-deadzone);
 		jhorizvel = (YDIM/8)*(jhorizvel-ksgn(jhorizvel)*deadzone)/(32767-deadzone);
 
-		for (i=0 ; i < 4 ; i++) {
+		for (i=0 ; i < NUMJOYKEYS ; i++) {
+			if (joykeys[i] < 0) continue;                // a button without an action
 			if (((joyb&butbit[i]) == butbit[i])          // button is down
 					&& ((oldjoyb&butbit[i]) != butbit[i])) {
 				keystatus[keys[joykeys[i]]]=1;
@@ -754,6 +770,16 @@ syncprocessinput(short snum) {
 
 		oldposx=plr->x; oldposy=plr->y;
 
+#ifdef MISTER_HYBRID
+		if (misternoclip) { // the OSD's No Clipping: through the walls
+			__typeof__(plr->sector) ns = plr->sector;
+			plr->x += xvect >> 14;
+			plr->y += yvect >> 14;
+			updatesector(plr->x, plr->y, &ns);
+			if (ns >= 0) plr->sector = ns;
+		}
+		else
+#endif
 		clipmove(&plr->x,&plr->y,&plr->z,&plr->sector,xvect,yvect,128L,4<<8,4<<8,CLIPMASK0);
 
 		if (plr->sector!=plr->lastsndsector) {
@@ -1198,3 +1224,47 @@ void dosoundthing(void) {
 		}
 
 }
+
+#ifdef MISTER_HYBRID
+// The core's OSD Cheats page, once a frame while a level plays (whaven.c).
+// God Mode: healthpic() (whplr.c) ignores a hit while mistergod is on.
+int mistergod, misternoclip;
+extern int horizvel, justteleported;
+void mistercheats(int playing)
+{
+	static int lastgod = -1, lastclip = -1;
+	int god, clip;
+	int triggers = mistercheatbits(&god, &clip);
+	struct player *plr = &player[pyrn];
+
+	if (!playing) {
+		lastgod = lastclip = -1;
+		return;
+	}
+	if (lastgod >= 0 && god != lastgod) { strcpy(displaybuf, god ? "GOD MODE ON" : "GOD MODE OFF"); displaytime = 360; }
+	lastgod = mistergod = god;
+	if (god && plr->health < plr->maxhealth) healthpic(plr->maxhealth - plr->health);
+	if (lastclip >= 0 && clip != lastclip) { strcpy(displaybuf, clip ? "NO CLIPPING ON" : "NO CLIPPING OFF"); displaytime = 360; }
+	lastclip = misternoclip = clip;
+	if (triggers & 1) { // Give All: the game's weapon, potion and spell cheats
+		strcpy(displaybuf, "SCOOTER"); checkcheat();
+		strcpy(displaybuf, "MOMMY"); checkcheat();
+		strcpy(displaybuf, "WANGO"); checkcheat();
+		strcpy(displaybuf, "GIVE ALL"); displaytime = 360;
+	}
+	if (triggers & 2) { // Next Level: as the level's exit
+		if (mapon < numlevels) {
+			justteleported = 1;
+			mapon++;
+			vel = 0; angvel = 0; svel = 0; horizvel = 0;
+			playsound_loc(S_CHAINDOOR1, plr->x, plr->y);
+			loadnewlevel(mapon);
+			warpfxsprite(plr->spritenum);
+			plr->treasure[14] = plr->treasure[15] = plr->treasure[16] = plr->treasure[17] = 0;
+			plr->treasure[4] = plr->treasure[5] = 0;
+			SND_CheckLoops();
+		}
+		else { strcpy(displaybuf, "LAST LEVEL"); displaytime = 360; }
+	}
+}
+#endif

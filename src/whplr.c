@@ -44,6 +44,9 @@ extern short oldmousestatus;
 
 extern char tempbuf[];
 extern char displaybuf[];
+#ifdef MISTER_HYBRID
+extern int mistergod; // whinp.c: the OSD's God Mode
+#endif
 extern char scorebuf[];
 extern char healthbuf[];
 extern char armorbuf[];
@@ -2628,6 +2631,9 @@ void swingdapunch(int daweapon) {
 }
 
 void shootgun ( struct player *plr, short daang, char guntype ) {
+#ifdef MISTER_HYBRID
+    misterrumble(0, 150, 110); // MiSTer: the weapon
+#endif
 
 	short hitsect, hitwall, hitsprite, daang2, k;
 	int i, j, daz2, hitx, hity, hitz;
@@ -3831,6 +3837,13 @@ void healthpic(int hp) {
 	struct player *plr;
 
 	plr=&player[pyrn];
+#ifdef MISTER_HYBRID
+    if (hp < 0) { // MiSTer: hit; harder for a bigger one
+        int strong = 90 - hp * 5;
+        misterrumble(strong > 255 ? 255 : strong, 60, 220);
+    }
+    if (hp < 0 && mistergod) hp = 0; // the OSD's God Mode: no harm done
+#endif
 	plr->health+=hp;
 
 	if(plr->health < 0)
